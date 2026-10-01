@@ -1,10 +1,2653 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Vedantu Voice Simulation</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>
+    Vedantu AI Counselling Coach
+  </title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7f8;
+      color: #202124;
+    }
+
+    button,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =====================================================
+       TOP BAR
+    ===================================================== */
+
+    .topbar {
+      height: 68px;
+      background: #ffffff;
+      border-bottom: 1px solid #e8e8e8;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 28px;
+    }
+
+    .brand {
+      font-size: 15px;
+      font-weight: 800;
+      color: #f35427;
+      letter-spacing: 0.4px;
+    }
+
+    .top-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .status-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #28a745;
+    }
+
+    /* =====================================================
+       WORKSPACE
+    ===================================================== */
+
+    .workspace {
+      flex: 1;
+
+      display: grid;
+      grid-template-columns: 300px 1fr;
+
+      min-height: 0;
+    }
+
+    /* =====================================================
+       SIDEBAR
+    ===================================================== */
+
+    .sidebar {
+      background: #ffffff;
+      border-right: 1px solid #e8e8e8;
+
+      padding: 24px;
+
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .sidebar-subtitle {
+      color: #777;
+      font-size: 13px;
+      line-height: 1.5;
+
+      margin-bottom: 22px;
+    }
+
+    .scenario-item {
+      padding: 13px 0;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+    .scenario-label {
+      font-size: 11px;
+      color: #888;
+
+      margin-bottom: 4px;
+
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .scenario-value {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .locked-note {
+      margin-top: 20px;
+
+      background: #f7f7f7;
+
+      border-radius: 10px;
+
+      padding: 12px;
+
+      color: #666;
+
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* =====================================================
+       CHAT AREA
+    ===================================================== */
+
+    .chat-area {
+      display: flex;
+      flex-direction: column;
+
+      min-width: 0;
+
+      height: calc(100vh - 68px);
+    }
+
+    .chat-header {
+      background: #ffffff;
+      border-bottom: 1px solid #ececec;
+
+      padding: 16px 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 20px;
+    }
+
+    .participant-name {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .participant-subtitle {
+      color: #777;
+      font-size: 12px;
+
+      margin-top: 3px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .voice-toggle {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      font-size: 12px;
+      color: #666;
+    }
+
+    .voice-toggle input {
+      cursor: pointer;
+    }
+
+    .end-button {
+      border: 1px solid #e1e1e1;
+      background: white;
+
+      color: #b42318;
+
+      border-radius: 10px;
+
+      padding: 9px 14px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .end-button:hover {
+      background: #fff5f4;
+    }
+
+    .end-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* =====================================================
+       MESSAGES
+    ===================================================== */
+
+    .messages {
+      flex: 1;
+
+      overflow-y: auto;
+
+      padding: 28px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .empty-state {
+      margin: auto;
+
+      max-width: 500px;
+
+      text-align: center;
+
+      color: #777;
+
+      line-height: 1.6;
+    }
+
+    .empty-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .message-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .message-row.counsellor {
+      justify-content: flex-end;
+    }
+
+    .message-row.customer {
+      justify-content: flex-start;
+    }
+
+    .message {
+      max-width: 72%;
+    }
+
+    .speaker {
+      font-size: 11px;
+      color: #777;
+      font-weight: 700;
+
+      margin-bottom: 5px;
+    }
+
+    .counsellor .speaker {
+      text-align: right;
+    }
+
+    .bubble {
+      border-radius: 16px;
+
+      padding: 13px 16px;
+
+      font-size: 14px;
+      line-height: 1.55;
+
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .counsellor .bubble {
+      background: #f35427;
+      color: white;
+
+      border-bottom-right-radius: 5px;
+    }
+
+    .customer .bubble {
+      background: #ffffff;
+
+      border: 1px solid #e5e5e5;
+
+      border-bottom-left-radius: 5px;
+    }
+
+    .thinking {
+      display: none;
+
+      padding: 0 28px 12px;
+
+      color: #777;
+
+      font-size: 13px;
+    }
+
+    .thinking.visible {
+      display: block;
+    }
+
+    /* =====================================================
+       VOICE PANEL
+    ===================================================== */
+
+    .composer-wrap {
+      background: #ffffff;
+
+      border-top: 1px solid #e8e8e8;
+
+      padding: 16px 24px 20px;
+    }
+
+    .voice-panel {
+      max-width: 950px;
+      margin: 0 auto 12px;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+    }
+
+    .mic-button {
+      border: none;
+
+      border-radius: 12px;
+
+      padding: 11px 16px;
+
+      background: #202124;
+      color: white;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      min-width: 150px;
+    }
+
+    .mic-button.listening {
+      background: #d92d20;
+    }
+
+    .mic-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .speech-status {
+      flex: 1;
+
+      min-height: 42px;
+
+      display: flex;
+      align-items: center;
+
+      padding: 8px 12px;
+
+      background: #f7f7f8;
+
+      border-radius: 10px;
+
+      font-size: 12px;
+      color: #666;
+    }
+
+    .language-select {
+      border: 1px solid #dedede;
+
+      background: white;
+
+      border-radius: 10px;
+
+      padding: 10px;
+
+      font-size: 12px;
+
+      max-width: 160px;
+    }
+
+    /* =====================================================
+       TEXT COMPOSER
+    ===================================================== */
+
+    .composer {
+      max-width: 950px;
+
+      margin: 0 auto;
+
+      display: flex;
+      align-items: flex-end;
+
+      gap: 12px;
+    }
+
+    textarea {
+      flex: 1;
+
+      resize: none;
+
+      min-height: 54px;
+      max-height: 150px;
+
+      border: 1px solid #dcdcdc;
+
+      border-radius: 14px;
+
+      padding: 14px 16px;
+
+      font-size: 14px;
+      line-height: 1.45;
+
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #f35427;
+    }
+
+    textarea:disabled {
+      background: #f5f5f5;
+    }
+
+    .send-button {
+      width: 54px;
+      height: 54px;
+
+      border: none;
+
+      border-radius: 13px;
+
+      background: #f35427;
+      color: white;
+
+      font-size: 20px;
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .send-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .composer-note {
+      max-width: 950px;
+
+      margin: 8px auto 0;
+
+      color: #999;
+
+      font-size: 11px;
+    }
+
+    /* =====================================================
+       LOADING OVERLAY
+    ===================================================== */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+
+      background: #f6f7f8;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      z-index: 100;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .loading-card {
+      width: 430px;
+      max-width: calc(100% - 32px);
+
+      background: white;
+
+      border-radius: 18px;
+
+      padding: 30px;
+
+      text-align: center;
+
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+    }
+
+    .loading-title {
+      font-size: 18px;
+      font-weight: 700;
+
+      margin-bottom: 8px;
+    }
+
+    .loading-text {
+      color: #777;
+
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .error-text {
+      color: #b42318;
+    }
+
+    /* =====================================================
+       HIDDEN APPS SCRIPT BRIDGE
+    ===================================================== */
+
+    #voiceBridge {
+      position: fixed;
+
+      width: 1px;
+      height: 1px;
+
+      border: 0;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      left: -10000px;
+      top: -10000px;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 850px) {
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .chat-area {
+        height: calc(100vh - 68px);
+      }
+
+      .top-title {
+        display: none;
+      }
+
+      .message {
+        max-width: 86%;
+      }
+
+      .voice-panel {
+        flex-wrap: wrap;
+      }
+
+      .speech-status {
+        order: 3;
+        flex-basis: 100%;
+      }
+
+    }
+
+  </style>
 </head>
+
 <body>
-  Voice Simulation Ready
+
+<div class="app">
+
+  <!-- =====================================================
+       TOP BAR
+  ====================================================== -->
+
+  <header class="topbar">
+
+    <div class="brand">
+      VEDANTU
+    </div>
+
+    <div class="top-title">
+      AI Counselling Coach
+    </div>
+
+    <div class="status-wrap">
+
+      <div
+        id="statusDot"
+        class="status-dot"
+      ></div>
+
+      <span id="sessionStatus">
+        Connecting...
+      </span>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN WORKSPACE
+  ====================================================== -->
+
+  <div class="workspace">
+
+    <!-- SCENARIO -->
+
+    <aside class="sidebar">
+
+      <h2>
+        Scenario
+      </h2>
+
+      <div class="sidebar-subtitle">
+        Information available to you before the counselling conversation.
+      </div>
+
+      <div id="scenarioDetails"></div>
+
+      <div class="locked-note">
+        🔒 Hidden customer information is intentionally not shown.
+        Discover it naturally through the conversation.
+      </div>
+
+    </aside>
+
+
+    <!-- LIVE ROOM -->
+
+    <main class="chat-area">
+
+      <div class="chat-header">
+
+        <div>
+
+          <div
+            id="participantName"
+            class="participant-name"
+          >
+            Customer
+          </div>
+
+          <div class="participant-subtitle">
+            Live AI Voice Simulation
+          </div>
+
+        </div>
+
+
+        <div class="header-actions">
+
+          <label class="voice-toggle">
+
+            <input
+              id="aiVoiceToggle"
+              type="checkbox"
+              checked
+            >
+
+            AI Voice
+
+          </label>
+
+
+          <button
+            id="endSessionButton"
+            class="end-button"
+            onclick="endSession()"
+          >
+            End Session
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="messages"
+        class="messages"
+      ></div>
+
+
+      <div
+        id="thinking"
+        class="thinking"
+      >
+        Customer is responding...
+      </div>
+
+
+      <!-- =================================================
+           VOICE + TEXT INPUT
+      ================================================== -->
+
+      <div class="composer-wrap">
+
+        <div class="voice-panel">
+
+          <button
+            id="micButton"
+            class="mic-button"
+            onclick="toggleMicrophone()"
+          >
+            🎙 Start Speaking
+          </button>
+
+
+          <div
+            id="speechStatus"
+            class="speech-status"
+          >
+            Microphone ready.
+          </div>
+
+
+          <select
+            id="speechLanguage"
+            class="language-select"
+            title="Speech recognition language"
+          >
+
+            <option value="en-IN">
+              English
+            </option>
+
+            <option value="hi-IN">
+              Hinglish / Hindi
+            </option>
+
+            <option value="ta-IN">
+              Tamil
+            </option>
+
+            <option value="te-IN">
+              Telugu
+            </option>
+
+            <option value="mr-IN">
+              Marathi
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="composer">
+
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Speak using the microphone or type as the Academic Counsellor..."
+            onkeydown="handleKeydown(event)"
+            oninput="resizeInput()"
+          ></textarea>
+
+
+          <button
+            id="sendButton"
+            class="send-button"
+            onclick="sendMessage()"
+            title="Send"
+          >
+            ↑
+          </button>
+
+        </div>
+
+
+        <div class="composer-note">
+          Speak, review the transcript, then send. Press Enter to send. Shift + Enter adds a new line.
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
+     APPS SCRIPT BRIDGE
+
+     Source is assigned dynamically after we read sessionId.
+======================================================== -->
+
+<iframe
+  id="voiceBridge"
+  title="Vedantu Voice Bridge"
+></iframe>
+
+
+<!-- =======================================================
+     LOADING
+======================================================== -->
+
+<div
+  id="loadingOverlay"
+  class="overlay"
+>
+
+  <div class="loading-card">
+
+    <div
+      id="loadingTitle"
+      class="loading-title"
+    >
+      Connecting to counselling room...
+    </div>
+
+    <div
+      id="loadingText"
+      class="loading-text"
+    >
+      Preparing your voice simulation.
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /* =========================================================
+     CONFIGURATION
+  ========================================================= */
+
+  const APPS_SCRIPT_URL =
+    'https://script.google.com/a/macros/vedantu.com/s/AKfycbwETFO-mKP1Swv_NAworx4D0BFN3_ZYm2e6g1AGpdrrJ8M4W1ybsWSsOi3yNg3Tv9wS/exec';
+
+
+  const ALLOWED_BRIDGE_ORIGINS = [
+    'https://script.google.com',
+    'https://script.googleusercontent.com'
+  ];
+
+
+  /* =========================================================
+     APPLICATION STATE
+  ========================================================= */
+
+  let currentSessionId =
+    '';
+
+
+  let roomData =
+    null;
+
+
+  let bridgeReady =
+    false;
+
+
+  let messageInProgress =
+    false;
+
+
+  let sessionCompleted =
+    false;
+
+
+  let recognition =
+    null;
+
+
+  let recognitionSupported =
+    false;
+
+
+  let listening =
+    false;
+
+
+  let finalTranscript =
+    '';
+
+
+  let microphonePermissionGranted =
+    false;
+
+
+  /* =========================================================
+     START
+  ========================================================= */
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    initialisePage
+  );
+
+
+  function initialisePage() {
+
+    /*
+     * Install message listener BEFORE loading the bridge,
+     * so the READY event cannot be missed.
+     */
+
+    window.addEventListener(
+      'message',
+      handleBridgeMessage
+    );
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    currentSessionId =
+      String(
+        params.get(
+          'sessionId'
+        ) || ''
+      ).trim();
+
+
+    if (!currentSessionId) {
+
+      showLoadError(
+        'No simulation session was supplied.'
+      );
+
+      return;
+
+    }
+
+
+    initialiseSpeechRecognition();
+
+
+    loadVoiceBridge();
+
+  }
+
+
+  /* =========================================================
+     LOAD APPS SCRIPT BRIDGE
+  ========================================================= */
+
+  function loadVoiceBridge() {
+
+    const bridge =
+      document.getElementById(
+        'voiceBridge'
+      );
+
+
+    bridge.src =
+      APPS_SCRIPT_URL +
+      '?page=voicebridge&sessionId=' +
+      encodeURIComponent(
+        currentSessionId
+      );
+
+  }
+
+
+  /* =========================================================
+     BRIDGE COMMUNICATION
+  ========================================================= */
+
+  function handleBridgeMessage(
+    event
+  ) {
+
+    /*
+     * Apps Script may ultimately render through
+     * script.googleusercontent.com, depending on browser
+     * and Google redirect behaviour.
+     */
+
+    const originAllowed =
+      ALLOWED_BRIDGE_ORIGINS.some(
+        function(origin) {
+
+          return (
+            event.origin === origin ||
+            event.origin.startsWith(
+              origin
+            )
+          );
+
+        }
+      );
+
+
+    if (!originAllowed) {
+
+      return;
+
+    }
+
+
+    const payload =
+      event.data || {};
+
+
+    if (!payload.type) {
+
+      return;
+
+    }
+
+
+    if (
+      payload.type ===
+      'VOICE_BRIDGE_READY'
+    ) {
+
+      bridgeReady =
+        true;
+
+
+      setSessionStatus(
+        'Loading Session',
+        'loading'
+      );
+
+
+      sendToBridge({
+        type:
+          'LOAD_ROOM'
+      });
+
+
+      return;
+
+    }
+
+
+    if (
+      payload.type ===
+      'LOAD_ROOM_RESULT'
+    ) {
+
+      handleRoomResult(
+        payload
+      );
+
+      return;
+
+    }
+
+
+    if (
+      payload.type ===
+      'SEND_MESSAGE_RESULT'
+    ) {
+
+      handleSendResult(
+        payload
+      );
+
+      return;
+
+    }
+
+
+    if (
+      payload.type ===
+      'END_SESSION_RESULT'
+    ) {
+
+      handleEndResult(
+        payload
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  function sendToBridge(
+    payload
+  ) {
+
+    const bridge =
+      document.getElementById(
+        'voiceBridge'
+      );
+
+
+    if (
+      !bridge ||
+      !bridge.contentWindow
+    ) {
+
+      showLoadError(
+        'Voice bridge is unavailable.'
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * The bridge itself verifies the GitHub parent origin.
+     * "*" avoids problems caused by Google's iframe redirects.
+     */
+
+    bridge.contentWindow.postMessage(
+      payload,
+      '*'
+    );
+
+  }
+
+
+  /* =========================================================
+     ROOM LOAD
+  ========================================================= */
+
+  function handleRoomResult(
+    payload
+  ) {
+
+    if (
+      !payload.success ||
+      !payload.data
+    ) {
+
+      showLoadError(
+        payload.error ||
+        'Unable to load simulation room.'
+      );
+
+      return;
+
+    }
+
+
+    roomData =
+      payload.data;
+
+
+    if (
+      roomData.status !==
+      'ACTIVE'
+    ) {
+
+      showLoadError(
+        'This simulation session is no longer active.'
+      );
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        'participantName'
+      )
+      .textContent =
+      roomData.participant ||
+      'Customer';
+
+
+    renderScenario(
+      roomData.scenario || {}
+    );
+
+
+    configureSpeechLanguage(
+      roomData.scenario || {}
+    );
+
+
+    renderConversation(
+      roomData.conversationHistory || []
+    );
+
+
+    setSessionStatus(
+      'Live Session',
+      'active'
+    );
+
+
+    hideLoadingOverlay();
+
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .focus();
+
+  }
+
+
+  /* =========================================================
+     SCENARIO
+  ========================================================= */
+
+  function renderScenario(
+    scenario
+  ) {
+
+    const items = [
+
+      [
+        'Language',
+        scenario.language
+      ],
+
+      [
+        'Location',
+        joinLocation(
+          scenario
+        )
+      ],
+
+      [
+        'Grade',
+        scenario.grade
+          ? (
+              String(
+                scenario.grade
+              ) === 'Dropper'
+                ? 'Dropper'
+                : 'Grade ' +
+                  scenario.grade
+            )
+          : ''
+      ],
+
+      [
+        'Board',
+        scenario.board
+      ],
+
+      [
+        'Who Is Present',
+        scenario.whoPresent
+      ],
+
+      [
+        'Course Intent',
+        scenario.courseIntent
+      ],
+
+      [
+        'Lead Source',
+        scenario.leadSource
+      ],
+
+      [
+        'Interaction Stage',
+        scenario.interactionStage
+      ],
+
+      [
+        'Test / Scholarship',
+        getTestText(
+          scenario
+        )
+      ]
+
+    ];
+
+
+    document
+      .getElementById(
+        'scenarioDetails'
+      )
+      .innerHTML =
+      items
+        .filter(
+          function(item) {
+
+            return Boolean(
+              item[1]
+            );
+
+          }
+        )
+        .map(
+          function(item) {
+
+            return `
+              <div class="scenario-item">
+
+                <div class="scenario-label">
+                  ${escapeHtml(
+                    item[0]
+                  )}
+                </div>
+
+                <div class="scenario-value">
+                  ${escapeHtml(
+                    String(
+                      item[1]
+                    )
+                  )}
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join('');
+
+  }
+
+
+  function joinLocation(
+    scenario
+  ) {
+
+    return [
+      scenario.centre,
+      scenario.city,
+      scenario.zone
+    ]
+      .filter(Boolean)
+      .join(' • ');
+
+  }
+
+
+  function getTestText(
+    scenario
+  ) {
+
+    if (
+      !scenario.testTaken
+    ) {
+
+      return 'Not Taken';
+
+    }
+
+
+    let output =
+      scenario.testType ||
+      'Taken';
+
+
+    if (
+      scenario.scholarshipPercentage !== null &&
+      scenario.scholarshipPercentage !== undefined &&
+      scenario.scholarshipPercentage !== ''
+    ) {
+
+      output +=
+        ' • ' +
+        scenario.scholarshipPercentage +
+        '% Scholarship';
+
+    }
+
+
+    return output;
+
+  }
+
+
+  /* =========================================================
+     CONVERSATION
+  ========================================================= */
+
+  function renderConversation(
+    history
+  ) {
+
+    const messages =
+      document.getElementById(
+        'messages'
+      );
+
+
+    if (
+      !Array.isArray(history) ||
+      history.length === 0
+    ) {
+
+      messages.innerHTML = `
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            🎙
+          </div>
+
+          <strong>
+            Begin the counselling conversation
+          </strong>
+
+          <br><br>
+
+          Use the microphone and speak exactly as you would with a real student or parent visiting the centre.
+
+        </div>
+      `;
+
+
+      return;
+
+    }
+
+
+    messages.innerHTML =
+      history
+        .map(
+          renderMessage
+        )
+        .join('');
+
+
+    scrollToBottom();
+
+  }
+
+
+  function renderMessage(
+    turn
+  ) {
+
+    const isCounsellor =
+      turn.speaker ===
+      'Academic Counsellor';
+
+
+    const rowClass =
+      isCounsellor
+        ? 'counsellor'
+        : 'customer';
+
+
+    return `
+      <div class="message-row ${rowClass}">
+
+        <div class="message">
+
+          <div class="speaker">
+            ${escapeHtml(
+              turn.speaker ||
+              ''
+            )}
+          </div>
+
+          <div class="bubble">
+            ${escapeHtml(
+              turn.text ||
+              ''
+            )}
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+  }
+
+
+  /* =========================================================
+     SPEECH RECOGNITION
+  ========================================================= */
+
+  function initialiseSpeechRecognition() {
+
+    const Recognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+
+    if (!Recognition) {
+
+      recognitionSupported =
+        false;
+
+
+      document
+        .getElementById(
+          'micButton'
+        )
+        .disabled =
+        true;
+
+
+      setSpeechStatus(
+        'Speech recognition is not supported in this browser. Use Chrome on desktop or type your message.'
+      );
+
+
+      return;
+
+    }
+
+
+    recognitionSupported =
+      true;
+
+
+    recognition =
+      new Recognition();
+
+
+    recognition.continuous =
+      true;
+
+
+    recognition.interimResults =
+      true;
+
+
+    recognition.maxAlternatives =
+      1;
+
+
+    recognition.onstart =
+      function() {
+
+        listening =
+          true;
+
+
+        finalTranscript =
+          '';
+
+
+        const button =
+          document.getElementById(
+            'micButton'
+          );
+
+
+        button.classList.add(
+          'listening'
+        );
+
+
+        button.textContent =
+          '■ Stop Speaking';
+
+
+        setSpeechStatus(
+          'Listening… speak naturally.'
+        );
+
+      };
+
+
+    recognition.onresult =
+      function(event) {
+
+        let interim =
+          '';
+
+
+        for (
+          let i = event.resultIndex;
+          i < event.results.length;
+          i++
+        ) {
+
+          const transcript =
+            event.results[i][0].transcript;
+
+
+          if (
+            event.results[i].isFinal
+          ) {
+
+            finalTranscript +=
+              transcript +
+              ' ';
+
+          }
+
+          else {
+
+            interim +=
+              transcript;
+
+          }
+
+        }
+
+
+        const combined =
+          (
+            finalTranscript +
+            interim
+          ).trim();
+
+
+        document
+          .getElementById(
+            'messageInput'
+          )
+          .value =
+          combined;
+
+
+        resizeInput();
+
+
+        if (combined) {
+
+          setSpeechStatus(
+            interim
+              ? 'Listening… ' + interim
+              : 'Speech captured. Review and send.'
+          );
+
+        }
+
+      };
+
+
+    recognition.onerror =
+      function(event) {
+
+        listening =
+          false;
+
+
+        resetMicButton();
+
+
+        let message =
+          'Microphone error: ' +
+          event.error;
+
+
+        if (
+          event.error ===
+          'not-allowed'
+        ) {
+
+          message =
+            'Microphone permission was denied. Allow microphone access in your browser and try again.';
+
+        }
+
+
+        if (
+          event.error ===
+          'no-speech'
+        ) {
+
+          message =
+            'No speech was detected. Click Start Speaking and try again.';
+
+        }
+
+
+        setSpeechStatus(
+          message
+        );
+
+      };
+
+
+    recognition.onend =
+      function() {
+
+        listening =
+          false;
+
+
+        resetMicButton();
+
+
+        const text =
+          document
+            .getElementById(
+              'messageInput'
+            )
+            .value
+            .trim();
+
+
+        if (text) {
+
+          setSpeechStatus(
+            'Speech captured. Review the transcript, then press Send.'
+          );
+
+        }
+
+        else {
+
+          setSpeechStatus(
+            'Microphone ready.'
+          );
+
+        }
+
+      };
+
+  }
+
+
+  /* =========================================================
+     MICROPHONE
+  ========================================================= */
+
+  async function toggleMicrophone() {
+
+    if (
+      !recognitionSupported ||
+      !recognition
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      messageInProgress ||
+      sessionCompleted
+    ) {
+
+      return;
+
+    }
+
+
+    if (listening) {
+
+      recognition.stop();
+
+      return;
+
+    }
+
+
+    /*
+     * Ask for browser microphone permission explicitly.
+     */
+
+    if (
+      !microphonePermissionGranted
+    ) {
+
+      try {
+
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+            audio: true
+          });
+
+
+        stream
+          .getTracks()
+          .forEach(
+            function(track) {
+
+              track.stop();
+
+            }
+          );
+
+
+        microphonePermissionGranted =
+          true;
+
+      }
+
+      catch (error) {
+
+        setSpeechStatus(
+          'Microphone permission could not be granted. Check your browser permissions.'
+        );
+
+
+        return;
+
+      }
+
+    }
+
+
+    const language =
+      document
+        .getElementById(
+          'speechLanguage'
+        )
+        .value;
+
+
+    recognition.lang =
+      language;
+
+
+    finalTranscript =
+      '';
+
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .value =
+      '';
+
+
+    try {
+
+      recognition.start();
+
+    }
+
+    catch (error) {
+
+      setSpeechStatus(
+        'The microphone is already starting. Please try again in a moment.'
+      );
+
+    }
+
+  }
+
+
+  function resetMicButton() {
+
+    const button =
+      document.getElementById(
+        'micButton'
+      );
+
+
+    button.classList.remove(
+      'listening'
+    );
+
+
+    button.textContent =
+      '🎙 Start Speaking';
+
+  }
+
+
+  function setSpeechStatus(
+    text
+  ) {
+
+    document
+      .getElementById(
+        'speechStatus'
+      )
+      .textContent =
+      text;
+
+  }
+
+
+  /* =========================================================
+     LANGUAGE
+  ========================================================= */
+
+  function configureSpeechLanguage(
+    scenario
+  ) {
+
+    const language =
+      String(
+        scenario.language ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    let locale =
+      'en-IN';
+
+
+    if (
+      language.indexOf(
+        'hinglish'
+      ) !== -1 ||
+      language.indexOf(
+        'hindi'
+      ) !== -1
+    ) {
+
+      locale =
+        'hi-IN';
+
+    }
+
+
+    else if (
+      language.indexOf(
+        'tamil'
+      ) !== -1
+    ) {
+
+      locale =
+        'ta-IN';
+
+    }
+
+
+    else if (
+      language.indexOf(
+        'telugu'
+      ) !== -1
+    ) {
+
+      locale =
+        'te-IN';
+
+    }
+
+
+    else if (
+      language.indexOf(
+        'marathi'
+      ) !== -1
+    ) {
+
+      locale =
+        'mr-IN';
+
+    }
+
+
+    document
+      .getElementById(
+        'speechLanguage'
+      )
+      .value =
+      locale;
+
+  }
+
+
+  /* =========================================================
+     SEND MESSAGE
+  ========================================================= */
+
+  function sendMessage() {
+
+    if (
+      messageInProgress ||
+      sessionCompleted
+    ) {
+
+      return;
+
+    }
+
+
+    if (listening) {
+
+      recognition.stop();
+
+    }
+
+
+    const input =
+      document.getElementById(
+        'messageInput'
+      );
+
+
+    const message =
+      input.value.trim();
+
+
+    if (!message) {
+
+      return;
+
+    }
+
+
+    messageInProgress =
+      true;
+
+
+    setComposerEnabled(
+      false
+    );
+
+
+    showThinking(
+      true
+    );
+
+
+    appendTemporaryCounsellorMessage(
+      message
+    );
+
+
+    input.value =
+      '';
+
+
+    resizeInput();
+
+
+    setSpeechStatus(
+      'Message sent. Waiting for customer response...'
+    );
+
+
+    sendToBridge({
+
+      type:
+        'SEND_MESSAGE',
+
+      message:
+        message
+
+    });
+
+  }
+
+
+  function appendTemporaryCounsellorMessage(
+    message
+  ) {
+
+    const messages =
+      document.getElementById(
+        'messages'
+      );
+
+
+    if (
+      messages.querySelector(
+        '.empty-state'
+      )
+    ) {
+
+      messages.innerHTML =
+        '';
+
+    }
+
+
+    messages.insertAdjacentHTML(
+      'beforeend',
+      renderMessage({
+
+        speaker:
+          'Academic Counsellor',
+
+        text:
+          message
+
+      })
+    );
+
+
+    scrollToBottom();
+
+  }
+
+
+  function handleSendResult(
+    payload
+  ) {
+
+    messageInProgress =
+      false;
+
+
+    showThinking(
+      false
+    );
+
+
+    setComposerEnabled(
+      true
+    );
+
+
+    if (
+      !payload.success ||
+      !payload.data
+    ) {
+
+      alert(
+        payload.error ||
+        'Unable to send message.'
+      );
+
+
+      sendToBridge({
+        type:
+          'LOAD_ROOM'
+      });
+
+
+      return;
+
+    }
+
+
+    const result =
+      payload.data;
+
+
+    renderConversation(
+      result.conversationHistory || []
+    );
+
+
+    setSpeechStatus(
+      'Microphone ready for your next response.'
+    );
+
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .focus();
+
+
+    /*
+     * Free browser TTS for the AI response.
+     */
+
+    if (
+      result.reply &&
+      document
+        .getElementById(
+          'aiVoiceToggle'
+        )
+        .checked
+    ) {
+
+      speakCustomerReply(
+        result.reply
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     AI VOICE OUTPUT
+  ========================================================= */
+
+  function speakCustomerReply(
+    text
+  ) {
+
+    if (
+      !window.speechSynthesis ||
+      !text
+    ) {
+
+      return;
+
+    }
+
+
+    window.speechSynthesis.cancel();
+
+
+    const utterance =
+      new SpeechSynthesisUtterance(
+        text
+      );
+
+
+    utterance.lang =
+      document
+        .getElementById(
+          'speechLanguage'
+        )
+        .value ||
+      'en-IN';
+
+
+    utterance.rate =
+      1;
+
+
+    utterance.pitch =
+      1;
+
+
+    window.speechSynthesis.speak(
+      utterance
+    );
+
+  }
+
+
+  /* =========================================================
+     END SESSION
+  ========================================================= */
+
+  function endSession() {
+
+    if (
+      messageInProgress
+    ) {
+
+      alert(
+        'Please wait for the current customer response before ending the session.'
+      );
+
+      return;
+
+    }
+
+
+    if (
+      sessionCompleted
+    ) {
+
+      return;
+
+    }
+
+
+    if (listening) {
+
+      recognition.stop();
+
+    }
+
+
+    window.speechSynthesis &&
+      window.speechSynthesis.cancel();
+
+
+    const confirmed =
+      window.confirm(
+        'End this counselling session? You will not be able to continue after this.'
+      );
+
+
+    if (!confirmed) {
+
+      return;
+
+    }
+
+
+    const button =
+      document.getElementById(
+        'endSessionButton'
+      );
+
+
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      'Ending...';
+
+
+    setComposerEnabled(
+      false
+    );
+
+
+    sendToBridge({
+      type:
+        'END_SESSION'
+    });
+
+  }
+
+
+  function handleEndResult(
+    payload
+  ) {
+
+    const button =
+      document.getElementById(
+        'endSessionButton'
+      );
+
+
+    if (
+      !payload.success ||
+      !payload.data
+    ) {
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        'End Session';
+
+
+      setComposerEnabled(
+        true
+      );
+
+
+      alert(
+        payload.error ||
+        'Unable to end session.'
+      );
+
+
+      return;
+
+    }
+
+
+    sessionCompleted =
+      true;
+
+
+    button.textContent =
+      'Session Ended';
+
+
+    setSessionStatus(
+      'Completed',
+      'completed'
+    );
+
+
+    setSpeechStatus(
+      'Session completed.'
+    );
+
+
+    document
+      .getElementById(
+        'micButton'
+      )
+      .disabled =
+      true;
+
+
+    /*
+     * Audit/results redirect will be connected later.
+     */
+
+    alert(
+      'Session completed successfully.'
+    );
+
+  }
+
+
+  /* =========================================================
+     INPUT UTILITIES
+  ========================================================= */
+
+  function handleKeydown(
+    event
+  ) {
+
+    if (
+      event.key === 'Enter' &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+
+      sendMessage();
+
+    }
+
+  }
+
+
+  function resizeInput() {
+
+    const input =
+      document.getElementById(
+        'messageInput'
+      );
+
+
+    input.style.height =
+      'auto';
+
+
+    input.style.height =
+      Math.min(
+        input.scrollHeight,
+        150
+      ) +
+      'px';
+
+  }
+
+
+  function setComposerEnabled(
+    enabled
+  ) {
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .disabled =
+      !enabled;
+
+
+    document
+      .getElementById(
+        'sendButton'
+      )
+      .disabled =
+      !enabled;
+
+
+    document
+      .getElementById(
+        'micButton'
+      )
+      .disabled =
+      !enabled ||
+      !recognitionSupported;
+
+  }
+
+
+  function showThinking(
+    visible
+  ) {
+
+    document
+      .getElementById(
+        'thinking'
+      )
+      .classList.toggle(
+        'visible',
+        visible
+      );
+
+  }
+
+
+  function scrollToBottom() {
+
+    const messages =
+      document.getElementById(
+        'messages'
+      );
+
+
+    requestAnimationFrame(
+      function() {
+
+        messages.scrollTop =
+          messages.scrollHeight;
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     STATUS
+  ========================================================= */
+
+  function setSessionStatus(
+    text,
+    state
+  ) {
+
+    document
+      .getElementById(
+        'sessionStatus'
+      )
+      .textContent =
+      text;
+
+
+    const dot =
+      document.getElementById(
+        'statusDot'
+      );
+
+
+    if (
+      state === 'completed'
+    ) {
+
+      dot.style.background =
+        '#777';
+
+    }
+
+    else if (
+      state === 'loading'
+    ) {
+
+      dot.style.background =
+        '#f5a623';
+
+    }
+
+    else {
+
+      dot.style.background =
+        '#28a745';
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LOADING
+  ========================================================= */
+
+  function hideLoadingOverlay() {
+
+    document
+      .getElementById(
+        'loadingOverlay'
+      )
+      .classList.add(
+        'hidden'
+      );
+
+  }
+
+
+  function showLoadError(
+    message
+  ) {
+
+    document
+      .getElementById(
+        'loadingTitle'
+      )
+      .textContent =
+      'Unable to open voice simulation';
+
+
+    const element =
+      document.getElementById(
+        'loadingText'
+      );
+
+
+    element.classList.add(
+      'error-text'
+    );
+
+
+    element.textContent =
+      message;
+
+  }
+
+
+  /* =========================================================
+     HTML ESCAPE
+  ========================================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value === undefined ||
+      value === null
+        ? ''
+        : value
+    )
+      .replace(
+        /&/g,
+        '&amp;'
+      )
+      .replace(
+        /</g,
+        '&lt;'
+      )
+      .replace(
+        />/g,
+        '&gt;'
+      )
+      .replace(
+        /"/g,
+        '&quot;'
+      )
+      .replace(
+        /'/g,
+        '&#039;'
+      );
+
+  }
+
+</script>
+
 </body>
 </html>
