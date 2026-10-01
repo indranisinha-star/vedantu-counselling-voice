@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -18,9 +20,14 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      min-height: 100%;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
       background: #f6f7f8;
       color: #202124;
     }
@@ -31,11 +38,17 @@
       font-family: inherit;
     }
 
+
+    /* =====================================================
+       APP
+    ===================================================== */
+
     .app {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
 
     /* =====================================================
        TOP BAR
@@ -43,21 +56,30 @@
 
     .topbar {
       height: 68px;
+
       background: #ffffff;
-      border-bottom: 1px solid #e8e8e8;
+
+      border-bottom:
+        1px solid #e8e8e8;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
 
-      padding: 0 28px;
+      padding:
+        0 28px;
+
+      flex-shrink: 0;
     }
 
     .brand {
-      font-size: 15px;
-      font-weight: 800;
       color: #f35427;
-      letter-spacing: 0.4px;
+
+      font-size: 16px;
+      font-weight: 800;
+
+      letter-spacing:
+        0.4px;
     }
 
     .top-title {
@@ -65,9 +87,10 @@
       font-weight: 700;
     }
 
-    .status-wrap {
+    .session-status-wrap {
       display: flex;
       align-items: center;
+
       gap: 8px;
 
       font-size: 13px;
@@ -77,9 +100,12 @@
     .status-dot {
       width: 9px;
       height: 9px;
+
       border-radius: 50%;
+
       background: #f5a623;
     }
+
 
     /* =====================================================
        WORKSPACE
@@ -88,11 +114,14 @@
     .workspace {
       flex: 1;
 
-      display: grid;
-      grid-template-columns: 300px 1fr;
-
       min-height: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        300px 1fr;
     }
+
 
     /* =====================================================
        SIDEBAR
@@ -100,82 +129,106 @@
 
     .sidebar {
       background: #ffffff;
-      border-right: 1px solid #e8e8e8;
 
-      padding: 24px;
+      border-right:
+        1px solid #e8e8e8;
+
+      padding:
+        24px;
 
       overflow-y: auto;
     }
 
     .sidebar h2 {
-      margin: 0 0 6px;
+      margin:
+        0 0 6px;
+
       font-size: 18px;
     }
 
     .sidebar-subtitle {
       color: #777;
+
       font-size: 13px;
+
       line-height: 1.5;
 
       margin-bottom: 22px;
     }
 
     .scenario-item {
-      padding: 13px 0;
-      border-bottom: 1px solid #eeeeee;
+      padding:
+        13px 0;
+
+      border-bottom:
+        1px solid #eeeeee;
     }
 
     .scenario-label {
       font-size: 11px;
+
       color: #888;
 
-      margin-bottom: 4px;
+      text-transform:
+        uppercase;
 
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing:
+        0.5px;
+
+      margin-bottom: 4px;
     }
 
     .scenario-value {
       font-size: 14px;
+
       font-weight: 600;
+
       line-height: 1.4;
     }
 
     .locked-note {
       margin-top: 20px;
 
+      padding: 12px;
+
       background: #f7f7f7;
 
       border-radius: 10px;
 
-      padding: 12px;
-
       color: #666;
 
       font-size: 12px;
+
       line-height: 1.5;
     }
+
 
     /* =====================================================
        CHAT AREA
     ===================================================== */
 
     .chat-area {
-      display: flex;
-      flex-direction: column;
-
       min-width: 0;
 
-      height: calc(100vh - 68px);
+      height:
+        calc(100vh - 68px);
+
+      display: flex;
+
+      flex-direction: column;
     }
 
     .chat-header {
       background: #ffffff;
-      border-bottom: 1px solid #ececec;
 
-      padding: 16px 24px;
+      border-bottom:
+        1px solid #ececec;
+
+      padding:
+        16px 24px;
 
       display: flex;
+
       align-items: center;
       justify-content: space-between;
 
@@ -188,40 +241,45 @@
     }
 
     .participant-subtitle {
-      color: #777;
-      font-size: 12px;
-
       margin-top: 3px;
+
+      color: #777;
+
+      font-size: 12px;
     }
 
     .header-actions {
       display: flex;
+
       align-items: center;
+
       gap: 12px;
     }
 
     .voice-toggle {
       display: flex;
+
       align-items: center;
+
       gap: 7px;
 
       font-size: 12px;
+
       color: #666;
     }
 
-    .voice-toggle input {
-      cursor: pointer;
-    }
-
     .end-button {
-      border: 1px solid #e1e1e1;
-      background: white;
+      border:
+        1px solid #e1e1e1;
+
+      background: #ffffff;
 
       color: #b42318;
 
       border-radius: 10px;
 
-      padding: 9px 14px;
+      padding:
+        9px 14px;
 
       font-weight: 700;
 
@@ -232,13 +290,9 @@
       background: #fff5f4;
     }
 
-    .end-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
 
     /* =====================================================
-       MESSAGES
+       MESSAGE AREA
     ===================================================== */
 
     .messages {
@@ -249,14 +303,16 @@
       padding: 28px;
 
       display: flex;
+
       flex-direction: column;
+
       gap: 18px;
     }
 
     .empty-state {
       margin: auto;
 
-      max-width: 500px;
+      max-width: 520px;
 
       text-align: center;
 
@@ -266,12 +322,14 @@
     }
 
     .empty-icon {
-      font-size: 36px;
-      margin-bottom: 12px;
+      font-size: 38px;
+
+      margin-bottom: 14px;
     }
 
     .message-row {
       display: flex;
+
       width: 100%;
     }
 
@@ -288,11 +346,13 @@
     }
 
     .speaker {
-      font-size: 11px;
-      color: #777;
-      font-weight: 700;
-
       margin-bottom: 5px;
+
+      font-size: 11px;
+
+      color: #777;
+
+      font-weight: 700;
     }
 
     .counsellor .speaker {
@@ -302,61 +362,62 @@
     .bubble {
       border-radius: 16px;
 
-      padding: 13px 16px;
+      padding:
+        13px 16px;
 
       font-size: 14px;
+
       line-height: 1.55;
 
-      white-space: pre-wrap;
-      word-break: break-word;
+      white-space:
+        pre-wrap;
+
+      word-break:
+        break-word;
     }
 
     .counsellor .bubble {
       background: #f35427;
-      color: white;
 
-      border-bottom-right-radius: 5px;
+      color: #ffffff;
+
+      border-bottom-right-radius:
+        5px;
     }
 
     .customer .bubble {
       background: #ffffff;
 
-      border: 1px solid #e5e5e5;
+      border:
+        1px solid #e5e5e5;
 
-      border-bottom-left-radius: 5px;
+      border-bottom-left-radius:
+        5px;
     }
 
-    .thinking {
-      display: none;
-
-      padding: 0 28px 12px;
-
-      color: #777;
-
-      font-size: 13px;
-    }
-
-    .thinking.visible {
-      display: block;
-    }
 
     /* =====================================================
-       VOICE PANEL
+       COMPOSER
     ===================================================== */
 
     .composer-wrap {
       background: #ffffff;
 
-      border-top: 1px solid #e8e8e8;
+      border-top:
+        1px solid #e8e8e8;
 
-      padding: 16px 24px 20px;
+      padding:
+        16px 24px 20px;
     }
 
     .voice-panel {
       max-width: 950px;
-      margin: 0 auto 12px;
+
+      margin:
+        0 auto 12px;
 
       display: flex;
+
       align-items: center;
 
       gap: 10px;
@@ -367,10 +428,12 @@
 
       border-radius: 12px;
 
-      padding: 11px 16px;
+      padding:
+        11px 16px;
 
       background: #202124;
-      color: white;
+
+      color: #ffffff;
 
       font-weight: 700;
 
@@ -385,6 +448,7 @@
 
     .mic-button:disabled {
       opacity: 0.5;
+
       cursor: not-allowed;
     }
 
@@ -394,35 +458,35 @@
       min-height: 42px;
 
       display: flex;
+
       align-items: center;
 
-      padding: 8px 12px;
+      padding:
+        8px 12px;
 
       background: #f7f7f8;
 
       border-radius: 10px;
 
       font-size: 12px;
+
       color: #666;
     }
 
     .language-select {
-      border: 1px solid #dedede;
+      max-width: 175px;
 
-      background: white;
+      border:
+        1px solid #dedede;
+
+      background: #ffffff;
 
       border-radius: 10px;
 
       padding: 10px;
 
       font-size: 12px;
-
-      max-width: 160px;
     }
-
-    /* =====================================================
-       TEXT COMPOSER
-    ===================================================== */
 
     .composer {
       max-width: 950px;
@@ -430,6 +494,7 @@
       margin: 0 auto;
 
       display: flex;
+
       align-items: flex-end;
 
       gap: 12px;
@@ -438,18 +503,22 @@
     textarea {
       flex: 1;
 
-      resize: none;
-
       min-height: 54px;
+
       max-height: 150px;
 
-      border: 1px solid #dcdcdc;
+      resize: none;
+
+      border:
+        1px solid #dcdcdc;
 
       border-radius: 14px;
 
-      padding: 14px 16px;
+      padding:
+        14px 16px;
 
       font-size: 14px;
+
       line-height: 1.45;
 
       outline: none;
@@ -459,12 +528,9 @@
       border-color: #f35427;
     }
 
-    textarea:disabled {
-      background: #f5f5f5;
-    }
-
     .send-button {
       width: 54px;
+
       height: 54px;
 
       border: none;
@@ -472,9 +538,11 @@
       border-radius: 13px;
 
       background: #f35427;
-      color: white;
+
+      color: #ffffff;
 
       font-size: 20px;
+
       font-weight: 700;
 
       cursor: pointer;
@@ -482,30 +550,35 @@
 
     .send-button:disabled {
       opacity: 0.5;
+
       cursor: not-allowed;
     }
 
     .composer-note {
       max-width: 950px;
 
-      margin: 8px auto 0;
+      margin:
+        8px auto 0;
 
       color: #999;
 
       font-size: 11px;
     }
 
+
     /* =====================================================
-       LOADING OVERLAY
+       LOADING
     ===================================================== */
 
     .overlay {
       position: fixed;
+
       inset: 0;
 
       background: #f6f7f8;
 
       display: flex;
+
       align-items: center;
       justify-content: center;
 
@@ -517,10 +590,12 @@
     }
 
     .loading-card {
-      width: 430px;
-      max-width: calc(100% - 32px);
+      width: 440px;
 
-      background: white;
+      max-width:
+        calc(100% - 32px);
+
+      background: #ffffff;
 
       border-radius: 18px;
 
@@ -528,11 +603,19 @@
 
       text-align: center;
 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+      box-shadow:
+        0 10px 30px
+        rgba(
+          0,
+          0,
+          0,
+          0.07
+        );
     }
 
     .loading-title {
       font-size: 18px;
+
       font-weight: 700;
 
       margin-bottom: 8px;
@@ -542,6 +625,7 @@
       color: #777;
 
       font-size: 14px;
+
       line-height: 1.5;
     }
 
@@ -549,46 +633,31 @@
       color: #b42318;
     }
 
-    /* =====================================================
-       HIDDEN APPS SCRIPT BRIDGE
-    ===================================================== */
-
-    #voiceBridge {
-      position: fixed;
-
-      width: 1px;
-      height: 1px;
-
-      border: 0;
-
-      opacity: 0;
-
-      pointer-events: none;
-
-      left: -10000px;
-      top: -10000px;
-    }
 
     /* =====================================================
        RESPONSIVE
     ===================================================== */
 
-    @media (max-width: 850px) {
+    @media (
+      max-width: 850px
+    ) {
 
       .workspace {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+          1fr;
       }
 
       .sidebar {
         display: none;
       }
 
-      .chat-area {
-        height: calc(100vh - 68px);
-      }
-
       .top-title {
         display: none;
+      }
+
+      .chat-area {
+        height:
+          calc(100vh - 68px);
       }
 
       .message {
@@ -601,21 +670,24 @@
 
       .speech-status {
         order: 3;
+
         flex-basis: 100%;
       }
 
     }
 
   </style>
+
 </head>
+
 
 <body>
 
 <div class="app">
 
-  <!-- =====================================================
+  <!-- ===================================================
        TOP BAR
-  ====================================================== -->
+  ==================================================== -->
 
   <header class="topbar">
 
@@ -623,11 +695,13 @@
       VEDANTU
     </div>
 
+
     <div class="top-title">
       AI Counselling Coach
     </div>
 
-    <div class="status-wrap">
+
+    <div class="session-status-wrap">
 
       <div
         id="statusDot"
@@ -643,13 +717,16 @@
   </header>
 
 
-  <!-- =====================================================
-       MAIN WORKSPACE
-  ====================================================== -->
+  <!-- ===================================================
+       WORKSPACE
+  ==================================================== -->
 
   <div class="workspace">
 
-    <!-- SCENARIO -->
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
 
     <aside class="sidebar">
 
@@ -661,19 +738,26 @@
         Information available to you before the counselling conversation.
       </div>
 
+
       <div id="scenarioDetails"></div>
 
+
       <div class="locked-note">
+
         🔒 Hidden customer information is intentionally not shown.
-        Discover it naturally through the conversation.
+        Discover it naturally during the conversation.
+
       </div>
 
     </aside>
 
 
-    <!-- LIVE ROOM -->
+    <!-- =================================================
+         LIVE ROOM
+    ================================================== -->
 
     <main class="chat-area">
+
 
       <div class="chat-header">
 
@@ -727,19 +811,8 @@
       ></div>
 
 
-      <div
-        id="thinking"
-        class="thinking"
-      >
-        Customer is responding...
-      </div>
-
-
-      <!-- =================================================
-           VOICE + TEXT INPUT
-      ================================================== -->
-
       <div class="composer-wrap">
+
 
         <div class="voice-panel">
 
@@ -756,14 +829,13 @@
             id="speechStatus"
             class="speech-status"
           >
-            Microphone ready.
+            Checking microphone support...
           </div>
 
 
           <select
             id="speechLanguage"
             class="language-select"
-            title="Speech recognition language"
           >
 
             <option value="en-IN">
@@ -815,8 +887,10 @@
 
 
         <div class="composer-note">
-          Speak, review the transcript, then send. Press Enter to send.
-          Shift + Enter adds a new line.
+
+          Speak, review the transcript, then send.
+          Live AI turn processing will be connected in the next runtime step.
+
         </div>
 
       </div>
@@ -828,19 +902,9 @@
 </div>
 
 
-<!-- =======================================================
-     APPS SCRIPT BRIDGE
-======================================================== -->
-
-<iframe
-  id="voiceBridge"
-  title="Vedantu Voice Bridge"
-></iframe>
-
-
-<!-- =======================================================
-     LOADING
-======================================================== -->
+<!-- =====================================================
+     LOADING OVERLAY
+====================================================== -->
 
 <div
   id="loadingOverlay"
@@ -871,15 +935,15 @@
 <script>
 
   /* =========================================================
-     CONFIGURATION
+     CONFIG
   ========================================================= */
 
-  const APPS_SCRIPT_URL =
-    'https://script.google.com/a/macros/vedantu.com/s/AKfycbwETFO-mKP1Swv_NAworx4D0BFN3_ZYm2e6g1AGpdrrJ8M4W1ybsWSsOi3yNg3Tv9wS/exec';
+  const RUNTIME_URL =
+    'https://vedantu-counselling-runtime.indrani-sinha.workers.dev';
 
 
   /* =========================================================
-     APPLICATION STATE
+     STATE
   ========================================================= */
 
   let currentSessionId =
@@ -888,18 +952,6 @@
 
   let roomData =
     null;
-
-
-  let bridgeReady =
-    false;
-
-
-  let messageInProgress =
-    false;
-
-
-  let sessionCompleted =
-    false;
 
 
   let recognition =
@@ -923,21 +975,18 @@
 
 
   /* =========================================================
-     START
+     INITIALISE
   ========================================================= */
 
-  document.addEventListener(
+  window.addEventListener(
     'DOMContentLoaded',
-    initialisePage
+    initialiseVoiceSimulation
   );
 
 
-  function initialisePage() {
+  function initialiseVoiceSimulation() {
 
-    window.addEventListener(
-      'message',
-      handleBridgeMessage
-    );
+    initialiseSpeechRecognition();
 
 
     const params =
@@ -950,7 +999,8 @@
       String(
         params.get(
           'sessionId'
-        ) || ''
+        ) ||
+        ''
       ).trim();
 
 
@@ -965,74 +1015,120 @@
     }
 
 
-    initialiseSpeechRecognition();
-
-
-    loadVoiceBridge();
+    loadRuntimeSession();
 
   }
 
 
   /* =========================================================
-     LOAD APPS SCRIPT BRIDGE
+     LOAD SESSION FROM CLOUDFLARE / D1
   ========================================================= */
 
-  function loadVoiceBridge() {
+  async function loadRuntimeSession() {
 
-    const bridge =
-      document.getElementById(
-        'voiceBridge'
-      );
+    setSessionStatus(
+      'Connecting...',
+      'loading'
+    );
 
 
-    bridge.src =
-      APPS_SCRIPT_URL +
-      '?page=voicebridge&sessionId=' +
+    const url =
+      RUNTIME_URL +
+      '/session?sessionId=' +
       encodeURIComponent(
         currentSessionId
       );
 
-  }
-
-
-  /* =========================================================
-     ALLOWED BRIDGE ORIGIN CHECK
-  ========================================================= */
-
-  function isAllowedBridgeOrigin(
-    origin
-  ) {
 
     try {
 
-      const url =
-        new URL(
-          origin
+      const response =
+        await fetch(
+          url,
+          {
+            method:
+              'GET',
+
+            headers: {
+              'Accept':
+                'application/json'
+            },
+
+            cache:
+              'no-store'
+          }
         );
 
 
-      const hostname =
-        url.hostname
-          .toLowerCase();
+      let payload;
 
 
-      return (
-        hostname ===
-          'script.google.com' ||
+      try {
 
-        hostname ===
-          'script.googleusercontent.com' ||
+        payload =
+          await response.json();
 
-        hostname.endsWith(
-          '.googleusercontent.com'
-        )
+      }
+
+      catch (error) {
+
+        throw new Error(
+          'Runtime returned an invalid response.'
+        );
+
+      }
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          payload &&
+          payload.error
+            ? payload.error
+            : (
+                'Runtime returned HTTP ' +
+                response.status
+              )
+        );
+
+      }
+
+
+      if (
+        !payload ||
+        payload.success !== true ||
+        !payload.data
+      ) {
+
+        throw new Error(
+          'Simulation session could not be loaded.'
+        );
+
+      }
+
+
+      handleRoomData(
+        payload.data
       );
 
     }
 
     catch (error) {
 
-      return false;
+      console.error(
+        'Runtime session load failed:',
+        error
+      );
+
+
+      showLoadError(
+        error &&
+        error.message
+          ? error.message
+          : String(
+              error
+            )
+      );
 
     }
 
@@ -1040,162 +1136,15 @@
 
 
   /* =========================================================
-     BRIDGE COMMUNICATION
+     ROOM DATA
   ========================================================= */
 
-  function handleBridgeMessage(
-    event
+  function handleRoomData(
+    data
   ) {
-
-    if (
-      !isAllowedBridgeOrigin(
-        event.origin
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    const payload =
-      event.data || {};
-
-
-    if (!payload.type) {
-
-      return;
-
-    }
-
-
-    if (
-      payload.type ===
-      'VOICE_BRIDGE_READY'
-    ) {
-
-      bridgeReady =
-        true;
-
-
-      setSessionStatus(
-        'Loading Session',
-        'loading'
-      );
-
-
-      sendToBridge({
-        type:
-          'LOAD_ROOM'
-      });
-
-
-      return;
-
-    }
-
-
-    if (
-      payload.type ===
-      'LOAD_ROOM_RESULT'
-    ) {
-
-      handleRoomResult(
-        payload
-      );
-
-      return;
-
-    }
-
-
-    if (
-      payload.type ===
-      'SEND_MESSAGE_RESULT'
-    ) {
-
-      handleSendResult(
-        payload
-      );
-
-      return;
-
-    }
-
-
-    if (
-      payload.type ===
-      'END_SESSION_RESULT'
-    ) {
-
-      handleEndResult(
-        payload
-      );
-
-      return;
-
-    }
-
-  }
-
-
-  function sendToBridge(
-    payload
-  ) {
-
-    const bridge =
-      document.getElementById(
-        'voiceBridge'
-      );
-
-
-    if (
-      !bridge ||
-      !bridge.contentWindow
-    ) {
-
-      showLoadError(
-        'Voice bridge is unavailable.'
-      );
-
-      return;
-
-    }
-
-
-    bridge.contentWindow.postMessage(
-      payload,
-      '*'
-    );
-
-  }
-
-
-  /* =========================================================
-     ROOM LOAD
-  ========================================================= */
-
-  function handleRoomResult(
-    payload
-  ) {
-
-    if (
-      !payload.success ||
-      !payload.data
-    ) {
-
-      showLoadError(
-        payload.error ||
-        'Unable to load simulation room.'
-      );
-
-      return;
-
-    }
-
 
     roomData =
-      payload.data;
+      data;
 
 
     if (
@@ -1222,17 +1171,20 @@
 
 
     renderScenario(
-      roomData.scenario || {}
+      roomData.scenario ||
+      {}
     );
 
 
     configureSpeechLanguage(
-      roomData.scenario || {}
+      roomData.scenario ||
+      {}
     );
 
 
     renderConversation(
-      roomData.conversationHistory || []
+      roomData.conversationHistory ||
+      []
     );
 
 
@@ -1271,9 +1223,13 @@
 
       [
         'Location',
-        joinLocation(
-          scenario
-        )
+        [
+          scenario.centre,
+          scenario.city,
+          scenario.zone
+        ]
+          .filter(Boolean)
+          .join(' • ')
       ],
 
       [
@@ -1282,7 +1238,8 @@
           ? (
               String(
                 scenario.grade
-              ) === 'Dropper'
+              ) ===
+              'Dropper'
                 ? 'Dropper'
                 : 'Grade ' +
                   scenario.grade
@@ -1370,21 +1327,6 @@
   }
 
 
-  function joinLocation(
-    scenario
-  ) {
-
-    return [
-      scenario.centre,
-      scenario.city,
-      scenario.zone
-    ]
-      .filter(Boolean)
-      .join(' • ');
-
-  }
-
-
   function getTestText(
     scenario
   ) {
@@ -1404,9 +1346,12 @@
 
 
     if (
-      scenario.scholarshipPercentage !== null &&
-      scenario.scholarshipPercentage !== undefined &&
-      scenario.scholarshipPercentage !== ''
+      scenario.scholarshipPercentage !==
+        null &&
+      scenario.scholarshipPercentage !==
+        undefined &&
+      scenario.scholarshipPercentage !==
+        ''
     ) {
 
       output +=
@@ -1437,8 +1382,11 @@
 
 
     if (
-      !Array.isArray(history) ||
-      history.length === 0
+      !Array.isArray(
+        history
+      ) ||
+      history.length ===
+      0
     ) {
 
       messages.innerHTML = `
@@ -1454,8 +1402,8 @@
 
           <br><br>
 
-          Use the microphone and speak exactly as you would with
-          a real student or parent visiting the centre.
+          Use the microphone and speak exactly as you would
+          with a real student or parent visiting the centre.
 
         </div>
       `;
@@ -1483,9 +1431,20 @@
     turn
   ) {
 
+    const speaker =
+      String(
+        turn.speaker ||
+        ''
+      );
+
+
     const isCounsellor =
-      turn.speaker ===
-      'Academic Counsellor';
+      speaker ===
+        'Academic Counsellor' ||
+      speaker ===
+        'Counsellor' ||
+      speaker ===
+        'AC';
 
 
     const rowClass =
@@ -1501,14 +1460,14 @@
 
           <div class="speaker">
             ${escapeHtml(
-              turn.speaker ||
-              ''
+              speaker
             )}
           </div>
 
           <div class="bubble">
             ${escapeHtml(
               turn.text ||
+              turn.message ||
               ''
             )}
           </div>
@@ -1547,7 +1506,7 @@
 
 
       setSpeechStatus(
-        'Speech recognition is not supported in this browser. Use Chrome on desktop or type your message.'
+        'Speech recognition is unavailable in this browser. You can still type your response.'
       );
 
 
@@ -1653,7 +1612,12 @@
           (
             finalTranscript +
             interim
-          ).trim();
+          )
+            .replace(
+              /\s+/g,
+              ' '
+            )
+            .trim();
 
 
         document
@@ -1692,7 +1656,7 @@
 
 
         let message =
-          'Microphone error: ' +
+          'Speech recognition error: ' +
           event.error;
 
 
@@ -1702,18 +1666,29 @@
         ) {
 
           message =
-            'Microphone permission was denied. Allow microphone access in your browser and try again.';
+            'Microphone permission was denied. Allow microphone access for this site and try again.';
 
         }
 
 
-        if (
+        else if (
           event.error ===
           'no-speech'
         ) {
 
           message =
             'No speech was detected. Click Start Speaking and try again.';
+
+        }
+
+
+        else if (
+          event.error ===
+          'network'
+        ) {
+
+          message =
+            'Speech recognition encountered a network error. Please retry or type your response.';
 
         }
 
@@ -1747,7 +1722,7 @@
         if (text) {
 
           setSpeechStatus(
-            'Speech captured. Review the transcript, then press Send.'
+            'Speech captured. Review the transcript, then send.'
           );
 
         }
@@ -1762,6 +1737,11 @@
 
       };
 
+
+    setSpeechStatus(
+      'Microphone ready.'
+    );
+
   }
 
 
@@ -1774,16 +1754,6 @@
     if (
       !recognitionSupported ||
       !recognition
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      messageInProgress ||
-      sessionCompleted
     ) {
 
       return;
@@ -1805,6 +1775,18 @@
     ) {
 
       try {
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+
+          throw new Error(
+            'Microphone API unavailable.'
+          );
+
+        }
+
 
         const stream =
           await navigator
@@ -1832,8 +1814,14 @@
 
       catch (error) {
 
+        console.error(
+          'Microphone permission error:',
+          error
+        );
+
+
         setSpeechStatus(
-          'Microphone permission could not be granted. Check your browser permissions.'
+          'Microphone permission could not be granted. Check browser permissions and try again.'
         );
 
 
@@ -1849,7 +1837,8 @@
         .getElementById(
           'speechLanguage'
         )
-        .value;
+        .value ||
+      'en-IN';
 
 
     finalTranscript =
@@ -1864,6 +1853,9 @@
       '';
 
 
+    resizeInput();
+
+
     try {
 
       recognition.start();
@@ -1872,8 +1864,14 @@
 
     catch (error) {
 
+      console.error(
+        'Speech recognition start error:',
+        error
+      );
+
+
       setSpeechStatus(
-        'The microphone is already starting. Please try again in a moment.'
+        'Microphone is already starting. Please try again in a moment.'
       );
 
     }
@@ -1936,12 +1934,12 @@
 
 
     if (
-      language.indexOf(
-        'hinglish'
-      ) !== -1 ||
-      language.indexOf(
+      language.includes(
         'hindi'
-      ) !== -1
+      ) ||
+      language.includes(
+        'hinglish'
+      )
     ) {
 
       locale =
@@ -1951,9 +1949,9 @@
 
 
     else if (
-      language.indexOf(
+      language.includes(
         'tamil'
-      ) !== -1
+      )
     ) {
 
       locale =
@@ -1963,9 +1961,9 @@
 
 
     else if (
-      language.indexOf(
+      language.includes(
         'telugu'
-      ) !== -1
+      )
     ) {
 
       locale =
@@ -1975,9 +1973,9 @@
 
 
     else if (
-      language.indexOf(
+      language.includes(
         'marathi'
-      ) !== -1
+      )
     ) {
 
       locale =
@@ -1998,19 +1996,17 @@
 
   /* =========================================================
      SEND MESSAGE
+
+     INTENTIONALLY NOT CONNECTED TO GEMINI YET.
+
+     The next build step will add:
+     POST /turn
+     Worker -> Gemini
+     D1 state update
+     Browser response/TTS
   ========================================================= */
 
   function sendMessage() {
-
-    if (
-      messageInProgress ||
-      sessionCompleted
-    ) {
-
-      return;
-
-    }
-
 
     if (listening) {
 
@@ -2036,173 +2032,30 @@
     }
 
 
-    messageInProgress =
-      true;
-
-
-    setComposerEnabled(
-      false
+    alert(
+      'Session loading and microphone are now connected to the new runtime. Live AI turn processing will be connected in the next step.'
     );
-
-
-    showThinking(
-      true
-    );
-
-
-    appendTemporaryCounsellorMessage(
-      message
-    );
-
-
-    input.value =
-      '';
-
-
-    resizeInput();
-
-
-    setSpeechStatus(
-      'Message sent. Waiting for customer response...'
-    );
-
-
-    sendToBridge({
-
-      type:
-        'SEND_MESSAGE',
-
-      message:
-        message
-
-    });
-
-  }
-
-
-  function appendTemporaryCounsellorMessage(
-    message
-  ) {
-
-    const messages =
-      document.getElementById(
-        'messages'
-      );
-
-
-    if (
-      messages.querySelector(
-        '.empty-state'
-      )
-    ) {
-
-      messages.innerHTML =
-        '';
-
-    }
-
-
-    messages.insertAdjacentHTML(
-      'beforeend',
-      renderMessage({
-
-        speaker:
-          'Academic Counsellor',
-
-        text:
-          message
-
-      })
-    );
-
-
-    scrollToBottom();
-
-  }
-
-
-  function handleSendResult(
-    payload
-  ) {
-
-    messageInProgress =
-      false;
-
-
-    showThinking(
-      false
-    );
-
-
-    setComposerEnabled(
-      true
-    );
-
-
-    if (
-      !payload.success ||
-      !payload.data
-    ) {
-
-      alert(
-        payload.error ||
-        'Unable to send message.'
-      );
-
-
-      sendToBridge({
-        type:
-          'LOAD_ROOM'
-      });
-
-
-      return;
-
-    }
-
-
-    const result =
-      payload.data;
-
-
-    renderConversation(
-      result.conversationHistory ||
-      []
-    );
-
-
-    setSpeechStatus(
-      'Microphone ready for your next response.'
-    );
-
-
-    document
-      .getElementById(
-        'messageInput'
-      )
-      .focus();
-
-
-    if (
-      result.reply &&
-      document
-        .getElementById(
-          'aiVoiceToggle'
-        )
-        .checked
-    ) {
-
-      speakCustomerReply(
-        result.reply
-      );
-
-    }
 
   }
 
 
   /* =========================================================
-     AI VOICE OUTPUT
+     END SESSION
+
+     ALSO DELIBERATELY NOT CONNECTED YET.
+  ========================================================= */
+
+  function endSession() {
+
+    alert(
+      'End Session will be connected after the live turn endpoint is working.'
+    );
+
+  }
+
+
+  /* =========================================================
+     TTS
   ========================================================= */
 
   function speakCustomerReply(
@@ -2257,165 +2110,6 @@
 
 
   /* =========================================================
-     END SESSION
-  ========================================================= */
-
-  function endSession() {
-
-    if (
-      messageInProgress
-    ) {
-
-      alert(
-        'Please wait for the current customer response before ending the session.'
-      );
-
-      return;
-
-    }
-
-
-    if (
-      sessionCompleted
-    ) {
-
-      return;
-
-    }
-
-
-    if (listening) {
-
-      recognition.stop();
-
-    }
-
-
-    if (
-      window.speechSynthesis
-    ) {
-
-      window
-        .speechSynthesis
-        .cancel();
-
-    }
-
-
-    const confirmed =
-      window.confirm(
-        'End this counselling session? You will not be able to continue after this.'
-      );
-
-
-    if (!confirmed) {
-
-      return;
-
-    }
-
-
-    const button =
-      document.getElementById(
-        'endSessionButton'
-      );
-
-
-    button.disabled =
-      true;
-
-
-    button.textContent =
-      'Ending...';
-
-
-    setComposerEnabled(
-      false
-    );
-
-
-    sendToBridge({
-      type:
-        'END_SESSION'
-    });
-
-  }
-
-
-  function handleEndResult(
-    payload
-  ) {
-
-    const button =
-      document.getElementById(
-        'endSessionButton'
-      );
-
-
-    if (
-      !payload.success ||
-      !payload.data
-    ) {
-
-      button.disabled =
-        false;
-
-
-      button.textContent =
-        'End Session';
-
-
-      setComposerEnabled(
-        true
-      );
-
-
-      alert(
-        payload.error ||
-        'Unable to end session.'
-      );
-
-
-      return;
-
-    }
-
-
-    sessionCompleted =
-      true;
-
-
-    button.textContent =
-      'Session Ended';
-
-
-    setSessionStatus(
-      'Completed',
-      'completed'
-    );
-
-
-    setSpeechStatus(
-      'Session completed.'
-    );
-
-
-    document
-      .getElementById(
-        'micButton'
-      )
-      .disabled =
-      true;
-
-
-    alert(
-      'Session completed successfully.'
-    );
-
-  }
-
-
-  /* =========================================================
      INPUT UTILITIES
   ========================================================= */
 
@@ -2461,53 +2155,6 @@
   }
 
 
-  function setComposerEnabled(
-    enabled
-  ) {
-
-    document
-      .getElementById(
-        'messageInput'
-      )
-      .disabled =
-      !enabled;
-
-
-    document
-      .getElementById(
-        'sendButton'
-      )
-      .disabled =
-      !enabled;
-
-
-    document
-      .getElementById(
-        'micButton'
-      )
-      .disabled =
-      !enabled ||
-      !recognitionSupported;
-
-  }
-
-
-  function showThinking(
-    visible
-  ) {
-
-    document
-      .getElementById(
-        'thinking'
-      )
-      .classList.toggle(
-        'visible',
-        visible
-      );
-
-  }
-
-
   function scrollToBottom() {
 
     const messages =
@@ -2529,7 +2176,7 @@
 
 
   /* =========================================================
-     STATUS
+     SESSION STATUS
   ========================================================= */
 
   function setSessionStatus(
@@ -2553,28 +2200,28 @@
 
     if (
       state ===
-      'completed'
+      'active'
     ) {
 
       dot.style.background =
-        '#777';
+        '#28a745';
 
     }
 
     else if (
       state ===
-      'loading'
+      'error'
     ) {
 
       dot.style.background =
-        '#f5a623';
+        '#d92d20';
 
     }
 
     else {
 
       dot.style.background =
-        '#28a745';
+        '#f5a623';
 
     }
 
@@ -2602,6 +2249,12 @@
     message
   ) {
 
+    setSessionStatus(
+      'Connection Error',
+      'error'
+    );
+
+
     document
       .getElementById(
         'loadingTitle'
@@ -2610,18 +2263,18 @@
       'Unable to open voice simulation';
 
 
-    const element =
+    const text =
       document.getElementById(
         'loadingText'
       );
 
 
-    element.classList.add(
+    text.classList.add(
       'error-text'
     );
 
 
-    element.textContent =
+    text.textContent =
       message;
 
   }
@@ -2636,8 +2289,10 @@
   ) {
 
     return String(
-      value === undefined ||
-      value === null
+      value ===
+      undefined ||
+      value ===
+      null
         ? ''
         : value
     )
@@ -2667,4 +2322,5 @@
 </script>
 
 </body>
+
 </html>
