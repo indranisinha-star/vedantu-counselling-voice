@@ -78,7 +78,7 @@
       width: 9px;
       height: 9px;
       border-radius: 50%;
-      background: #28a745;
+      background: #f5a623;
     }
 
     /* =====================================================
@@ -815,7 +815,8 @@
 
 
         <div class="composer-note">
-          Speak, review the transcript, then send. Press Enter to send. Shift + Enter adds a new line.
+          Speak, review the transcript, then send. Press Enter to send.
+          Shift + Enter adds a new line.
         </div>
 
       </div>
@@ -829,8 +830,6 @@
 
 <!-- =======================================================
      APPS SCRIPT BRIDGE
-
-     Source is assigned dynamically after we read sessionId.
 ======================================================== -->
 
 <iframe
@@ -877,12 +876,6 @@
 
   const APPS_SCRIPT_URL =
     'https://script.google.com/a/macros/vedantu.com/s/AKfycbwETFO-mKP1Swv_NAworx4D0BFN3_ZYm2e6g1AGpdrrJ8M4W1ybsWSsOi3yNg3Tv9wS/exec';
-
-
-  const ALLOWED_BRIDGE_ORIGINS = [
-    'https://script.google.com',
-    'https://script.googleusercontent.com'
-  ];
 
 
   /* =========================================================
@@ -940,11 +933,6 @@
 
 
   function initialisePage() {
-
-    /*
-     * Install message listener BEFORE loading the bridge,
-     * so the READY event cannot be missed.
-     */
 
     window.addEventListener(
       'message',
@@ -1008,6 +996,50 @@
 
 
   /* =========================================================
+     ALLOWED BRIDGE ORIGIN CHECK
+  ========================================================= */
+
+  function isAllowedBridgeOrigin(
+    origin
+  ) {
+
+    try {
+
+      const url =
+        new URL(
+          origin
+        );
+
+
+      const hostname =
+        url.hostname
+          .toLowerCase();
+
+
+      return (
+        hostname ===
+          'script.google.com' ||
+
+        hostname ===
+          'script.googleusercontent.com' ||
+
+        hostname.endsWith(
+          '.googleusercontent.com'
+        )
+      );
+
+    }
+
+    catch (error) {
+
+      return false;
+
+    }
+
+  }
+
+
+  /* =========================================================
      BRIDGE COMMUNICATION
   ========================================================= */
 
@@ -1015,28 +1047,11 @@
     event
   ) {
 
-    /*
-     * Apps Script may ultimately render through
-     * script.googleusercontent.com, depending on browser
-     * and Google redirect behaviour.
-     */
-
-    const originAllowed =
-      ALLOWED_BRIDGE_ORIGINS.some(
-        function(origin) {
-
-          return (
-            event.origin === origin ||
-            event.origin.startsWith(
-              origin
-            )
-          );
-
-        }
-      );
-
-
-    if (!originAllowed) {
+    if (
+      !isAllowedBridgeOrigin(
+        event.origin
+      )
+    ) {
 
       return;
 
@@ -1147,11 +1162,6 @@
 
     }
 
-
-    /*
-     * The bridge itself verifies the GitHub parent origin.
-     * "*" avoids problems caused by Google's iframe redirects.
-     */
 
     bridge.contentWindow.postMessage(
       payload,
@@ -1444,7 +1454,8 @@
 
           <br><br>
 
-          Use the microphone and speak exactly as you would with a real student or parent visiting the centre.
+          Use the microphone and speak exactly as you would with
+          a real student or parent visiting the centre.
 
         </div>
       `;
@@ -1606,17 +1617,20 @@
 
 
         for (
-          let i = event.resultIndex;
+          let i =
+            event.resultIndex;
           i < event.results.length;
           i++
         ) {
 
           const transcript =
-            event.results[i][0].transcript;
+            event.results[i][0]
+              .transcript;
 
 
           if (
-            event.results[i].isFinal
+            event.results[i]
+              .isFinal
           ) {
 
             finalTranscript +=
@@ -1657,7 +1671,8 @@
 
           setSpeechStatus(
             interim
-              ? 'Listening… ' + interim
+              ? 'Listening… ' +
+                interim
               : 'Speech captured. Review and send.'
           );
 
@@ -1785,10 +1800,6 @@
     }
 
 
-    /*
-     * Ask for browser microphone permission explicitly.
-     */
-
     if (
       !microphonePermissionGranted
     ) {
@@ -1796,9 +1807,11 @@
       try {
 
         const stream =
-          await navigator.mediaDevices.getUserMedia({
-            audio: true
-          });
+          await navigator
+            .mediaDevices
+            .getUserMedia({
+              audio: true
+            });
 
 
         stream
@@ -1831,16 +1844,12 @@
     }
 
 
-    const language =
+    recognition.lang =
       document
         .getElementById(
           'speechLanguage'
         )
         .value;
-
-
-    recognition.lang =
-      language;
 
 
     finalTranscript =
@@ -2157,7 +2166,8 @@
 
 
     renderConversation(
-      result.conversationHistory || []
+      result.conversationHistory ||
+      []
     );
 
 
@@ -2172,10 +2182,6 @@
       )
       .focus();
 
-
-    /*
-     * Free browser TTS for the AI response.
-     */
 
     if (
       result.reply &&
@@ -2213,7 +2219,9 @@
     }
 
 
-    window.speechSynthesis.cancel();
+    window
+      .speechSynthesis
+      .cancel();
 
 
     const utterance =
@@ -2239,9 +2247,11 @@
       1;
 
 
-    window.speechSynthesis.speak(
-      utterance
-    );
+    window
+      .speechSynthesis
+      .speak(
+        utterance
+      );
 
   }
 
@@ -2281,8 +2291,15 @@
     }
 
 
-    window.speechSynthesis &&
-      window.speechSynthesis.cancel();
+    if (
+      window.speechSynthesis
+    ) {
+
+      window
+        .speechSynthesis
+        .cancel();
+
+    }
 
 
     const confirmed =
@@ -2391,10 +2408,6 @@
       true;
 
 
-    /*
-     * Audit/results redirect will be connected later.
-     */
-
     alert(
       'Session completed successfully.'
     );
@@ -2411,11 +2424,13 @@
   ) {
 
     if (
-      event.key === 'Enter' &&
+      event.key ===
+        'Enter' &&
       !event.shiftKey
     ) {
 
       event.preventDefault();
+
 
       sendMessage();
 
@@ -2537,7 +2552,8 @@
 
 
     if (
-      state === 'completed'
+      state ===
+      'completed'
     ) {
 
       dot.style.background =
@@ -2546,7 +2562,8 @@
     }
 
     else if (
-      state === 'loading'
+      state ===
+      'loading'
     ) {
 
       dot.style.background =
