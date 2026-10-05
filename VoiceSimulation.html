@@ -689,17 +689,12 @@
 
   let originalSpeechTranscript = '';
 
-  let microphonePermissionGranted = false;
-
   let turnInProgress = false;
 
   let transliterationInProgress = false;
 
   let suppressManualInputReset = false;
 
-  /*
-   * Browser TTS voice cache.
-   */
   let availableSpeechVoices = [];
 
 
@@ -2331,6 +2326,19 @@
         resetMicButton();
 
 
+        console.error(
+          'Speech recognition error:',
+          {
+            error:
+              event.error,
+            message:
+              event.message || '',
+            event:
+              event
+          }
+        );
+
+
         let message =
           'Speech recognition error: ' +
           event.error;
@@ -2342,7 +2350,17 @@
         ) {
 
           message =
-            'Microphone permission was denied. Allow microphone access for this site and try again.';
+            'Speech recognition microphone access was blocked by the browser. Check site microphone permission and retry.';
+
+        }
+
+        else if (
+          event.error ===
+          'audio-capture'
+        ) {
+
+          message =
+            'Chrome could not access the selected microphone. Check the active microphone device and retry.';
 
         }
 
@@ -2502,71 +2520,23 @@
 
     if (listening) {
 
-      recognition.stop();
-
-      return;
-
-    }
-
-
-    if (
-      !microphonePermissionGranted
-    ) {
-
       try {
 
-        if (
-          !navigator.mediaDevices ||
-          !navigator.mediaDevices.getUserMedia
-        ) {
-
-          throw new Error(
-            'Microphone API unavailable.'
-          );
-
-        }
-
-
-        const stream =
-          await navigator
-            .mediaDevices
-            .getUserMedia({
-              audio: true
-            });
-
-
-        stream
-          .getTracks()
-          .forEach(
-            function(track) {
-
-              track.stop();
-
-            }
-          );
-
-
-        microphonePermissionGranted =
-          true;
+        recognition.stop();
 
       }
 
       catch (error) {
 
-        console.error(
-          'Microphone permission error:',
+        console.warn(
+          'Recognition stop warning:',
           error
         );
 
-
-        setSpeechStatus(
-          'Microphone permission could not be granted. Check browser permissions and try again.'
-        );
-
-
-        return;
-
       }
+
+
+      return;
 
     }
 
@@ -2596,6 +2566,11 @@
     resizeInput();
 
 
+    setSpeechStatus(
+      'Starting microphone...'
+    );
+
+
     try {
 
       recognition.start();
@@ -2605,14 +2580,43 @@
     catch (error) {
 
       console.error(
-        'Speech recognition start error:',
-        error
+        'Speech recognition start failed:',
+        {
+          name:
+            error.name,
+
+          message:
+            error.message,
+
+          error:
+            error
+        }
       );
 
 
-      setSpeechStatus(
-        'Microphone is already starting. Please try again in a moment.'
-      );
+      if (
+        error.name ===
+        'InvalidStateError'
+      ) {
+
+        setSpeechStatus(
+          'Microphone is already starting. Please wait a moment and try again.'
+        );
+
+      }
+
+      else {
+
+        setSpeechStatus(
+          'Could not start speech recognition: ' +
+          (
+            error.message ||
+            error.name ||
+            'Unknown browser error'
+          )
+        );
+
+      }
 
     }
 
@@ -2848,12 +2852,6 @@
     refreshSpeechVoices();
 
 
-    /*
-     * Chrome / macOS often loads voices asynchronously.
-     * This callback fires once the system voice list becomes
-     * available.
-     */
-
     window
       .speechSynthesis
       .onvoiceschanged =
@@ -2863,11 +2861,6 @@
 
       };
 
-
-    /*
-     * A few delayed refreshes help Chrome initialise its
-     * system voice list reliably.
-     */
 
     setTimeout(
       refreshSpeechVoices,
@@ -3056,12 +3049,6 @@
       );
 
 
-    /*
-     * Tamil
-     *
-     * Confirmed on this machine:
-     * Vani / ta-IN
-     */
     if (
       selectedLocale ===
       'ta-IN'
@@ -3081,13 +3068,6 @@
     }
 
 
-    /*
-     * Hindi
-     *
-     * Confirmed:
-     * Lekha / hi-IN
-     * Google हिन्दी / hi-IN
-     */
     if (
       selectedLocale ===
       'hi-IN'
@@ -3108,12 +3088,6 @@
     }
 
 
-    /*
-     * Telugu
-     *
-     * Confirmed:
-     * Geeta / te-IN
-     */
     if (
       selectedLocale ===
       'te-IN'
@@ -3133,15 +3107,6 @@
     }
 
 
-    /*
-     * Marathi
-     *
-     * Prefer a true Marathi voice if the operating system
-     * gains one later.
-     *
-     * Current machine has no mr-IN voice, so use Hindi as
-     * temporary Devanagari fallback.
-     */
     if (
       selectedLocale ===
       'mr-IN'
@@ -3164,10 +3129,6 @@
 
     }
 
-
-    /*
-     * English
-     */
 
     if (
       selectedLocale ===
@@ -3285,12 +3246,6 @@
         selectedVoice;
 
 
-      /*
-       * Important:
-       * use the actual voice locale when using the Marathi
-       * fallback so the browser does not reject the voice.
-       */
-
       if (
         locale === 'mr-IN' &&
         selectedVoice.lang
@@ -3330,12 +3285,6 @@
 
     }
 
-
-    /*
-     * Keep these close to natural speech for now.
-     * We will handle genuinely expressive / emotional voice
-     * in a separate TTS milestone.
-     */
 
     utterance.rate =
       0.96;
@@ -3393,11 +3342,6 @@
 
       };
 
-
-    /*
-     * Short delay after cancel() helps Chrome/macOS avoid
-     * swallowing the next utterance.
-     */
 
     setTimeout(
       function() {
