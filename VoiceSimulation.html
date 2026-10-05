@@ -459,7 +459,6 @@
 
 </head>
 
-
 <body>
 
 <div class="app">
@@ -489,7 +488,6 @@
 
   </header>
 
-
   <div class="workspace">
 
     <aside class="sidebar">
@@ -511,7 +509,6 @@
 
     </aside>
 
-
     <main class="chat-area">
 
       <div class="chat-header">
@@ -530,7 +527,6 @@
           </div>
 
         </div>
-
 
         <div class="header-actions">
 
@@ -558,12 +554,10 @@
 
       </div>
 
-
       <div
         id="messages"
         class="messages"
       ></div>
-
 
       <div class="composer-wrap">
 
@@ -613,7 +607,6 @@
 
         </div>
 
-
         <div class="composer">
 
           <textarea
@@ -634,7 +627,6 @@
 
         </div>
 
-
         <div class="composer-note">
           Speak or type your response, then send.
         </div>
@@ -651,7 +643,6 @@
   </div>
 
 </div>
-
 
 <div
   id="loadingOverlay"
@@ -677,7 +668,6 @@
   </div>
 
 </div>
-
 
 <script>
 
@@ -707,6 +697,11 @@
 
   let suppressManualInputReset = false;
 
+  /*
+   * Browser TTS voice cache.
+   */
+  let availableSpeechVoices = [];
+
 
   window.addEventListener(
     'DOMContentLoaded',
@@ -717,6 +712,8 @@
   async function initialiseVoiceSimulation() {
 
     initialiseSpeechRecognition();
+
+    initialiseSpeechVoices();
 
 
     const params =
@@ -1132,11 +1129,6 @@
 
       }
 
-
-      /*
-       * New Worker-generated Parent/Student turns already
-       * contain displayText. Never transliterate them again.
-       */
 
       if (
         turn.displayText &&
@@ -1738,12 +1730,6 @@
 
   async function sendMessage() {
 
-    /*
-     * If Send is clicked while STT is still listening,
-     * finish STT first. Do not accidentally send an empty
-     * Romanized transcript.
-     */
-
     if (listening) {
 
       try {
@@ -1792,15 +1778,6 @@
     const conversationLanguage =
       getConversationLanguage();
 
-
-    /*
-     * For speech:
-     * - visible text is Roman
-     * - originalSpeechTranscript is native script
-     *
-     * For typed text:
-     * visible text is sent as-is.
-     */
 
     const messageForAI =
       originalSpeechTranscript
@@ -1981,11 +1958,6 @@
           : [];
 
 
-      /*
-       * Worker currently does not persist the Roman AC
-       * transcript, so attach it locally to the latest AC turn.
-       */
-
       if (
         serverHistory.length >= 2
       ) {
@@ -2002,12 +1974,6 @@
 
       }
 
-
-      /*
-       * Parent/Student display comes DIRECTLY from Worker.
-       *
-       * No second frontend transliteration call.
-       */
 
       if (
         serverHistory.length >= 1
@@ -2064,13 +2030,6 @@
         voiceEnabled &&
         payload.reply
       ) {
-
-        /*
-         * IMPORTANT:
-         *
-         * Audio receives ORIGINAL native-language reply.
-         * Never use displayReply for TTS.
-         */
 
         speakCustomerReply(
           payload.reply
@@ -2332,15 +2291,6 @@
         const language =
           getConversationLanguage();
 
-
-        /*
-         * ENGLISH:
-         * show live transcript normally.
-         *
-         * NON-ENGLISH:
-         * never show native script in the textbox.
-         * Keep it hidden until we Romanize on speech end.
-         */
 
         if (
           language ===
@@ -2739,14 +2689,6 @@
     }
 
 
-    /*
-     * If the user edits the Romanized transcript manually,
-     * we can no longer guarantee that the native original
-     * exactly matches what is visible.
-     *
-     * Therefore the visible edited text becomes the message.
-     */
-
     if (
       !listening &&
       !transliterationInProgress
@@ -2885,11 +2827,410 @@
 
 
   /* =========================================================
-     CURRENT BROWSER TTS
-
-     We are intentionally leaving this untouched for now.
-     Multilingual/human voice is Issue 1 from our remaining list.
+     MULTILINGUAL BROWSER TTS
   ========================================================= */
+
+  function initialiseSpeechVoices() {
+
+    if (
+      !window.speechSynthesis
+    ) {
+
+      console.warn(
+        'Browser speech synthesis is unavailable.'
+      );
+
+      return;
+
+    }
+
+
+    refreshSpeechVoices();
+
+
+    /*
+     * Chrome / macOS often loads voices asynchronously.
+     * This callback fires once the system voice list becomes
+     * available.
+     */
+
+    window
+      .speechSynthesis
+      .onvoiceschanged =
+      function() {
+
+        refreshSpeechVoices();
+
+      };
+
+
+    /*
+     * A few delayed refreshes help Chrome initialise its
+     * system voice list reliably.
+     */
+
+    setTimeout(
+      refreshSpeechVoices,
+      250
+    );
+
+
+    setTimeout(
+      refreshSpeechVoices,
+      1000
+    );
+
+  }
+
+
+  function refreshSpeechVoices() {
+
+    if (
+      !window.speechSynthesis
+    ) {
+
+      availableSpeechVoices =
+        [];
+
+      return;
+
+    }
+
+
+    availableSpeechVoices =
+      window
+        .speechSynthesis
+        .getVoices() ||
+      [];
+
+
+    console.log(
+      'Speech voices loaded:',
+      availableSpeechVoices.length
+    );
+
+  }
+
+
+  function findVoiceByName(
+    names
+  ) {
+
+    if (
+      !Array.isArray(
+        names
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    for (
+      const preferredName of names
+    ) {
+
+      const exactMatch =
+        availableSpeechVoices
+          .find(
+            function(voice) {
+
+              return (
+                String(
+                  voice.name ||
+                  ''
+                )
+                  .toLowerCase() ===
+                String(
+                  preferredName
+                )
+                  .toLowerCase()
+              );
+
+            }
+          );
+
+
+      if (exactMatch) {
+
+        return exactMatch;
+
+      }
+
+    }
+
+
+    return null;
+
+  }
+
+
+  function findVoiceByLocale(
+    locale
+  ) {
+
+    const desired =
+      String(
+        locale ||
+        ''
+      )
+        .toLowerCase();
+
+
+    if (!desired) {
+
+      return null;
+
+    }
+
+
+    const exactMatch =
+      availableSpeechVoices
+        .find(
+          function(voice) {
+
+            return (
+              String(
+                voice.lang ||
+                ''
+              )
+                .toLowerCase() ===
+              desired
+            );
+
+          }
+        );
+
+
+    if (exactMatch) {
+
+      return exactMatch;
+
+    }
+
+
+    const baseLanguage =
+      desired
+        .split('-')[0];
+
+
+    const baseMatch =
+      availableSpeechVoices
+        .find(
+          function(voice) {
+
+            return (
+              String(
+                voice.lang ||
+                ''
+              )
+                .toLowerCase()
+                .startsWith(
+                  baseLanguage +
+                  '-'
+                )
+            );
+
+          }
+        );
+
+
+    return baseMatch ||
+      null;
+
+  }
+
+
+  function getBestVoiceForLocale(
+    locale
+  ) {
+
+    refreshSpeechVoices();
+
+
+    const selectedLocale =
+      String(
+        locale ||
+        'en-IN'
+      );
+
+
+    /*
+     * Tamil
+     *
+     * Confirmed on this machine:
+     * Vani / ta-IN
+     */
+    if (
+      selectedLocale ===
+      'ta-IN'
+    ) {
+
+      return (
+        findVoiceByName(
+          [
+            'Vani'
+          ]
+        ) ||
+        findVoiceByLocale(
+          'ta-IN'
+        )
+      );
+
+    }
+
+
+    /*
+     * Hindi
+     *
+     * Confirmed:
+     * Lekha / hi-IN
+     * Google हिन्दी / hi-IN
+     */
+    if (
+      selectedLocale ===
+      'hi-IN'
+    ) {
+
+      return (
+        findVoiceByName(
+          [
+            'Lekha',
+            'Google हिन्दी'
+          ]
+        ) ||
+        findVoiceByLocale(
+          'hi-IN'
+        )
+      );
+
+    }
+
+
+    /*
+     * Telugu
+     *
+     * Confirmed:
+     * Geeta / te-IN
+     */
+    if (
+      selectedLocale ===
+      'te-IN'
+    ) {
+
+      return (
+        findVoiceByName(
+          [
+            'Geeta'
+          ]
+        ) ||
+        findVoiceByLocale(
+          'te-IN'
+        )
+      );
+
+    }
+
+
+    /*
+     * Marathi
+     *
+     * Prefer a true Marathi voice if the operating system
+     * gains one later.
+     *
+     * Current machine has no mr-IN voice, so use Hindi as
+     * temporary Devanagari fallback.
+     */
+    if (
+      selectedLocale ===
+      'mr-IN'
+    ) {
+
+      return (
+        findVoiceByLocale(
+          'mr-IN'
+        ) ||
+        findVoiceByName(
+          [
+            'Lekha',
+            'Google हिन्दी'
+          ]
+        ) ||
+        findVoiceByLocale(
+          'hi-IN'
+        )
+      );
+
+    }
+
+
+    /*
+     * English
+     */
+
+    if (
+      selectedLocale ===
+      'en-IN'
+    ) {
+
+      const indianEnglish =
+        findVoiceByLocale(
+          'en-IN'
+        );
+
+
+      if (indianEnglish) {
+
+        return indianEnglish;
+
+      }
+
+
+      const defaultEnglish =
+        availableSpeechVoices
+          .find(
+            function(voice) {
+
+              return (
+                voice.default &&
+                String(
+                  voice.lang ||
+                  ''
+                )
+                  .toLowerCase()
+                  .startsWith(
+                    'en'
+                  )
+              );
+
+            }
+          );
+
+
+      if (defaultEnglish) {
+
+        return defaultEnglish;
+
+      }
+
+
+      return findVoiceByLocale(
+        'en-US'
+      ) ||
+      findVoiceByLocale(
+        'en-GB'
+      );
+
+    }
+
+
+    return findVoiceByLocale(
+      selectedLocale
+    );
+
+  }
+
 
   function speakCustomerReply(
     text
@@ -2905,6 +3246,24 @@
     }
 
 
+    refreshSpeechVoices();
+
+
+    const locale =
+      document
+        .getElementById(
+          'speechLanguage'
+        )
+        .value ||
+      'en-IN';
+
+
+    const selectedVoice =
+      getBestVoiceForLocale(
+        locale
+      );
+
+
     window
       .speechSynthesis
       .cancel();
@@ -2917,27 +3276,141 @@
 
 
     utterance.lang =
-      document
-        .getElementById(
-          'speechLanguage'
-        )
-        .value ||
-      'en-IN';
+      locale;
 
+
+    if (selectedVoice) {
+
+      utterance.voice =
+        selectedVoice;
+
+
+      /*
+       * Important:
+       * use the actual voice locale when using the Marathi
+       * fallback so the browser does not reject the voice.
+       */
+
+      if (
+        locale === 'mr-IN' &&
+        selectedVoice.lang
+      ) {
+
+        utterance.lang =
+          selectedVoice.lang;
+
+      }
+
+
+      console.log(
+        'AI TTS voice:',
+        {
+          requestedLocale:
+            locale,
+
+          voice:
+            selectedVoice.name,
+
+          voiceLanguage:
+            selectedVoice.lang,
+
+          localService:
+            selectedVoice.localService
+        }
+      );
+
+    }
+
+    else {
+
+      console.warn(
+        'No matching TTS voice found for:',
+        locale
+      );
+
+    }
+
+
+    /*
+     * Keep these close to natural speech for now.
+     * We will handle genuinely expressive / emotional voice
+     * in a separate TTS milestone.
+     */
 
     utterance.rate =
-      1;
+      0.96;
 
 
     utterance.pitch =
       1;
 
 
-    window
-      .speechSynthesis
-      .speak(
-        utterance
-      );
+    utterance.volume =
+      1;
+
+
+    utterance.onerror =
+      function(event) {
+
+        console.error(
+          'AI TTS error:',
+          {
+            error:
+              event.error,
+
+            locale:
+              locale,
+
+            voice:
+              selectedVoice
+                ? selectedVoice.name
+                : null
+          }
+        );
+
+      };
+
+
+    utterance.onstart =
+      function() {
+
+        console.log(
+          'AI TTS started:',
+          selectedVoice
+            ? selectedVoice.name
+            : 'browser default'
+        );
+
+      };
+
+
+    utterance.onend =
+      function() {
+
+        console.log(
+          'AI TTS completed.'
+        );
+
+      };
+
+
+    /*
+     * Short delay after cancel() helps Chrome/macOS avoid
+     * swallowing the next utterance.
+     */
+
+    setTimeout(
+      function() {
+
+        window
+          .speechSynthesis
+          .speak(
+            utterance
+          );
+
+      },
+      80
+    );
 
   }
 
