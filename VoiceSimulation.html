@@ -24,10 +24,7 @@
     body {
       margin: 0;
       min-height: 100%;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: #f6f7f8;
       color: #202124;
     }
@@ -495,7 +492,6 @@
 
   <div class="workspace">
 
-
     <aside class="sidebar">
 
       <h2>
@@ -517,7 +513,6 @@
 
 
     <main class="chat-area">
-
 
       <div class="chat-header">
 
@@ -551,7 +546,6 @@
 
           </label>
 
-
           <button
             id="endSessionButton"
             class="end-button"
@@ -573,7 +567,6 @@
 
       <div class="composer-wrap">
 
-
         <div class="voice-panel">
 
           <button
@@ -584,14 +577,12 @@
             🎙 Start Speaking
           </button>
 
-
           <div
             id="speechStatus"
             class="speech-status"
           >
             Checking microphone support...
           </div>
-
 
           <select
             id="speechLanguage"
@@ -633,12 +624,10 @@
             oninput="handleManualInput()"
           ></textarea>
 
-
           <button
             id="sendButton"
             class="send-button"
             onclick="sendMessage()"
-            title="Send"
           >
             ↑
           </button>
@@ -649,7 +638,6 @@
         <div class="composer-note">
           Speak or type your response, then send.
         </div>
-
 
         <div
           id="runtimeError"
@@ -698,18 +686,23 @@
 
 
   let currentSessionId = '';
+
   let roomData = null;
 
   let recognition = null;
+
   let recognitionSupported = false;
+
   let listening = false;
 
   let finalTranscript = '';
+
   let originalSpeechTranscript = '';
-  let romanizedSpeechTranscript = '';
 
   let microphonePermissionGranted = false;
+
   let turnInProgress = false;
+
   let transliterationInProgress = false;
 
 
@@ -719,20 +712,23 @@
   );
 
 
-  function initialiseVoiceSimulation() {
+  async function initialiseVoiceSimulation() {
 
     initialiseSpeechRecognition();
+
 
     const params =
       new URLSearchParams(
         window.location.search
       );
 
+
     currentSessionId =
       String(
         params.get('sessionId') ||
         ''
       ).trim();
+
 
     if (!currentSessionId) {
 
@@ -743,7 +739,9 @@
       return;
     }
 
-    loadRuntimeSession();
+
+    await loadRuntimeSession();
+
   }
 
 
@@ -754,12 +752,14 @@
       'loading'
     );
 
+
     const url =
       RUNTIME_URL +
       '/session?sessionId=' +
       encodeURIComponent(
         currentSessionId
       );
+
 
     try {
 
@@ -768,25 +768,33 @@
           url,
           {
             method: 'GET',
+
             headers: {
-              'Accept': 'application/json'
+              'Accept':
+                'application/json'
             },
-            cache: 'no-store'
+
+            cache:
+              'no-store'
           }
         );
+
 
       const payload =
         await response.json();
 
+
       if (!response.ok) {
 
         throw new Error(
-          payload && payload.error
+          payload &&
+          payload.error
             ? payload.error
             : 'Runtime returned HTTP ' +
               response.status
         );
       }
+
 
       if (
         !payload ||
@@ -799,7 +807,8 @@
         );
       }
 
-      handleRoomData(
+
+      await handleRoomData(
         payload.data
       );
 
@@ -812,20 +821,26 @@
         error
       );
 
+
       showLoadError(
-        error && error.message
+        error &&
+        error.message
           ? error.message
           : String(error)
       );
+
     }
+
   }
 
 
-  function handleRoomData(
+  async function handleRoomData(
     data
   ) {
 
-    roomData = data;
+    roomData =
+      data;
+
 
     if (
       roomData.status !==
@@ -839,6 +854,7 @@
       return;
     }
 
+
     document
       .getElementById(
         'participantName'
@@ -847,33 +863,56 @@
       roomData.participant ||
       'Customer';
 
+
     renderScenario(
       roomData.scenario ||
       {}
     );
+
 
     configureSpeechLanguage(
       roomData.scenario ||
       {}
     );
 
-    renderConversation(
-      roomData.conversationHistory ||
-      []
+
+    setSpeechStatus(
+      'Preparing conversation...'
     );
+
+
+    roomData.conversationHistory =
+      await prepareDisplayHistory(
+        roomData.conversationHistory ||
+        []
+      );
+
+
+    renderConversation(
+      roomData.conversationHistory
+    );
+
 
     setSessionStatus(
       'Live Session',
       'active'
     );
 
+
+    setSpeechStatus(
+      'Microphone ready.'
+    );
+
+
     hideLoadingOverlay();
+
 
     document
       .getElementById(
         'messageInput'
       )
       .focus();
+
   }
 
 
@@ -905,7 +944,8 @@
           ? (
               String(
                 scenario.grade
-              ) === 'Dropper'
+              ) ===
+              'Dropper'
                 ? 'Dropper'
                 : 'Grade ' +
                   scenario.grade
@@ -947,6 +987,7 @@
 
     ];
 
+
     document
       .getElementById(
         'scenarioDetails'
@@ -955,9 +996,11 @@
       items
         .filter(
           function(item) {
+
             return Boolean(
               item[1]
             );
+
           }
         )
         .map(
@@ -982,9 +1025,11 @@
 
               </div>
             `;
+
           }
         )
         .join('');
+
   }
 
 
@@ -993,26 +1038,154 @@
   ) {
 
     if (!scenario.testTaken) {
+
       return 'Not Taken';
+
     }
+
 
     let output =
       scenario.testType ||
       'Taken';
 
+
     if (
-      scenario.scholarshipPercentage !== null &&
-      scenario.scholarshipPercentage !== undefined &&
-      scenario.scholarshipPercentage !== ''
+      scenario.scholarshipPercentage !==
+        null &&
+      scenario.scholarshipPercentage !==
+        undefined &&
+      scenario.scholarshipPercentage !==
+        ''
     ) {
 
       output +=
         ' • ' +
         scenario.scholarshipPercentage +
         '% Scholarship';
+
     }
 
+
     return output;
+
+  }
+
+
+  /* =========================================================
+     DISPLAY HISTORY
+
+     Native-script content remains in turn.text.
+
+     Romanized version exists only in turn.displayText.
+  ========================================================= */
+
+  async function prepareDisplayHistory(
+    history
+  ) {
+
+    if (
+      !Array.isArray(history) ||
+      history.length === 0
+    ) {
+
+      return [];
+    }
+
+
+    const prepared =
+      [];
+
+
+    for (
+      const originalTurn of history
+    ) {
+
+      const turn =
+        {
+          ...originalTurn
+        };
+
+
+      const rawText =
+        String(
+          turn.text ||
+          turn.message ||
+          ''
+        ).trim();
+
+
+      if (!rawText) {
+
+        prepared.push(
+          turn
+        );
+
+        continue;
+
+      }
+
+
+      if (turn.displayText) {
+
+        prepared.push(
+          turn
+        );
+
+        continue;
+
+      }
+
+
+      const detectedLanguage =
+        detectScriptLanguage(
+          rawText
+        );
+
+
+      const turnLanguage =
+        normaliseDisplayLanguage(
+          turn.language
+        );
+
+
+      const language =
+        detectedLanguage ||
+        turnLanguage;
+
+
+      if (
+        language &&
+        language !== 'English' &&
+        containsNativeIndicScript(
+          rawText
+        )
+      ) {
+
+        turn.displayText =
+          await transliterateText(
+            rawText,
+            language
+          );
+
+      }
+
+      else {
+
+        turn.displayText =
+          rawText;
+
+      }
+
+
+      prepared.push(
+        turn
+      );
+
+    }
+
+
+    return prepared;
+
   }
 
 
@@ -1024,6 +1197,7 @@
       document.getElementById(
         'messages'
       );
+
 
     if (
       !Array.isArray(history) ||
@@ -1046,14 +1220,20 @@
       `;
 
       return;
+
     }
+
 
     messages.innerHTML =
       history
-        .map(renderMessage)
+        .map(
+          renderMessage
+        )
         .join('');
 
+
     scrollToBottom();
+
   }
 
 
@@ -1067,25 +1247,30 @@
         ''
       );
 
+
     const isCounsellor =
-      speaker === 'Academic Counsellor' ||
-      speaker === 'Counsellor' ||
-      speaker === 'AC';
+      speaker ===
+        'Academic Counsellor' ||
+      speaker ===
+        'Counsellor' ||
+      speaker ===
+        'AC';
+
 
     const rowClass =
       isCounsellor
         ? 'counsellor'
         : 'customer';
 
+
     const displayText =
-      isCounsellor &&
-      turn.displayText
-        ? turn.displayText
-        : (
-            turn.text ||
-            turn.message ||
-            ''
-          );
+      String(
+        turn.displayText ||
+        turn.text ||
+        turn.message ||
+        ''
+      );
+
 
     return `
       <div class="message-row ${rowClass}">
@@ -1108,6 +1293,7 @@
 
       </div>
     `;
+
   }
 
 
@@ -1118,25 +1304,33 @@
         'messages'
       );
 
+
     const emptyState =
       messages.querySelector(
         '.empty-state'
       );
 
+
     if (emptyState) {
+
       emptyState.remove();
+
     }
+
 
     const wrapper =
       document.createElement(
         'div'
       );
 
+
     wrapper.id =
       'thinkingMessage';
 
+
     wrapper.className =
       'message-row customer';
+
 
     wrapper.innerHTML = `
       <div class="message">
@@ -1157,11 +1351,14 @@
       </div>
     `;
 
+
     messages.appendChild(
       wrapper
     );
 
+
     scrollToBottom();
+
   }
 
 
@@ -1172,11 +1369,19 @@
         'thinkingMessage'
       );
 
+
     if (element) {
+
       element.remove();
+
     }
+
   }
 
+
+  /* =========================================================
+     LANGUAGE
+  ========================================================= */
 
   function getConversationLanguage() {
 
@@ -1187,44 +1392,234 @@
         )
         .value;
 
+
     const languageMap = {
 
-      'en-IN': 'English',
-      'hi-IN': 'Hindi',
-      'ta-IN': 'Tamil',
-      'te-IN': 'Telugu',
-      'mr-IN': 'Marathi'
+      'en-IN':
+        'English',
+
+      'hi-IN':
+        'Hindi',
+
+      'ta-IN':
+        'Tamil',
+
+      'te-IN':
+        'Telugu',
+
+      'mr-IN':
+        'Marathi'
 
     };
+
 
     return (
       languageMap[locale] ||
       'English'
     );
+
   }
 
 
-  async function transliterateSpeech(
+  function normaliseDisplayLanguage(
+    language
+  ) {
+
+    const value =
+      String(
+        language ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+      value.includes(
+        'tamil'
+      )
+    ) {
+
+      return 'Tamil';
+
+    }
+
+
+    if (
+      value.includes(
+        'hindi'
+      ) ||
+      value.includes(
+        'hinglish'
+      )
+    ) {
+
+      return 'Hindi';
+
+    }
+
+
+    if (
+      value.includes(
+        'telugu'
+      )
+    ) {
+
+      return 'Telugu';
+
+    }
+
+
+    if (
+      value.includes(
+        'marathi'
+      )
+    ) {
+
+      return 'Marathi';
+
+    }
+
+
+    if (
+      value.includes(
+        'english'
+      )
+    ) {
+
+      return 'English';
+
+    }
+
+
+    return '';
+
+  }
+
+
+  function detectScriptLanguage(
+    text
+  ) {
+
+    const value =
+      String(
+        text ||
+        ''
+      );
+
+
+    /*
+     * Tamil Unicode block
+     */
+
+    if (
+      /[\u0B80-\u0BFF]/.test(
+        value
+      )
+    ) {
+
+      return 'Tamil';
+
+    }
+
+
+    /*
+     * Telugu Unicode block
+     */
+
+    if (
+      /[\u0C00-\u0C7F]/.test(
+        value
+      )
+    ) {
+
+      return 'Telugu';
+
+    }
+
+
+    /*
+     * Devanagari.
+     *
+     * In this product it currently maps to Hindi or Marathi.
+     * Prefer live/turn metadata when available.
+     */
+
+    if (
+      /[\u0900-\u097F]/.test(
+        value
+      )
+    ) {
+
+      const currentLanguage =
+        getConversationLanguage();
+
+
+      if (
+        currentLanguage ===
+        'Marathi'
+      ) {
+
+        return 'Marathi';
+
+      }
+
+
+      return 'Hindi';
+
+    }
+
+
+    return '';
+
+  }
+
+
+  function containsNativeIndicScript(
+    text
+  ) {
+
+    return (
+      /[\u0900-\u097F]/.test(
+        text
+      ) ||
+      /[\u0B80-\u0BFF]/.test(
+        text
+      ) ||
+      /[\u0C00-\u0C7F]/.test(
+        text
+      )
+    );
+
+  }
+
+
+  /* =========================================================
+     TRANSLITERATION
+  ========================================================= */
+
+  async function transliterateText(
     text,
     language
   ) {
 
     if (!text) {
+
       return text;
+
     }
+
 
     if (
-      language === 'English'
+      !language ||
+      language ===
+      'English'
     ) {
+
       return text;
+
     }
 
-    transliterationInProgress =
-      true;
-
-    setSpeechStatus(
-      'Converting transcript to Roman script...'
-    );
 
     try {
 
@@ -1233,45 +1628,52 @@
           RUNTIME_URL +
           '/transliterate',
           {
-            method: 'POST',
+            method:
+              'POST',
+
             headers: {
               'Content-Type':
                 'application/json',
+
               'Accept':
                 'application/json'
             },
+
             body:
               JSON.stringify(
                 {
-                  text: text,
-                  language: language
+                  text:
+                    text,
+
+                  language:
+                    language
                 }
               )
           }
         );
 
+
       const payload =
         await response.json();
 
-      if (!response.ok) {
-
-        throw new Error(
-          payload && payload.error
-            ? payload.error
-            : 'Transliteration failed.'
-        );
-      }
 
       if (
+        !response.ok ||
         !payload ||
         payload.success !== true ||
         !payload.romanizedText
       ) {
 
-        throw new Error(
-          'Roman transcript could not be generated.'
+        console.warn(
+          'Transliteration unavailable:',
+          payload
         );
+
+
+        return text;
+
       }
+
 
       return payload.romanizedText;
 
@@ -1284,17 +1686,17 @@
         error
       );
 
+
       return text;
 
     }
 
-    finally {
-
-      transliterationInProgress =
-        false;
-    }
   }
 
+
+  /* =========================================================
+     LIVE TURN
+  ========================================================= */
 
   async function sendMessage() {
 
@@ -1302,46 +1704,108 @@
       turnInProgress ||
       transliterationInProgress
     ) {
+
       return;
+
     }
+
 
     if (listening) {
 
       try {
+
         recognition.stop();
+
       }
+
       catch (error) {
+
       }
+
     }
+
 
     const input =
       document.getElementById(
         'messageInput'
       );
 
+
     const displayedMessage =
       input.value.trim();
 
+
     if (!displayedMessage) {
+
       return;
+
     }
+
 
     const conversationLanguage =
       getConversationLanguage();
+
 
     const messageForAI =
       originalSpeechTranscript
         ? originalSpeechTranscript
         : displayedMessage;
 
+
+    let finalDisplayedMessage =
+      displayedMessage;
+
+
+    /*
+     * Covers typed native-script messages too.
+     */
+
+    if (
+      conversationLanguage !==
+        'English' &&
+      containsNativeIndicScript(
+        displayedMessage
+      )
+    ) {
+
+      transliterationInProgress =
+        true;
+
+
+      setComposerBusy(
+        true
+      );
+
+
+      setSpeechStatus(
+        'Converting transcript to Roman script...'
+      );
+
+
+      finalDisplayedMessage =
+        await transliterateText(
+          displayedMessage,
+          conversationLanguage
+        );
+
+
+      transliterationInProgress =
+        false;
+
+    }
+
+
     clearRuntimeError();
+
 
     turnInProgress =
       true;
 
+
     setComposerBusy(
       true
     );
+
 
     const localConversation =
       Array.isArray(
@@ -1352,6 +1816,7 @@
           ]
         : [];
 
+
     localConversation.push(
       {
         speaker:
@@ -1361,7 +1826,7 @@
           messageForAI,
 
         displayText:
-          displayedMessage,
+          finalDisplayedMessage,
 
         timestamp:
           new Date().toISOString(),
@@ -1371,27 +1836,36 @@
       }
     );
 
+
     roomData.conversationHistory =
       localConversation;
+
 
     renderConversation(
       localConversation
     );
 
-    input.value = '';
+
+    input.value =
+      '';
+
 
     resizeInput();
 
+
     renderThinkingMessage();
+
 
     setSessionStatus(
       'AI Responding...',
       'loading'
     );
 
+
     setSpeechStatus(
       'AI is responding...'
     );
+
 
     try {
 
@@ -1400,7 +1874,8 @@
           RUNTIME_URL +
           '/turn',
           {
-            method: 'POST',
+            method:
+              'POST',
 
             headers: {
               'Content-Type':
@@ -1426,17 +1901,25 @@
           }
         );
 
+
       let payload;
 
+
       try {
+
         payload =
           await response.json();
+
       }
+
       catch (error) {
+
         throw new Error(
           'Runtime returned an invalid response.'
         );
+
       }
+
 
       if (!response.ok) {
 
@@ -1447,7 +1930,9 @@
             : 'Runtime returned HTTP ' +
               response.status
         );
+
       }
+
 
       if (
         !payload ||
@@ -1458,47 +1943,127 @@
         throw new Error(
           'AI response could not be generated.'
         );
+
       }
+
 
       removeThinkingMessage();
 
-      const serverHistory =
+
+      let serverHistory =
         Array.isArray(
           payload.conversationHistory
         )
           ? payload.conversationHistory
           : [];
 
+
+      /*
+       * Add Roman display text for the latest AC message.
+       */
+
       if (
-        serverHistory.length >= 2
+        serverHistory.length >=
+        2
       ) {
 
         const counsellorIndex =
-          serverHistory.length - 2;
+          serverHistory.length -
+          2;
+
 
         serverHistory[
           counsellorIndex
         ].displayText =
-          displayedMessage;
+          finalDisplayedMessage;
+
       }
+
+
+      /*
+       * Romanize the latest Parent / Student reply.
+       *
+       * IMPORTANT:
+       * payload.reply remains the original native-language
+       * response and is what audio receives.
+       */
+
+      if (
+        serverHistory.length >=
+        1
+      ) {
+
+        const customerIndex =
+          serverHistory.length -
+          1;
+
+
+        const customerTurn =
+          serverHistory[
+            customerIndex
+          ];
+
+
+        const rawCustomerText =
+          String(
+            customerTurn.text ||
+            payload.reply ||
+            ''
+          );
+
+
+        if (
+          conversationLanguage !==
+            'English' &&
+          containsNativeIndicScript(
+            rawCustomerText
+          )
+        ) {
+
+          setSpeechStatus(
+            'Preparing Roman transcript...'
+          );
+
+
+          customerTurn.displayText =
+            await transliterateText(
+              rawCustomerText,
+              conversationLanguage
+            );
+
+        }
+
+        else {
+
+          customerTurn.displayText =
+            rawCustomerText;
+
+        }
+
+      }
+
 
       roomData.conversationHistory =
         serverHistory.length
           ? serverHistory
           : localConversation;
 
+
       renderConversation(
         roomData.conversationHistory
       );
+
 
       setSessionStatus(
         'Live Session',
         'active'
       );
 
+
       setSpeechStatus(
         'Microphone ready.'
       );
+
 
       const voiceEnabled =
         document
@@ -1507,18 +2072,27 @@
           )
           .checked;
 
+
       if (
         voiceEnabled &&
         payload.reply
       ) {
 
+        /*
+         * IMPORTANT:
+         * Speak original response,
+         * not Romanized display text.
+         */
+
         speakCustomerReply(
           payload.reply
         );
+
       }
 
-      originalSpeechTranscript = '';
-      romanizedSpeechTranscript = '';
+
+      originalSpeechTranscript =
+        '';
 
     }
 
@@ -1529,7 +2103,9 @@
         error
       );
 
+
       removeThinkingMessage();
+
 
       showRuntimeError(
         error &&
@@ -1538,14 +2114,17 @@
           : String(error)
       );
 
+
       setSessionStatus(
         'Live Session',
         'active'
       );
 
+
       setSpeechStatus(
         'The AI response failed. You can retry.'
       );
+
     }
 
     finally {
@@ -1553,12 +2132,20 @@
       turnInProgress =
         false;
 
+
+      transliterationInProgress =
+        false;
+
+
       setComposerBusy(
         false
       );
 
+
       input.focus();
+
     }
+
   }
 
 
@@ -1573,6 +2160,7 @@
       .disabled =
       busy;
 
+
     document
       .getElementById(
         'micButton'
@@ -1582,6 +2170,7 @@
       transliterationInProgress ||
       !recognitionSupported;
 
+
     document
       .getElementById(
         'messageInput'
@@ -1589,14 +2178,20 @@
       .disabled =
       busy;
 
+
     document
       .getElementById(
         'speechLanguage'
       )
       .disabled =
       busy;
+
   }
 
+
+  /* =========================================================
+     SPEECH RECOGNITION
+  ========================================================= */
 
   function initialiseSpeechRecognition() {
 
@@ -1604,10 +2199,12 @@
       window.SpeechRecognition ||
       window.webkitSpeechRecognition;
 
+
     if (!Recognition) {
 
       recognitionSupported =
         false;
+
 
       document
         .getElementById(
@@ -1616,24 +2213,32 @@
         .disabled =
         true;
 
+
       setSpeechStatus(
         'Speech recognition is unavailable in this browser. You can still type your response.'
       );
 
+
       return;
+
     }
+
 
     recognitionSupported =
       true;
 
+
     recognition =
       new Recognition();
+
 
     recognition.continuous =
       true;
 
+
     recognition.interimResults =
       true;
+
 
     recognition.maxAlternatives =
       1;
@@ -1645,60 +2250,79 @@
         listening =
           true;
 
-        finalTranscript = '';
-        originalSpeechTranscript = '';
-        romanizedSpeechTranscript = '';
+
+        finalTranscript =
+          '';
+
+
+        originalSpeechTranscript =
+          '';
+
 
         const button =
           document.getElementById(
             'micButton'
           );
 
+
         button.classList.add(
           'listening'
         );
 
+
         button.textContent =
           '■ Stop Speaking';
+
 
         setSpeechStatus(
           'Listening… speak naturally.'
         );
+
       };
 
 
     recognition.onresult =
       function(event) {
 
-        let interim = '';
+        let interim =
+          '';
+
 
         for (
           let i =
             event.resultIndex;
-          i < event.results.length;
+          i <
+            event.results.length;
           i++
         ) {
 
           const transcript =
-            event.results[i][0]
-              .transcript;
+            event.results[
+              i
+            ][0].transcript;
+
 
           if (
-            event.results[i]
-              .isFinal
+            event.results[
+              i
+            ].isFinal
           ) {
 
             finalTranscript +=
               transcript +
               ' ';
+
           }
 
           else {
 
             interim +=
               transcript;
+
           }
+
         }
+
 
         const combined =
           (
@@ -1711,8 +2335,10 @@
             )
             .trim();
 
+
         originalSpeechTranscript =
           combined;
+
 
         document
           .getElementById(
@@ -1721,16 +2347,18 @@
           .value =
           combined;
 
+
         resizeInput();
+
 
         if (combined) {
 
           setSpeechStatus(
-            interim
-              ? 'Listening…'
-              : 'Speech captured.'
+            'Listening…'
           );
+
         }
+
       };
 
 
@@ -1740,11 +2368,14 @@
         listening =
           false;
 
+
         resetMicButton();
+
 
         let message =
           'Speech recognition error: ' +
           event.error;
+
 
         if (
           event.error ===
@@ -1753,6 +2384,7 @@
 
           message =
             'Microphone permission was denied. Allow microphone access for this site and try again.';
+
         }
 
         else if (
@@ -1762,6 +2394,7 @@
 
           message =
             'No speech was detected. Click Start Speaking and try again.';
+
         }
 
         else if (
@@ -1771,11 +2404,14 @@
 
           message =
             'Speech recognition encountered a network error. Please retry or type your response.';
+
         }
+
 
         setSpeechStatus(
           message
         );
+
       };
 
 
@@ -1785,7 +2421,9 @@
         listening =
           false;
 
+
         resetMicButton();
+
 
         const originalText =
           String(
@@ -1793,25 +2431,27 @@
             ''
           ).trim();
 
+
         if (!originalText) {
 
           setSpeechStatus(
             'Microphone ready.'
           );
 
+
           return;
+
         }
+
 
         const language =
           getConversationLanguage();
+
 
         if (
           language ===
           'English'
         ) {
-
-          romanizedSpeechTranscript =
-            originalText;
 
           document
             .getElementById(
@@ -1820,27 +2460,40 @@
             .value =
             originalText;
 
+
           resizeInput();
+
 
           setSpeechStatus(
             'Speech captured. Review and send.'
           );
 
+
           return;
+
         }
+
+
+        transliterationInProgress =
+          true;
+
 
         setComposerBusy(
           true
         );
 
+
+        setSpeechStatus(
+          'Converting transcript to Roman script...'
+        );
+
+
         const romanized =
-          await transliterateSpeech(
+          await transliterateText(
             originalText,
             language
           );
 
-        romanizedSpeechTranscript =
-          romanized;
 
         document
           .getElementById(
@@ -1849,21 +2502,30 @@
           .value =
           romanized;
 
+
         resizeInput();
+
+
+        transliterationInProgress =
+          false;
+
 
         setComposerBusy(
           false
         );
 
+
         setSpeechStatus(
           'Speech captured in Roman script. Review and send.'
         );
+
       };
 
 
     setSpeechStatus(
       'Microphone ready.'
     );
+
   }
 
 
@@ -1875,14 +2537,20 @@
       !recognitionSupported ||
       !recognition
     ) {
+
       return;
+
     }
+
 
     if (listening) {
 
       recognition.stop();
+
       return;
+
     }
+
 
     if (
       !microphonePermissionGranted
@@ -1898,7 +2566,9 @@
           throw new Error(
             'Microphone API unavailable.'
           );
+
         }
+
 
         const stream =
           await navigator
@@ -1907,13 +2577,17 @@
               audio: true
             });
 
+
         stream
           .getTracks()
           .forEach(
             function(track) {
+
               track.stop();
+
             }
           );
+
 
         microphonePermissionGranted =
           true;
@@ -1927,13 +2601,18 @@
           error
         );
 
+
         setSpeechStatus(
           'Microphone permission could not be granted. Check browser permissions and try again.'
         );
 
+
         return;
+
       }
+
     }
+
 
     recognition.lang =
       document
@@ -1943,9 +2622,14 @@
         .value ||
       'en-IN';
 
-    finalTranscript = '';
-    originalSpeechTranscript = '';
-    romanizedSpeechTranscript = '';
+
+    finalTranscript =
+      '';
+
+
+    originalSpeechTranscript =
+      '';
+
 
     document
       .getElementById(
@@ -1954,7 +2638,9 @@
       .value =
       '';
 
+
     resizeInput();
+
 
     try {
 
@@ -1969,18 +2655,21 @@
         error
       );
 
+
       setSpeechStatus(
         'Microphone is already starting. Please try again in a moment.'
       );
+
     }
+
   }
 
 
   function handleManualInput() {
 
     /*
-     * Once the user manually edits the Roman transcript,
-     * use what is visible as the final message.
+     * If the AC edits the visible text manually,
+     * that edited text becomes the final input.
      */
 
     if (
@@ -1988,11 +2677,14 @@
       !transliterationInProgress
     ) {
 
-      originalSpeechTranscript = '';
-      romanizedSpeechTranscript = '';
+      originalSpeechTranscript =
+        '';
+
     }
 
+
     resizeInput();
+
   }
 
 
@@ -2003,12 +2695,15 @@
         'micButton'
       );
 
+
     button.classList.remove(
       'listening'
     );
 
+
     button.textContent =
       '🎙 Start Speaking';
+
   }
 
 
@@ -2022,6 +2717,7 @@
       )
       .textContent =
       text;
+
   }
 
 
@@ -2037,33 +2733,58 @@
         .trim()
         .toLowerCase();
 
+
     let locale =
       'en-IN';
 
+
     if (
-      language.includes('hindi') ||
-      language.includes('hinglish')
+      language.includes(
+        'hindi'
+      ) ||
+      language.includes(
+        'hinglish'
+      )
     ) {
-      locale = 'hi-IN';
+
+      locale =
+        'hi-IN';
+
     }
 
     else if (
-      language.includes('tamil')
+      language.includes(
+        'tamil'
+      )
     ) {
-      locale = 'ta-IN';
+
+      locale =
+        'ta-IN';
+
     }
 
     else if (
-      language.includes('telugu')
+      language.includes(
+        'telugu'
+      )
     ) {
-      locale = 'te-IN';
+
+      locale =
+        'te-IN';
+
     }
 
     else if (
-      language.includes('marathi')
+      language.includes(
+        'marathi'
+      )
     ) {
-      locale = 'mr-IN';
+
+      locale =
+        'mr-IN';
+
     }
+
 
     document
       .getElementById(
@@ -2071,8 +2792,13 @@
       )
       .value =
       locale;
+
   }
 
+
+  /* =========================================================
+     CURRENT BROWSER TTS
+  ========================================================= */
 
   function speakCustomerReply(
     text
@@ -2082,17 +2808,22 @@
       !window.speechSynthesis ||
       !text
     ) {
+
       return;
+
     }
+
 
     window
       .speechSynthesis
       .cancel();
 
+
     const utterance =
       new SpeechSynthesisUtterance(
         text
       );
+
 
     utterance.lang =
       document
@@ -2102,14 +2833,21 @@
         .value ||
       'en-IN';
 
-    utterance.rate = 1;
-    utterance.pitch = 1;
+
+    utterance.rate =
+      1;
+
+
+    utterance.pitch =
+      1;
+
 
     window
       .speechSynthesis
       .speak(
         utterance
       );
+
   }
 
 
@@ -2118,6 +2856,7 @@
     alert(
       'End Session will be connected after live conversation flow is verified.'
     );
+
   }
 
 
@@ -2126,13 +2865,18 @@
   ) {
 
     if (
-      event.key === 'Enter' &&
+      event.key ===
+        'Enter' &&
       !event.shiftKey
     ) {
 
       event.preventDefault();
+
+
       sendMessage();
+
     }
+
   }
 
 
@@ -2143,8 +2887,10 @@
         'messageInput'
       );
 
+
     input.style.height =
       'auto';
+
 
     input.style.height =
       Math.min(
@@ -2152,6 +2898,7 @@
         150
       ) +
       'px';
+
   }
 
 
@@ -2162,12 +2909,16 @@
         'messages'
       );
 
+
     requestAnimationFrame(
       function() {
+
         messages.scrollTop =
           messages.scrollHeight;
+
       }
     );
+
   }
 
 
@@ -2180,12 +2931,15 @@
         'runtimeError'
       );
 
+
     element.textContent =
       message;
+
 
     element.classList.add(
       'visible'
     );
+
   }
 
 
@@ -2196,11 +2950,15 @@
         'runtimeError'
       );
 
-    element.textContent = '';
+
+    element.textContent =
+      '';
+
 
     element.classList.remove(
       'visible'
     );
+
   }
 
 
@@ -2216,29 +2974,40 @@
       .textContent =
       text;
 
+
     const dot =
       document.getElementById(
         'statusDot'
       );
 
+
     if (
-      state === 'active'
+      state ===
+      'active'
     ) {
+
       dot.style.background =
         '#28a745';
+
     }
 
     else if (
-      state === 'error'
+      state ===
+      'error'
     ) {
+
       dot.style.background =
         '#d92d20';
+
     }
 
     else {
+
       dot.style.background =
         '#f5a623';
+
     }
+
   }
 
 
@@ -2251,6 +3020,7 @@
       .classList.add(
         'hidden'
       );
+
   }
 
 
@@ -2263,6 +3033,7 @@
       'error'
     );
 
+
     document
       .getElementById(
         'loadingTitle'
@@ -2270,17 +3041,21 @@
       .textContent =
       'Unable to open voice simulation';
 
+
     const text =
       document.getElementById(
         'loadingText'
       );
 
+
     text.classList.add(
       'error-text'
     );
 
+
     text.textContent =
       message;
+
   }
 
 
@@ -2289,16 +3064,34 @@
   ) {
 
     return String(
-      value === undefined ||
-      value === null
+      value ===
+      undefined ||
+      value ===
+      null
         ? ''
         : value
     )
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+      .replace(
+        /&/g,
+        '&amp;'
+      )
+      .replace(
+        /</g,
+        '&lt;'
+      )
+      .replace(
+        />/g,
+        '&gt;'
+      )
+      .replace(
+        /"/g,
+        '&quot;'
+      )
+      .replace(
+        /'/g,
+        '&#039;'
+      );
+
   }
 
 </script>
