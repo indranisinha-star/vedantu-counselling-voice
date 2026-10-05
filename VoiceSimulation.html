@@ -395,6 +395,12 @@
         5px;
     }
 
+    .thinking-bubble {
+      color: #777;
+
+      font-style: italic;
+    }
+
 
     /* =====================================================
        COMPOSER
@@ -528,6 +534,11 @@
       border-color: #f35427;
     }
 
+    textarea:disabled {
+      background: #f7f7f8;
+      color: #777;
+    }
+
     .send-button {
       width: 54px;
 
@@ -563,6 +574,33 @@
       color: #999;
 
       font-size: 11px;
+    }
+
+    .runtime-error {
+      max-width: 950px;
+
+      margin:
+        10px auto 0;
+
+      padding:
+        10px 12px;
+
+      background: #fff3f2;
+
+      color: #b42318;
+
+      border:
+        1px solid #f5c2be;
+
+      border-radius: 10px;
+
+      font-size: 12px;
+
+      display: none;
+    }
+
+    .runtime-error.visible {
+      display: block;
     }
 
 
@@ -685,21 +723,15 @@
 
 <div class="app">
 
-  <!-- ===================================================
-       TOP BAR
-  ==================================================== -->
-
   <header class="topbar">
 
     <div class="brand">
       VEDANTU
     </div>
 
-
     <div class="top-title">
       AI Counselling Coach
     </div>
-
 
     <div class="session-status-wrap">
 
@@ -717,16 +749,8 @@
   </header>
 
 
-  <!-- ===================================================
-       WORKSPACE
-  ==================================================== -->
-
   <div class="workspace">
 
-
-    <!-- =================================================
-         SIDEBAR
-    ================================================== -->
 
     <aside class="sidebar">
 
@@ -738,23 +762,15 @@
         Information available to you before the counselling conversation.
       </div>
 
-
       <div id="scenarioDetails"></div>
 
-
       <div class="locked-note">
-
         🔒 Hidden customer information is intentionally not shown.
         Discover it naturally during the conversation.
-
       </div>
 
     </aside>
 
-
-    <!-- =================================================
-         LIVE ROOM
-    ================================================== -->
 
     <main class="chat-area">
 
@@ -887,11 +903,14 @@
 
 
         <div class="composer-note">
-
-          Speak, review the transcript, then send.
-          Live AI turn processing will be connected in the next runtime step.
-
+          Speak or type your response, then send.
         </div>
+
+
+        <div
+          id="runtimeError"
+          class="runtime-error"
+        ></div>
 
       </div>
 
@@ -901,10 +920,6 @@
 
 </div>
 
-
-<!-- =====================================================
-     LOADING OVERLAY
-====================================================== -->
 
 <div
   id="loadingOverlay"
@@ -949,28 +964,25 @@
   let currentSessionId =
     '';
 
-
   let roomData =
     null;
-
 
   let recognition =
     null;
 
-
   let recognitionSupported =
     false;
-
 
   let listening =
     false;
 
-
   let finalTranscript =
     '';
 
-
   let microphonePermissionGranted =
+    false;
+
+  let turnInProgress =
     false;
 
 
@@ -1021,7 +1033,7 @@
 
 
   /* =========================================================
-     LOAD SESSION FROM CLOUDFLARE / D1
+     LOAD SESSION
   ========================================================= */
 
   async function loadRuntimeSession() {
@@ -1060,23 +1072,8 @@
         );
 
 
-      let payload;
-
-
-      try {
-
-        payload =
-          await response.json();
-
-      }
-
-      catch (error) {
-
-        throw new Error(
-          'Runtime returned an invalid response.'
-        );
-
-      }
+      const payload =
+        await response.json();
 
 
       if (!response.ok) {
@@ -1125,9 +1122,7 @@
         error &&
         error.message
           ? error.message
-          : String(
-              error
-            )
+          : String(error)
       );
 
     }
@@ -1480,6 +1475,414 @@
   }
 
 
+  function renderThinkingMessage() {
+
+    const messages =
+      document.getElementById(
+        'messages'
+      );
+
+
+    const emptyState =
+      messages.querySelector(
+        '.empty-state'
+      );
+
+
+    if (emptyState) {
+
+      emptyState.remove();
+
+    }
+
+
+    const wrapper =
+      document.createElement(
+        'div'
+      );
+
+
+    wrapper.id =
+      'thinkingMessage';
+
+
+    wrapper.className =
+      'message-row customer';
+
+
+    wrapper.innerHTML = `
+      <div class="message">
+
+        <div class="speaker">
+          ${escapeHtml(
+            roomData &&
+            roomData.participant
+              ? roomData.participant
+              : 'Customer'
+          )}
+        </div>
+
+        <div class="bubble thinking-bubble">
+          Thinking...
+        </div>
+
+      </div>
+    `;
+
+
+    messages.appendChild(
+      wrapper
+    );
+
+
+    scrollToBottom();
+
+  }
+
+
+  function removeThinkingMessage() {
+
+    const element =
+      document.getElementById(
+        'thinkingMessage'
+      );
+
+
+    if (element) {
+
+      element.remove();
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LIVE TURN
+  ========================================================= */
+
+  async function sendMessage() {
+
+    if (turnInProgress) {
+
+      return;
+
+    }
+
+
+    if (listening) {
+
+      try {
+
+        recognition.stop();
+
+      }
+
+      catch (error) {
+
+      }
+
+    }
+
+
+    const input =
+      document.getElementById(
+        'messageInput'
+      );
+
+
+    const message =
+      input.value.trim();
+
+
+    if (!message) {
+
+      return;
+
+    }
+
+
+    clearRuntimeError();
+
+
+    turnInProgress =
+      true;
+
+
+    setComposerBusy(
+      true
+    );
+
+
+    const localConversation =
+      Array.isArray(
+        roomData.conversationHistory
+      )
+        ? [
+            ...roomData.conversationHistory
+          ]
+        : [];
+
+
+    localConversation.push(
+      {
+        speaker:
+          'Academic Counsellor',
+
+        text:
+          message,
+
+        timestamp:
+          new Date().toISOString()
+      }
+    );
+
+
+    roomData.conversationHistory =
+      localConversation;
+
+
+    renderConversation(
+      localConversation
+    );
+
+
+    input.value =
+      '';
+
+
+    resizeInput();
+
+
+    renderThinkingMessage();
+
+
+    setSessionStatus(
+      'AI Responding...',
+      'loading'
+    );
+
+
+    setSpeechStatus(
+      'AI is responding...'
+    );
+
+
+    try {
+
+      const response =
+        await fetch(
+          RUNTIME_URL +
+          '/turn',
+          {
+            method:
+              'POST',
+
+            headers: {
+              'Content-Type':
+                'application/json',
+
+              'Accept':
+                'application/json'
+            },
+
+            body:
+              JSON.stringify(
+                {
+                  sessionId:
+                    currentSessionId,
+
+                  message:
+                    message
+                }
+              )
+          }
+        );
+
+
+      let payload;
+
+
+      try {
+
+        payload =
+          await response.json();
+
+      }
+
+      catch (error) {
+
+        throw new Error(
+          'Runtime returned an invalid response.'
+        );
+
+      }
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          payload &&
+          payload.error
+            ? payload.error
+            : (
+                'Runtime returned HTTP ' +
+                response.status
+              )
+        );
+
+      }
+
+
+      if (
+        !payload ||
+        payload.success !== true ||
+        !payload.reply
+      ) {
+
+        throw new Error(
+          'AI response could not be generated.'
+        );
+
+      }
+
+
+      removeThinkingMessage();
+
+
+      roomData.conversationHistory =
+        Array.isArray(
+          payload.conversationHistory
+        )
+          ? payload.conversationHistory
+          : localConversation;
+
+
+      renderConversation(
+        roomData.conversationHistory
+      );
+
+
+      setSessionStatus(
+        'Live Session',
+        'active'
+      );
+
+
+      setSpeechStatus(
+        'Microphone ready.'
+      );
+
+
+      const voiceEnabled =
+        document
+          .getElementById(
+            'aiVoiceToggle'
+          )
+          .checked;
+
+
+      if (
+        voiceEnabled &&
+        payload.reply
+      ) {
+
+        speakCustomerReply(
+          payload.reply
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.error(
+        'Live turn failed:',
+        error
+      );
+
+
+      removeThinkingMessage();
+
+
+      showRuntimeError(
+        error &&
+        error.message
+          ? error.message
+          : String(error)
+      );
+
+
+      setSessionStatus(
+        'Live Session',
+        'active'
+      );
+
+
+      setSpeechStatus(
+        'The AI response failed. You can retry.'
+      );
+
+    }
+
+    finally {
+
+      turnInProgress =
+        false;
+
+
+      setComposerBusy(
+        false
+      );
+
+
+      input.focus();
+
+    }
+
+  }
+
+
+  function setComposerBusy(
+    busy
+  ) {
+
+    document
+      .getElementById(
+        'sendButton'
+      )
+      .disabled =
+      busy;
+
+
+    document
+      .getElementById(
+        'micButton'
+      )
+      .disabled =
+      busy ||
+      !recognitionSupported;
+
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .disabled =
+      busy;
+
+
+    document
+      .getElementById(
+        'speechLanguage'
+      )
+      .disabled =
+      busy;
+
+  }
+
+
   /* =========================================================
      SPEECH RECOGNITION
   ========================================================= */
@@ -1752,6 +2155,7 @@
   async function toggleMicrophone() {
 
     if (
+      turnInProgress ||
       !recognitionSupported ||
       !recognition
     ) {
@@ -1995,66 +2399,6 @@
 
 
   /* =========================================================
-     SEND MESSAGE
-
-     INTENTIONALLY NOT CONNECTED TO GEMINI YET.
-
-     The next build step will add:
-     POST /turn
-     Worker -> Gemini
-     D1 state update
-     Browser response/TTS
-  ========================================================= */
-
-  function sendMessage() {
-
-    if (listening) {
-
-      recognition.stop();
-
-    }
-
-
-    const input =
-      document.getElementById(
-        'messageInput'
-      );
-
-
-    const message =
-      input.value.trim();
-
-
-    if (!message) {
-
-      return;
-
-    }
-
-
-    alert(
-      'Session loading and microphone are now connected to the new runtime. Live AI turn processing will be connected in the next step.'
-    );
-
-  }
-
-
-  /* =========================================================
-     END SESSION
-
-     ALSO DELIBERATELY NOT CONNECTED YET.
-  ========================================================= */
-
-  function endSession() {
-
-    alert(
-      'End Session will be connected after the live turn endpoint is working.'
-    );
-
-  }
-
-
-  /* =========================================================
      TTS
   ========================================================= */
 
@@ -2105,6 +2449,21 @@
       .speak(
         utterance
       );
+
+  }
+
+
+  /* =========================================================
+     END SESSION
+
+     Still intentionally not connected.
+  ========================================================= */
+
+  function endSession() {
+
+    alert(
+      'End Session will be connected after live conversation flow is verified.'
+    );
 
   }
 
@@ -2170,6 +2529,50 @@
           messages.scrollHeight;
 
       }
+    );
+
+  }
+
+
+  /* =========================================================
+     ERRORS
+  ========================================================= */
+
+  function showRuntimeError(
+    message
+  ) {
+
+    const element =
+      document.getElementById(
+        'runtimeError'
+      );
+
+
+    element.textContent =
+      message;
+
+
+    element.classList.add(
+      'visible'
+    );
+
+  }
+
+
+  function clearRuntimeError() {
+
+    const element =
+      document.getElementById(
+        'runtimeError'
+      );
+
+
+    element.textContent =
+      '';
+
+
+    element.classList.remove(
+      'visible'
     );
 
   }
