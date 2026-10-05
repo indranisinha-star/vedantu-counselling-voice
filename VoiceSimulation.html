@@ -705,6 +705,8 @@
 
   let transliterationInProgress = false;
 
+  let suppressManualInputReset = false;
+
 
   window.addEventListener(
     'DOMContentLoaded',
@@ -737,6 +739,7 @@
       );
 
       return;
+
     }
 
 
@@ -744,6 +747,10 @@
 
   }
 
+
+  /* =========================================================
+     LOAD SESSION
+  ========================================================= */
 
   async function loadRuntimeSession() {
 
@@ -793,6 +800,7 @@
             : 'Runtime returned HTTP ' +
               response.status
         );
+
       }
 
 
@@ -805,6 +813,7 @@
         throw new Error(
           'Simulation session could not be loaded.'
         );
+
       }
 
 
@@ -852,6 +861,7 @@
       );
 
       return;
+
     }
 
 
@@ -915,6 +925,10 @@
 
   }
 
+
+  /* =========================================================
+     SCENARIO
+  ========================================================= */
 
   function renderScenario(
     scenario
@@ -1050,12 +1064,9 @@
 
 
     if (
-      scenario.scholarshipPercentage !==
-        null &&
-      scenario.scholarshipPercentage !==
-        undefined &&
-      scenario.scholarshipPercentage !==
-        ''
+      scenario.scholarshipPercentage !== null &&
+      scenario.scholarshipPercentage !== undefined &&
+      scenario.scholarshipPercentage !== ''
     ) {
 
       output +=
@@ -1072,11 +1083,7 @@
 
 
   /* =========================================================
-     DISPLAY HISTORY
-
-     Native-script content remains in turn.text.
-
-     Romanized version exists only in turn.displayText.
+     HISTORY DISPLAY PREPARATION
   ========================================================= */
 
   async function prepareDisplayHistory(
@@ -1089,6 +1096,7 @@
     ) {
 
       return [];
+
     }
 
 
@@ -1125,7 +1133,17 @@
       }
 
 
-      if (turn.displayText) {
+      /*
+       * New Worker-generated Parent/Student turns already
+       * contain displayText. Never transliterate them again.
+       */
+
+      if (
+        turn.displayText &&
+        String(
+          turn.displayText
+        ).trim()
+      ) {
 
         prepared.push(
           turn
@@ -1136,25 +1154,14 @@
       }
 
 
-      const detectedLanguage =
-        detectScriptLanguage(
+      const language =
+        getLanguageForStoredTurn(
+          turn,
           rawText
         );
 
 
-      const turnLanguage =
-        normaliseDisplayLanguage(
-          turn.language
-        );
-
-
-      const language =
-        detectedLanguage ||
-        turnLanguage;
-
-
       if (
-        language &&
         language !== 'English' &&
         containsNativeIndicScript(
           rawText
@@ -1189,6 +1196,50 @@
   }
 
 
+  function getLanguageForStoredTurn(
+    turn,
+    rawText
+  ) {
+
+    const turnLanguage =
+      normaliseDisplayLanguage(
+        turn.language
+      );
+
+
+    if (
+      turnLanguage &&
+      turnLanguage !== 'English'
+    ) {
+
+      return turnLanguage;
+
+    }
+
+
+    const detected =
+      detectScriptLanguage(
+        rawText
+      );
+
+
+    if (detected) {
+
+      return detected;
+
+    }
+
+
+    return turnLanguage ||
+      'English';
+
+  }
+
+
+  /* =========================================================
+     CONVERSATION RENDERING
+  ========================================================= */
+
   function renderConversation(
     history
   ) {
@@ -1218,6 +1269,7 @@
 
         </div>
       `;
+
 
       return;
 
@@ -1414,7 +1466,9 @@
 
 
     return (
-      languageMap[locale] ||
+      languageMap[
+        locale
+      ] ||
       'English'
     );
 
@@ -1508,10 +1562,6 @@
       );
 
 
-    /*
-     * Tamil Unicode block
-     */
-
     if (
       /[\u0B80-\u0BFF]/.test(
         value
@@ -1522,10 +1572,6 @@
 
     }
 
-
-    /*
-     * Telugu Unicode block
-     */
 
     if (
       /[\u0C00-\u0C7F]/.test(
@@ -1538,25 +1584,18 @@
     }
 
 
-    /*
-     * Devanagari.
-     *
-     * In this product it currently maps to Hindi or Marathi.
-     * Prefer live/turn metadata when available.
-     */
-
     if (
       /[\u0900-\u097F]/.test(
         value
       )
     ) {
 
-      const currentLanguage =
+      const liveLanguage =
         getConversationLanguage();
 
 
       if (
-        currentLanguage ===
+        liveLanguage ===
         'Marathi'
       ) {
 
@@ -1612,8 +1651,7 @@
 
     if (
       !language ||
-      language ===
-      'English'
+      language === 'English'
     ) {
 
       return text;
@@ -1695,20 +1733,16 @@
 
 
   /* =========================================================
-     LIVE TURN
+     SEND LIVE TURN
   ========================================================= */
 
   async function sendMessage() {
 
-    if (
-      turnInProgress ||
-      transliterationInProgress
-    ) {
-
-      return;
-
-    }
-
+    /*
+     * If Send is clicked while STT is still listening,
+     * finish STT first. Do not accidentally send an empty
+     * Romanized transcript.
+     */
 
     if (listening) {
 
@@ -1721,6 +1755,19 @@
       catch (error) {
 
       }
+
+
+      return;
+
+    }
+
+
+    if (
+      turnInProgress ||
+      transliterationInProgress
+    ) {
+
+      return;
 
     }
 
@@ -1746,53 +1793,19 @@
       getConversationLanguage();
 
 
+    /*
+     * For speech:
+     * - visible text is Roman
+     * - originalSpeechTranscript is native script
+     *
+     * For typed text:
+     * visible text is sent as-is.
+     */
+
     const messageForAI =
       originalSpeechTranscript
         ? originalSpeechTranscript
         : displayedMessage;
-
-
-    let finalDisplayedMessage =
-      displayedMessage;
-
-
-    /*
-     * Covers typed native-script messages too.
-     */
-
-    if (
-      conversationLanguage !==
-        'English' &&
-      containsNativeIndicScript(
-        displayedMessage
-      )
-    ) {
-
-      transliterationInProgress =
-        true;
-
-
-      setComposerBusy(
-        true
-      );
-
-
-      setSpeechStatus(
-        'Converting transcript to Roman script...'
-      );
-
-
-      finalDisplayedMessage =
-        await transliterateText(
-          displayedMessage,
-          conversationLanguage
-        );
-
-
-      transliterationInProgress =
-        false;
-
-    }
 
 
     clearRuntimeError();
@@ -1826,7 +1839,7 @@
           messageForAI,
 
         displayText:
-          finalDisplayedMessage,
+          displayedMessage,
 
         timestamp:
           new Date().toISOString(),
@@ -1846,8 +1859,9 @@
     );
 
 
-    input.value =
-      '';
+    setInputValue(
+      ''
+    );
 
 
     resizeInput();
@@ -1950,21 +1964,30 @@
       removeThinkingMessage();
 
 
-      let serverHistory =
+      const serverHistory =
         Array.isArray(
           payload.conversationHistory
         )
           ? payload.conversationHistory
+            .map(
+              function(turn) {
+
+                return {
+                  ...turn
+                };
+
+              }
+            )
           : [];
 
 
       /*
-       * Add Roman display text for the latest AC message.
+       * Worker currently does not persist the Roman AC
+       * transcript, so attach it locally to the latest AC turn.
        */
 
       if (
-        serverHistory.length >=
-        2
+        serverHistory.length >= 2
       ) {
 
         const counsellorIndex =
@@ -1975,22 +1998,19 @@
         serverHistory[
           counsellorIndex
         ].displayText =
-          finalDisplayedMessage;
+          displayedMessage;
 
       }
 
 
       /*
-       * Romanize the latest Parent / Student reply.
+       * Parent/Student display comes DIRECTLY from Worker.
        *
-       * IMPORTANT:
-       * payload.reply remains the original native-language
-       * response and is what audio receives.
+       * No second frontend transliteration call.
        */
 
       if (
-        serverHistory.length >=
-        1
+        serverHistory.length >= 1
       ) {
 
         const customerIndex =
@@ -1998,47 +2018,14 @@
           1;
 
 
-        const customerTurn =
+        serverHistory[
+          customerIndex
+        ].displayText =
+          payload.displayReply ||
           serverHistory[
             customerIndex
-          ];
-
-
-        const rawCustomerText =
-          String(
-            customerTurn.text ||
-            payload.reply ||
-            ''
-          );
-
-
-        if (
-          conversationLanguage !==
-            'English' &&
-          containsNativeIndicScript(
-            rawCustomerText
-          )
-        ) {
-
-          setSpeechStatus(
-            'Preparing Roman transcript...'
-          );
-
-
-          customerTurn.displayText =
-            await transliterateText(
-              rawCustomerText,
-              conversationLanguage
-            );
-
-        }
-
-        else {
-
-          customerTurn.displayText =
-            rawCustomerText;
-
-        }
+          ].displayText ||
+          payload.reply;
 
       }
 
@@ -2080,8 +2067,9 @@
 
         /*
          * IMPORTANT:
-         * Speak original response,
-         * not Romanized display text.
+         *
+         * Audio receives ORIGINAL native-language reply.
+         * Never use displayReply for TTS.
          */
 
         speakCustomerReply(
@@ -2130,10 +2118,6 @@
     finally {
 
       turnInProgress =
-        false;
-
-
-      transliterationInProgress =
         false;
 
 
@@ -2259,6 +2243,11 @@
           '';
 
 
+        setInputValue(
+          ''
+        );
+
+
         const button =
           document.getElementById(
             'micButton'
@@ -2340,21 +2329,41 @@
           combined;
 
 
-        document
-          .getElementById(
-            'messageInput'
-          )
-          .value =
-          combined;
+        const language =
+          getConversationLanguage();
 
 
-        resizeInput();
+        /*
+         * ENGLISH:
+         * show live transcript normally.
+         *
+         * NON-ENGLISH:
+         * never show native script in the textbox.
+         * Keep it hidden until we Romanize on speech end.
+         */
+
+        if (
+          language ===
+          'English'
+        ) {
+
+          setInputValue(
+            combined
+          );
+
+
+          resizeInput();
+
+        }
 
 
         if (combined) {
 
           setSpeechStatus(
-            'Listening…'
+            language ===
+              'English'
+              ? 'Listening…'
+              : 'Listening… transcript will appear in Roman script when you stop.'
           );
 
         }
@@ -2453,12 +2462,9 @@
           'English'
         ) {
 
-          document
-            .getElementById(
-              'messageInput'
-            )
-            .value =
-            originalText;
+          setInputValue(
+            originalText
+          );
 
 
           resizeInput();
@@ -2495,12 +2501,9 @@
           );
 
 
-        document
-          .getElementById(
-            'messageInput'
-          )
-          .value =
-          romanized;
+        setInputValue(
+          romanized
+        );
 
 
         resizeInput();
@@ -2528,6 +2531,10 @@
 
   }
 
+
+  /* =========================================================
+     MICROPHONE
+  ========================================================= */
 
   async function toggleMicrophone() {
 
@@ -2631,12 +2638,9 @@
       '';
 
 
-    document
-      .getElementById(
-        'messageInput'
-      )
-      .value =
-      '';
+    setInputValue(
+      ''
+    );
 
 
     resizeInput();
@@ -2661,29 +2665,6 @@
       );
 
     }
-
-  }
-
-
-  function handleManualInput() {
-
-    /*
-     * If the AC edits the visible text manually,
-     * that edited text becomes the final input.
-     */
-
-    if (
-      !listening &&
-      !transliterationInProgress
-    ) {
-
-      originalSpeechTranscript =
-        '';
-
-    }
-
-
-    resizeInput();
 
   }
 
@@ -2720,6 +2701,113 @@
 
   }
 
+
+  /* =========================================================
+     INPUT
+  ========================================================= */
+
+  function setInputValue(
+    value
+  ) {
+
+    suppressManualInputReset =
+      true;
+
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .value =
+      value;
+
+
+    suppressManualInputReset =
+      false;
+
+  }
+
+
+  function handleManualInput() {
+
+    if (
+      suppressManualInputReset
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+     * If the user edits the Romanized transcript manually,
+     * we can no longer guarantee that the native original
+     * exactly matches what is visible.
+     *
+     * Therefore the visible edited text becomes the message.
+     */
+
+    if (
+      !listening &&
+      !transliterationInProgress
+    ) {
+
+      originalSpeechTranscript =
+        '';
+
+    }
+
+
+    resizeInput();
+
+  }
+
+
+  function handleKeydown(
+    event
+  ) {
+
+    if (
+      event.key ===
+        'Enter' &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+
+
+      sendMessage();
+
+    }
+
+  }
+
+
+  function resizeInput() {
+
+    const input =
+      document.getElementById(
+        'messageInput'
+      );
+
+
+    input.style.height =
+      'auto';
+
+
+    input.style.height =
+      Math.min(
+        input.scrollHeight,
+        150
+      ) +
+      'px';
+
+  }
+
+
+  /* =========================================================
+     INITIAL LANGUAGE
+  ========================================================= */
 
   function configureSpeechLanguage(
     scenario
@@ -2798,6 +2886,9 @@
 
   /* =========================================================
      CURRENT BROWSER TTS
+
+     We are intentionally leaving this untouched for now.
+     Multilingual/human voice is Issue 1 from our remaining list.
   ========================================================= */
 
   function speakCustomerReply(
@@ -2851,6 +2942,10 @@
   }
 
 
+  /* =========================================================
+     END SESSION
+  ========================================================= */
+
   function endSession() {
 
     alert(
@@ -2860,47 +2955,9 @@
   }
 
 
-  function handleKeydown(
-    event
-  ) {
-
-    if (
-      event.key ===
-        'Enter' &&
-      !event.shiftKey
-    ) {
-
-      event.preventDefault();
-
-
-      sendMessage();
-
-    }
-
-  }
-
-
-  function resizeInput() {
-
-    const input =
-      document.getElementById(
-        'messageInput'
-      );
-
-
-    input.style.height =
-      'auto';
-
-
-    input.style.height =
-      Math.min(
-        input.scrollHeight,
-        150
-      ) +
-      'px';
-
-  }
-
+  /* =========================================================
+     GENERAL UI
+  ========================================================= */
 
   function scrollToBottom() {
 
@@ -3064,10 +3121,8 @@
   ) {
 
     return String(
-      value ===
-      undefined ||
-      value ===
-      null
+      value === undefined ||
+      value === null
         ? ''
         : value
     )
