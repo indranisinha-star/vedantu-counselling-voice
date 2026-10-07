@@ -675,6 +675,10 @@
     'https://vedantu-counselling-runtime.indrani-sinha.workers.dev';
 
 
+  const APPS_SCRIPT_URL =
+    'https://script.google.com/a/macros/vedantu.com/s/AKfycbwETFO-mKP1Swv_NAworx4D0BFN3_ZYm2e6g1AGpdrrJ8M4W1ybsWSsOi3yNg3Tv9wS/exec';
+
+
   let currentSessionId = '';
 
   let roomData = null;
@@ -916,9 +920,7 @@
       .focus();
 
   }
-
-
-  /* =========================================================
+    /* =========================================================
      SCENARIO
   ========================================================= */
 
@@ -1274,7 +1276,9 @@
     scrollToBottom();
 
   }
-    function renderMessage(
+
+
+  function renderMessage(
     turn
   ) {
 
@@ -2123,9 +2127,7 @@
       busy;
 
   }
-
-
-  /* =========================================================
+    /* =========================================================
      SPEECH RECOGNITION
   ========================================================= */
 
@@ -3189,9 +3191,7 @@
     );
 
   }
-
-
-  function speakCustomerReply(
+    function speakCustomerReply(
     text
   ) {
 
@@ -3360,7 +3360,8 @@
   /* =========================================================
      END SESSION
   ========================================================= */
-    async function endSession() {
+
+  async function endSession() {
 
     if (!currentSessionId) {
 
@@ -3470,7 +3471,7 @@
 
 
       setSpeechStatus(
-        'Simulation ended successfully.'
+        'Simulation ended successfully. Redirecting...'
       );
 
 
@@ -3528,9 +3529,17 @@
       );
 
 
-      alert(
-        'Simulation ended successfully.'
-      );
+      const postSessionUrl =
+        APPS_SCRIPT_URL +
+        '?page=postsession' +
+        '&sessionId=' +
+        encodeURIComponent(
+          currentSessionId
+        );
+
+
+      window.location.href =
+        postSessionUrl;
 
     }
 
