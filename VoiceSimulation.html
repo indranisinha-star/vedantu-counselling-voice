@@ -1274,9 +1274,7 @@
     scrollToBottom();
 
   }
-
-
-  function renderMessage(
+    function renderMessage(
     turn
   ) {
 
@@ -3362,12 +3360,207 @@
   /* =========================================================
      END SESSION
   ========================================================= */
+    async function endSession() {
 
-  function endSession() {
+    if (!currentSessionId) {
 
-    alert(
-      'End Session will be connected after live conversation flow is verified.'
-    );
+      alert(
+        'Session ID is missing.'
+      );
+
+      return;
+
+    }
+
+
+    const confirmed =
+      window.confirm(
+        'End this simulation now? You will not be able to continue the conversation after ending it.'
+      );
+
+
+    if (!confirmed) {
+
+      return;
+
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          RUNTIME_URL + '/end',
+          {
+            method:
+              'POST',
+
+            headers: {
+              'Content-Type':
+                'application/json',
+
+              'Accept':
+                'application/json'
+            },
+
+            body:
+              JSON.stringify(
+                {
+                  sessionId:
+                    currentSessionId
+                }
+              )
+          }
+        );
+
+
+      const result =
+        await response.json();
+
+
+      if (
+        !response.ok ||
+        !result ||
+        result.success !== true
+      ) {
+
+        throw new Error(
+          result &&
+          result.error
+            ? result.error
+            : 'Session could not be ended.'
+        );
+
+      }
+
+
+      if (
+        window.speechSynthesis
+      ) {
+
+        window
+          .speechSynthesis
+          .cancel();
+
+      }
+
+
+      if (
+        listening &&
+        recognition
+      ) {
+
+        try {
+
+          recognition.stop();
+
+        }
+
+        catch (error) {
+
+        }
+
+      }
+
+
+      setSessionStatus(
+        'Session Completed',
+        'loading'
+      );
+
+
+      setSpeechStatus(
+        'Simulation ended successfully.'
+      );
+
+
+      document
+        .getElementById(
+          'endSessionButton'
+        )
+        .disabled =
+        true;
+
+
+      document
+        .getElementById(
+          'sendButton'
+        )
+        .disabled =
+        true;
+
+
+      document
+        .getElementById(
+          'micButton'
+        )
+        .disabled =
+        true;
+
+
+      document
+        .getElementById(
+          'messageInput'
+        )
+        .disabled =
+        true;
+
+
+      document
+        .getElementById(
+          'speechLanguage'
+        )
+        .disabled =
+        true;
+
+
+      if (roomData) {
+
+        roomData.status =
+          'COMPLETED';
+
+      }
+
+
+      console.log(
+        'SESSION ENDED:',
+        result
+      );
+
+
+      alert(
+        'Simulation ended successfully.'
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        'END SESSION FAILED:',
+        error
+      );
+
+
+      showRuntimeError(
+        error &&
+        error.message
+          ? error.message
+          : 'Unable to end the simulation.'
+      );
+
+
+      alert(
+        'Unable to end the simulation. ' +
+        (
+          error &&
+          error.message
+            ? error.message
+            : 'Please try again.'
+        )
+      );
+
+    }
 
   }
 
