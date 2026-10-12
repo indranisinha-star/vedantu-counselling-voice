@@ -162,6 +162,274 @@
       font-size: 12px;
     }
 
+
+    /* =========================================================
+       AVATAR STAGE
+    ========================================================= */
+
+    .avatar-stage {
+      background: #ffffff;
+      border-bottom: 1px solid #ececec;
+      padding: 14px 24px 16px;
+      flex-shrink: 0;
+    }
+
+    .avatar-stage-shell {
+      max-width: 950px;
+      margin: 0 auto;
+    }
+
+    .avatar-stage-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .avatar-stage-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .avatar-stage-status {
+      font-size: 12px;
+      color: #777;
+      text-align: right;
+    }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .avatar-grid.single {
+      grid-template-columns: minmax(0, 280px);
+      justify-content: center;
+    }
+
+    .avatar-card {
+      position: relative;
+      min-width: 0;
+      background: #fff7f3;
+      border: 1px solid #f2d4c8;
+      border-radius: 18px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease,
+        background 160ms ease;
+      overflow: hidden;
+    }
+
+    .avatar-card.active {
+      border-color: #f35427;
+      background: #fff4ef;
+      box-shadow:
+        0 8px 22px rgba(243, 84, 39, 0.13);
+      transform: translateY(-1px);
+    }
+
+    .avatar-card.listening {
+      border-color: #f0c7b8;
+    }
+
+    .avatar-card.thinking {
+      border-color: #efbda9;
+    }
+
+    .avatar-image-wrap {
+      position: relative;
+      width: 82px;
+      height: 82px;
+      flex: 0 0 82px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #ffffff;
+      box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.08);
+      overflow: visible;
+    }
+
+    .avatar-image-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      pointer-events: none;
+    }
+
+    .avatar-card.speaking
+    .avatar-image-wrap::after {
+      border-color: rgba(243, 84, 39, 0.48);
+      animation:
+        avatarSpeakingRing 1.1s ease-in-out infinite;
+    }
+
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .avatar-fallback {
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f35427;
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .avatar-meta {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .avatar-name {
+      font-size: 15px;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #222;
+    }
+
+    .avatar-role {
+      margin-top: 3px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #777;
+    }
+
+    .avatar-state {
+      margin-top: 8px;
+      min-height: 18px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #777;
+    }
+
+    .avatar-state-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #b8b8b8;
+      flex-shrink: 0;
+    }
+
+    .avatar-card.listening
+    .avatar-state-dot {
+      background: #f5a623;
+    }
+
+    .avatar-card.thinking
+    .avatar-state-dot {
+      background: #8a63d2;
+      animation:
+        avatarThinking 1s ease-in-out infinite;
+    }
+
+    .avatar-card.speaking
+    .avatar-state-dot {
+      background: #f35427;
+    }
+
+    .avatar-bars {
+      height: 15px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .avatar-card.speaking
+    .avatar-bars {
+      opacity: 1;
+    }
+
+    .avatar-bar {
+      width: 3px;
+      height: 5px;
+      background: #f35427;
+      border-radius: 3px;
+      animation:
+        avatarBar 0.72s ease-in-out infinite;
+    }
+
+    .avatar-bar:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    .avatar-bar:nth-child(3) {
+      animation-delay: 0.24s;
+    }
+
+    .avatar-bar:nth-child(4) {
+      animation-delay: 0.36s;
+    }
+
+    @keyframes avatarSpeakingRing {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.55;
+      }
+
+      50% {
+        transform: scale(1.07);
+        opacity: 1;
+      }
+
+    }
+
+    @keyframes avatarThinking {
+
+      0%,
+      100% {
+        opacity: 0.45;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+    }
+
+    @keyframes avatarBar {
+
+      0%,
+      100% {
+        height: 4px;
+      }
+
+      50% {
+        height: 14px;
+      }
+
+    }
+
     .header-actions {
       display: flex;
       align-items: center;
@@ -453,6 +721,41 @@
         flex-basis: 100%;
       }
 
+      .avatar-stage {
+        padding:
+          12px 14px 14px;
+      }
+
+      .avatar-grid {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .avatar-grid.single {
+        grid-template-columns:
+          minmax(0, 280px);
+      }
+
+      .avatar-card {
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .avatar-image-wrap {
+        width: 66px;
+        height: 66px;
+        flex-basis: 66px;
+      }
+
+      .avatar-name {
+        font-size: 14px;
+      }
+
+      .avatar-role {
+        font-size: 11px;
+      }
+
     }
 
   </style>
@@ -553,6 +856,38 @@
         </div>
 
       </div>
+
+      <section
+        id="avatarStage"
+        class="avatar-stage"
+        aria-label="Live AI participants"
+      >
+
+        <div class="avatar-stage-shell">
+
+          <div class="avatar-stage-label-row">
+
+            <div class="avatar-stage-title">
+              Live Participants
+            </div>
+
+            <div
+              id="avatarStageStatus"
+              class="avatar-stage-status"
+            >
+              Preparing participants...
+            </div>
+
+          </div>
+
+          <div
+            id="avatarGrid"
+            class="avatar-grid"
+          ></div>
+
+        </div>
+
+      </section>
 
       <div
         id="messages"
@@ -668,7 +1003,6 @@
   </div>
 
 </div>
-
 <script>
 
   const RUNTIME_URL =
@@ -700,6 +1034,41 @@
   let suppressManualInputReset = false;
 
   let availableSpeechVoices = [];
+
+
+  /* =========================================================
+     AVATAR ASSETS
+
+     These files must exist in the GitHub repo:
+
+     assets/avatar-father.png
+     assets/avatar-mother.png
+     assets/avatar-daughter.png
+     assets/avatar-son.png
+  ========================================================= */
+
+  const AVATAR_ASSETS = {
+
+    father:
+      'assets/avatar-father.png',
+
+    mother:
+      'assets/avatar-mother.png',
+
+    daughter:
+      'assets/avatar-daughter.png',
+
+    son:
+      'assets/avatar-son.png'
+
+  };
+
+
+  let avatarParticipants = [];
+
+  let activeAvatarRole = '';
+
+  let lastAvatarSpeaker = '';
 
 
   window.addEventListener(
@@ -882,6 +1251,11 @@
     );
 
 
+    configureAvatarStage(
+      roomData
+    );
+
+
     setSpeechStatus(
       'Preparing conversation...'
     );
@@ -920,7 +1294,9 @@
       .focus();
 
   }
-    /* =========================================================
+
+
+  /* =========================================================
      SCENARIO
   ========================================================= */
 
@@ -1077,400 +1453,457 @@
 
 
   /* =========================================================
-     HISTORY DISPLAY PREPARATION
+     AVATAR STAGE
   ========================================================= */
 
-  async function prepareDisplayHistory(
-    history
+  function configureAvatarStage(
+    data
   ) {
 
-    if (
-      !Array.isArray(history) ||
-      history.length === 0
-    ) {
-
-      return [];
-
-    }
+    const scenario =
+      data &&
+      data.scenario
+        ? data.scenario
+        : {};
 
 
-    const prepared =
+    const whoPresent =
+      String(
+        scenario.whoPresent ||
+        data.participant ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+
+    /*
+       Avatar selection is stable for the same session.
+
+       Parent:
+       Father or Mother
+
+       Student:
+       Daughter or Son
+
+       Both:
+       One Parent + One Student
+
+       Refreshing the same session will not randomly
+       switch the participant identities.
+    */
+
+    const hash =
+      getStableSessionHash(
+        currentSessionId
+      );
+
+
+    const parentVariant =
+      hash % 2 === 0
+        ? 'father'
+        : 'mother';
+
+
+    const studentVariant =
+      Math.floor(
+        hash / 2
+      ) % 2 === 0
+        ? 'daughter'
+        : 'son';
+
+
+    const participants =
       [];
 
 
-    for (
-      const originalTurn of history
-    ) {
-
-      const turn =
-        {
-          ...originalTurn
-        };
-
-
-      const rawText =
-        String(
-          turn.text ||
-          turn.message ||
-          ''
-        ).trim();
-
-
-      if (!rawText) {
-
-        prepared.push(
-          turn
-        );
-
-        continue;
-
-      }
-
-
-      if (
-        turn.displayText &&
-        String(
-          turn.displayText
-        ).trim()
-      ) {
-
-        prepared.push(
-          turn
-        );
-
-        continue;
-
-      }
-
-
-      const language =
-        getLanguageForStoredTurn(
-          turn,
-          rawText
-        );
-
-
-      if (
-        language !== 'English' &&
-        containsNativeIndicScript(
-          rawText
+    if (
+      whoPresent.includes(
+        'both'
+      ) ||
+      (
+        whoPresent.includes(
+          'parent'
+        ) &&
+        whoPresent.includes(
+          'student'
         )
-      ) {
+      )
+    ) {
 
-        turn.displayText =
-          await transliterateText(
-            rawText,
-            language
-          );
-
-      }
-
-      else {
-
-        turn.displayText =
-          rawText;
-
-      }
+      participants.push(
+        buildAvatarParticipant(
+          'parent',
+          parentVariant
+        )
+      );
 
 
-      prepared.push(
-        turn
+      participants.push(
+        buildAvatarParticipant(
+          'student',
+          studentVariant
+        )
+      );
+
+    }
+
+    else if (
+      whoPresent.includes(
+        'student'
+      ) ||
+      whoPresent.includes(
+        'child'
+      )
+    ) {
+
+      participants.push(
+        buildAvatarParticipant(
+          'student',
+          studentVariant
+        )
+      );
+
+    }
+
+    else {
+
+      participants.push(
+        buildAvatarParticipant(
+          'parent',
+          parentVariant
+        )
       );
 
     }
 
 
-    return prepared;
+    avatarParticipants =
+      participants;
+
+
+    renderAvatarStage();
+
+
+    setAvatarStageState(
+      'idle'
+    );
 
   }
 
 
-  function getLanguageForStoredTurn(
-    turn,
-    rawText
+  function buildAvatarParticipant(
+    role,
+    variant
   ) {
 
-    const turnLanguage =
-      normaliseDisplayLanguage(
-        turn.language
-      );
+    const isParent =
+      role ===
+      'parent';
+
+
+    let displayName = '';
+
+    let image = '';
+
+    let fallbackLetter = '';
 
 
     if (
-      turnLanguage &&
-      turnLanguage !== 'English'
+      variant ===
+      'father'
     ) {
 
-      return turnLanguage;
+      displayName =
+        'Father';
+
+      image =
+        AVATAR_ASSETS.father;
+
+      fallbackLetter =
+        'F';
+
+    }
+
+    else if (
+      variant ===
+      'mother'
+    ) {
+
+      displayName =
+        'Mother';
+
+      image =
+        AVATAR_ASSETS.mother;
+
+      fallbackLetter =
+        'M';
+
+    }
+
+    else if (
+      variant ===
+      'daughter'
+    ) {
+
+      displayName =
+        'Daughter';
+
+      image =
+        AVATAR_ASSETS.daughter;
+
+      fallbackLetter =
+        'D';
+
+    }
+
+    else {
+
+      displayName =
+        'Son';
+
+      image =
+        AVATAR_ASSETS.son;
+
+      fallbackLetter =
+        'S';
 
     }
 
 
-    const detected =
-      detectScriptLanguage(
-        rawText
-      );
+    return {
 
+      role:
+        role,
 
-    if (detected) {
+      variant:
+        variant,
 
-      return detected;
+      displayName:
+        displayName,
 
-    }
+      roleLabel:
+        isParent
+          ? 'Parent'
+          : 'Student',
 
+      image:
+        image,
 
-    return turnLanguage ||
-      'English';
+      fallbackLetter:
+        fallbackLetter
+
+    };
 
   }
 
 
-  /* =========================================================
-     CONVERSATION RENDERING
-  ========================================================= */
-
-  function renderConversation(
-    history
+  function getStableSessionHash(
+    value
   ) {
 
-    const messages =
+    const input =
+      String(
+        value ||
+        'vedantu-avatar'
+      );
+
+
+    let hash =
+      0;
+
+
+    for (
+      let i = 0;
+      i < input.length;
+      i++
+    ) {
+
+      hash =
+        (
+          (
+            hash << 5
+          ) -
+          hash
+        ) +
+        input.charCodeAt(
+          i
+        );
+
+
+      hash |=
+        0;
+
+    }
+
+
+    return Math.abs(
+      hash
+    );
+
+  }
+
+
+  function renderAvatarStage() {
+
+    const grid =
       document.getElementById(
-        'messages'
+        'avatarGrid'
       );
 
 
-    if (
-      !Array.isArray(history) ||
-      history.length === 0
-    ) {
-
-      messages.innerHTML = `
-        <div class="empty-state">
-
-          <strong>
-            Begin the counselling conversation
-          </strong>
-
-          <br><br>
-
-          Use the microphone and speak exactly as you would
-          with a real student or parent visiting the centre.
-
-        </div>
-      `;
-
+    if (!grid) {
 
       return;
 
     }
 
 
-    messages.innerHTML =
-      history
+    grid.className =
+      avatarParticipants.length === 1
+        ? 'avatar-grid single'
+        : 'avatar-grid';
+
+
+    grid.innerHTML =
+      avatarParticipants
         .map(
-          renderMessage
+          function(participant) {
+
+            return `
+              <article
+                id="avatarCard-${escapeHtml(
+                  participant.role
+                )}"
+                class="avatar-card"
+                data-avatar-role="${escapeHtml(
+                  participant.role
+                )}"
+              >
+
+                <div class="avatar-image-wrap">
+
+                  <img
+                    class="avatar-image"
+                    src="${escapeHtml(
+                      participant.image
+                    )}"
+                    alt="${escapeHtml(
+                      participant.displayName +
+                      ' avatar'
+                    )}"
+                    onerror="handleAvatarImageError(this)"
+                  >
+
+                  <div
+                    class="avatar-fallback"
+                    aria-hidden="true"
+                  >
+                    ${escapeHtml(
+                      participant.fallbackLetter
+                    )}
+                  </div>
+
+                </div>
+
+
+                <div class="avatar-meta">
+
+                  <div class="avatar-name">
+                    ${escapeHtml(
+                      participant.displayName
+                    )}
+                  </div>
+
+                  <div class="avatar-role">
+                    ${escapeHtml(
+                      participant.roleLabel
+                    )}
+                  </div>
+
+                  <div class="avatar-state">
+
+                    <span class="avatar-state-dot"></span>
+
+                    <span
+                      class="avatar-state-text"
+                    >
+                      Ready
+                    </span>
+
+                    <span
+                      class="avatar-bars"
+                      aria-hidden="true"
+                    >
+                      <span class="avatar-bar"></span>
+                      <span class="avatar-bar"></span>
+                      <span class="avatar-bar"></span>
+                      <span class="avatar-bar"></span>
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </article>
+            `;
+
+          }
         )
         .join('');
 
-
-    scrollToBottom();
-
   }
 
 
-  function renderMessage(
-    turn
+  function handleAvatarImageError(
+    image
   ) {
 
-    const speaker =
-      String(
-        turn.speaker ||
-        ''
-      );
+    if (!image) {
 
-
-    const isCounsellor =
-      speaker ===
-        'Academic Counsellor' ||
-      speaker ===
-        'Counsellor' ||
-      speaker ===
-        'AC';
-
-
-    const rowClass =
-      isCounsellor
-        ? 'counsellor'
-        : 'customer';
-
-
-    const displayText =
-      String(
-        turn.displayText ||
-        turn.text ||
-        turn.message ||
-        ''
-      );
-
-
-    return `
-      <div class="message-row ${rowClass}">
-
-        <div class="message">
-
-          <div class="speaker">
-            ${escapeHtml(
-              speaker
-            )}
-          </div>
-
-          <div class="bubble">
-            ${escapeHtml(
-              displayText
-            )}
-          </div>
-
-        </div>
-
-      </div>
-    `;
-
-  }
-
-
-  function renderThinkingMessage() {
-
-    const messages =
-      document.getElementById(
-        'messages'
-      );
-
-
-    const emptyState =
-      messages.querySelector(
-        '.empty-state'
-      );
-
-
-    if (emptyState) {
-
-      emptyState.remove();
+      return;
 
     }
+
+
+    image.style.display =
+      'none';
 
 
     const wrapper =
-      document.createElement(
-        'div'
+      image.parentElement;
+
+
+    if (!wrapper) {
+
+      return;
+
+    }
+
+
+    const fallback =
+      wrapper.querySelector(
+        '.avatar-fallback'
       );
 
 
-    wrapper.id =
-      'thinkingMessage';
+    if (fallback) {
 
-
-    wrapper.className =
-      'message-row customer';
-
-
-    wrapper.innerHTML = `
-      <div class="message">
-
-        <div class="speaker">
-          ${escapeHtml(
-            roomData &&
-            roomData.participant
-              ? roomData.participant
-              : 'Customer'
-          )}
-        </div>
-
-        <div class="bubble thinking-bubble">
-          Thinking...
-        </div>
-
-      </div>
-    `;
-
-
-    messages.appendChild(
-      wrapper
-    );
-
-
-    scrollToBottom();
-
-  }
-
-
-  function removeThinkingMessage() {
-
-    const element =
-      document.getElementById(
-        'thinkingMessage'
-      );
-
-
-    if (element) {
-
-      element.remove();
+      fallback.style.display =
+        'flex';
 
     }
 
   }
 
 
-  /* =========================================================
-     LANGUAGE
-  ========================================================= */
-
-  function getConversationLanguage() {
-
-    const locale =
-      document
-        .getElementById(
-          'speechLanguage'
-        )
-        .value;
-
-
-    const languageMap = {
-
-      'en-IN':
-        'English',
-
-      'hi-IN':
-        'Hindi',
-
-      'ta-IN':
-        'Tamil',
-
-      'te-IN':
-        'Telugu',
-
-      'mr-IN':
-        'Marathi'
-
-    };
-
-
-    return (
-      languageMap[
-        locale
-      ] ||
-      'English'
-    );
-
-  }
-
-
-  function normaliseDisplayLanguage(
-    language
+  function resolveAvatarRoleFromSpeaker(
+    speaker
   ) {
 
     const value =
       String(
-        language ||
+        speaker ||
         ''
       )
         .trim()
@@ -1479,44 +1912,941 @@
 
     if (
       value.includes(
-        'tamil'
-      )
-    ) {
-
-      return 'Tamil';
-
-    }
-
-
-    if (
-      value.includes(
-        'hindi'
+        'parent'
       ) ||
       value.includes(
-        'hinglish'
+        'father'
+      ) ||
+      value.includes(
+        'mother'
+      ) ||
+      value.includes(
+        'dad'
+      ) ||
+      value.includes(
+        'mom'
+      ) ||
+      value.includes(
+        'mum'
       )
     ) {
 
-      return 'Hindi';
+      return 'parent';
 
     }
 
 
     if (
       value.includes(
-        'telugu'
+        'student'
+      ) ||
+      value.includes(
+        'son'
+      ) ||
+      value.includes(
+        'daughter'
+      ) ||
+      value.includes(
+        'child'
       )
     ) {
 
-      return 'Telugu';
+      return 'student';
 
     }
 
 
     if (
-      value.includes(
-        'marathi'
+      avatarParticipants.length ===
+      1
+    ) {
+
+      return avatarParticipants[
+        0
+      ].role;
+
+    }
+
+
+    if (
+      activeAvatarRole
+    ) {
+
+      return activeAvatarRole;
+
+    }
+
+
+    return avatarParticipants.length
+      ? avatarParticipants[
+          0
+        ].role
+      : '';
+
+  }
+
+
+  function getLatestCustomerSpeaker(
+    history
+  ) {
+
+    if (
+      !Array.isArray(
+        history
       )
+    ) {
+
+      return '';
+
+    }
+
+
+    for (
+      let i =
+        history.length - 1;
+      i >= 0;
+      i--
+    ) {
+
+      const speaker =
+        String(
+          history[i].speaker ||
+          ''
+        );
+
+
+      const normalized =
+        speaker
+          .trim()
+          .toLowerCase();
+
+
+      const isCounsellor =
+        normalized ===
+          'academic counsellor' ||
+        normalized ===
+          'counsellor' ||
+        normalized ===
+          'ac';
+
+
+      if (
+        speaker &&
+        !isCounsellor
+      ) {
+
+        return speaker;
+
+      }
+
+    }
+
+
+    return '';
+
+  }
+
+
+  function setAvatarStageState(
+    state,
+    speaker
+  ) {
+
+    const normalizedState =
+      String(
+        state ||
+        'idle'
+      )
+        .trim()
+        .toLowerCase();
+
+
+    const resolvedRole =
+      speaker
+        ? resolveAvatarRoleFromSpeaker(
+            speaker
+          )
+        : '';
+
+
+    if (
+      resolvedRole
+    ) {
+
+      activeAvatarRole =
+        resolvedRole;
+
+
+      lastAvatarSpeaker =
+        String(
+          speaker ||
+          ''
+        );
+
+    }
+
+
+    const stageStatus =
+      document.getElementById(
+        'avatarStageStatus'
+      );
+
+
+    if (
+      stageStatus
+    ) {
+
+      if (
+        normalizedState ===
+        'listening'
+      ) {
+
+        stageStatus.textContent =
+          'Listening to counsellor';
+
+      }
+
+      else if (
+        normalizedState ===
+        'thinking'
+      ) {
+
+        stageStatus.textContent =
+          resolvedRole
+            ? getAvatarDisplayName(
+                resolvedRole
+              ) +
+              ' is preparing a response'
+            : 'Preparing response...';
+
+      }
+
+      else if (
+        normalizedState ===
+        'speaking'
+      ) {
+
+        stageStatus.textContent =
+          getAvatarDisplayName(
+            resolvedRole
+          ) +
+          ' is speaking';
+
+      }
+
+      else {
+
+        stageStatus.textContent =
+          'Ready';
+
+      }
+
+    }
+
+
+    avatarParticipants.forEach(
+      function(participant) {
+
+        const card =
+          document.getElementById(
+            'avatarCard-' +
+            participant.role
+          );
+
+
+        if (!card) {
+
+          return;
+
+        }
+
+
+        card.classList.remove(
+          'active',
+          'listening',
+          'thinking',
+          'speaking'
+        );
+
+
+        const stateText =
+          card.querySelector(
+            '.avatar-state-text'
+          );
+
+
+        if (
+          normalizedState ===
+          'listening'
+        ) {
+
+          card.classList.add(
+            'listening'
+          );
+
+
+          if (stateText) {
+
+            stateText.textContent =
+              'Listening';
+
+          }
+
+
+          return;
+
+        }
+
+
+        if (
+          normalizedState ===
+          'thinking'
+        ) {
+
+          if (
+            !resolvedRole ||
+            participant.role ===
+              resolvedRole
+          ) {
+
+            card.classList.add(
+              'active',
+              'thinking'
+            );
+
+
+            if (stateText) {
+
+              stateText.textContent =
+                'Thinking';
+
+            }
+
+          }
+
+          else if (
+            stateText
+          ) {
+
+            stateText.textContent =
+              'Ready';
+
+          }
+
+
+          return;
+
+        }
+
+
+        if (
+          normalizedState ===
+          'speaking'
+        ) {
+
+          if (
+            participant.role ===
+            resolvedRole
+          ) {
+
+            card.classList.add(
+              'active',
+              'speaking'
+            );
+
+
+            if (stateText) {
+
+              stateText.textContent =
+                'Speaking';
+
+            }
+
+          }
+
+          else if (
+            stateText
+          ) {
+
+            stateText.textContent =
+              'Ready';
+
+          }
+
+
+          return;
+
+        }
+
+
+        if (stateText) {
+
+          stateText.textContent =
+            'Ready';
+
+        }
+
+      }
+    );
+
+  }
+
+
+  function getAvatarDisplayName(
+    role
+  ) {
+
+    const participant =
+      avatarParticipants.find(
+        function(item) {
+
+          return (
+            item.role ===
+            role
+          );
+
+        }
+      );
+
+
+    return participant
+      ? participant.displayName
+      : 'Participant';
+
+  }
+  /* =========================================================
+   HISTORY DISPLAY PREPARATION
+========================================================= */
+
+async function prepareDisplayHistory(
+  history
+) {
+
+  if (
+    !Array.isArray(history) ||
+    history.length === 0
+  ) {
+
+    return [];
+
+  }
+
+
+  const prepared =
+    [];
+
+
+  for (
+    const originalTurn of history
+  ) {
+
+    const turn =
+      {
+        ...originalTurn
+      };
+
+
+    const rawText =
+      String(
+        turn.text ||
+        turn.message ||
+        ''
+      ).trim();
+
+
+    if (!rawText) {
+
+      prepared.push(
+        turn
+      );
+
+      continue;
+
+    }
+
+
+    if (
+      turn.displayText &&
+      String(
+        turn.displayText
+      ).trim()
+    ) {
+
+      prepared.push(
+        turn
+      );
+
+      continue;
+
+    }
+
+
+    const language =
+      getLanguageForStoredTurn(
+        turn,
+        rawText
+      );
+
+
+    if (
+      language !== 'English' &&
+      containsNativeIndicScript(
+        rawText
+      )
+    ) {
+
+      turn.displayText =
+        await transliterateText(
+          rawText,
+          language
+        );
+
+    }
+
+    else {
+
+      turn.displayText =
+        rawText;
+
+    }
+
+
+    prepared.push(
+      turn
+    );
+
+  }
+
+
+  return prepared;
+
+}
+
+
+function getLanguageForStoredTurn(
+  turn,
+  rawText
+) {
+
+  const turnLanguage =
+    normaliseDisplayLanguage(
+      turn.language
+    );
+
+
+  if (
+    turnLanguage &&
+    turnLanguage !== 'English'
+  ) {
+
+    return turnLanguage;
+
+  }
+
+
+  const detected =
+    detectScriptLanguage(
+      rawText
+    );
+
+
+  if (detected) {
+
+    return detected;
+
+  }
+
+
+  return turnLanguage ||
+    'English';
+
+}
+
+
+/* =========================================================
+   CONVERSATION RENDERING
+========================================================= */
+
+function renderConversation(
+  history
+) {
+
+  const messages =
+    document.getElementById(
+      'messages'
+    );
+
+
+  if (
+    !Array.isArray(history) ||
+    history.length === 0
+  ) {
+
+    messages.innerHTML = `
+      <div class="empty-state">
+
+        <strong>
+          Begin the counselling conversation
+        </strong>
+
+        <br><br>
+
+        Use the microphone and speak exactly as you would
+        with a real student or parent visiting the centre.
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  messages.innerHTML =
+    history
+      .map(
+        renderMessage
+      )
+      .join('');
+
+
+  scrollToBottom();
+
+}
+
+
+function renderMessage(
+  turn
+) {
+
+  const speaker =
+    String(
+      turn.speaker ||
+      ''
+    );
+
+
+  const isCounsellor =
+    speaker ===
+      'Academic Counsellor' ||
+    speaker ===
+      'Counsellor' ||
+    speaker ===
+      'AC';
+
+
+  const rowClass =
+    isCounsellor
+      ? 'counsellor'
+      : 'customer';
+
+
+  const displayText =
+    String(
+      turn.displayText ||
+      turn.text ||
+      turn.message ||
+      ''
+    );
+
+
+  return `
+    <div class="message-row ${rowClass}">
+
+      <div class="message">
+
+        <div class="speaker">
+          ${escapeHtml(
+            speaker
+          )}
+        </div>
+
+        <div class="bubble">
+          ${escapeHtml(
+            displayText
+          )}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+function renderThinkingMessage() {
+
+  const messages =
+    document.getElementById(
+      'messages'
+    );
+
+
+  const emptyState =
+    messages.querySelector(
+      '.empty-state'
+    );
+
+
+  if (emptyState) {
+
+    emptyState.remove();
+
+  }
+
+
+  const wrapper =
+    document.createElement(
+      'div'
+    );
+
+
+  wrapper.id =
+    'thinkingMessage';
+
+
+  wrapper.className =
+    'message-row customer';
+
+
+  wrapper.innerHTML = `
+    <div class="message">
+
+      <div class="speaker">
+        ${escapeHtml(
+          roomData &&
+          roomData.participant
+            ? roomData.participant
+            : 'Customer'
+        )}
+      </div>
+
+      <div class="bubble thinking-bubble">
+        Thinking...
+      </div>
+
+    </div>
+  `;
+
+
+  messages.appendChild(
+    wrapper
+  );
+
+
+  const previousCustomerSpeaker =
+    getLatestCustomerSpeaker(
+      roomData &&
+      Array.isArray(
+        roomData.conversationHistory
+      )
+        ? roomData.conversationHistory
+        : []
+    );
+
+
+  setAvatarStageState(
+    'thinking',
+    previousCustomerSpeaker ||
+    activeAvatarRole ||
+    (
+      avatarParticipants.length
+        ? avatarParticipants[0].role
+        : ''
+    )
+  );
+
+
+  scrollToBottom();
+
+}
+
+
+function removeThinkingMessage() {
+
+  const element =
+    document.getElementById(
+      'thinkingMessage'
+    );
+
+
+  if (element) {
+
+    element.remove();
+
+  }
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function getConversationLanguage() {
+
+  const locale =
+    document
+      .getElementById(
+        'speechLanguage'
+      )
+      .value;
+
+
+  const languageMap = {
+
+    'en-IN':
+      'English',
+
+    'hi-IN':
+      'Hindi',
+
+    'ta-IN':
+      'Tamil',
+
+    'te-IN':
+      'Telugu',
+
+    'mr-IN':
+      'Marathi'
+
+  };
+
+
+  return (
+    languageMap[
+      locale
+    ] ||
+    'English'
+  );
+
+}
+
+
+function normaliseDisplayLanguage(
+  language
+) {
+
+  const value =
+    String(
+      language ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    value.includes(
+      'tamil'
+    )
+  ) {
+
+    return 'Tamil';
+
+  }
+
+
+  if (
+    value.includes(
+      'hindi'
+    ) ||
+    value.includes(
+      'hinglish'
+    )
+  ) {
+
+    return 'Hindi';
+
+  }
+
+
+  if (
+    value.includes(
+      'telugu'
+    )
+  ) {
+
+    return 'Telugu';
+
+  }
+
+
+  if (
+    value.includes(
+      'marathi'
+    )
+  ) {
+
+    return 'Marathi';
+
+  }
+
+
+  if (
+    value.includes(
+      'english'
+    )
+  ) {
+
+    return 'English';
+
+  }
+
+
+  return '';
+
+}
+
+
+function detectScriptLanguage(
+  text
+) {
+
+  const value =
+    String(
+      text ||
+      ''
+    );
+
+
+  if (
+    /[\u0B80-\u0BFF]/.test(
+      value
+    )
+  ) {
+
+    return 'Tamil';
+
+  }
+
+
+  if (
+    /[\u0C00-\u0C7F]/.test(
+      value
+    )
+  ) {
+
+    return 'Telugu';
+
+  }
+
+
+  if (
+    /[\u0900-\u097F]/.test(
+      value
+    )
+  ) {
+
+    const liveLanguage =
+      getConversationLanguage();
+
+
+    if (
+      liveLanguage ===
+      'Marathi'
     ) {
 
       return 'Marathi';
@@ -1524,556 +2854,945 @@
     }
 
 
-    if (
-      value.includes(
-        'english'
-      )
-    ) {
-
-      return 'English';
-
-    }
-
-
-    return '';
+    return 'Hindi';
 
   }
 
 
-  function detectScriptLanguage(
-    text
+  return '';
+
+}
+
+
+function containsNativeIndicScript(
+  text
+) {
+
+  return (
+    /[\u0900-\u097F]/.test(
+      text
+    ) ||
+    /[\u0B80-\u0BFF]/.test(
+      text
+    ) ||
+    /[\u0C00-\u0C7F]/.test(
+      text
+    )
+  );
+
+}
+
+
+/* =========================================================
+   TRANSLITERATION
+========================================================= */
+
+async function transliterateText(
+  text,
+  language
+) {
+
+  if (!text) {
+
+    return text;
+
+  }
+
+
+  if (
+    !language ||
+    language === 'English'
   ) {
 
-    const value =
-      String(
-        text ||
-        ''
+    return text;
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        RUNTIME_URL +
+        '/transliterate',
+        {
+          method:
+            'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+
+            'Accept':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify(
+              {
+                text:
+                  text,
+
+                language:
+                  language
+              }
+            )
+        }
       );
 
 
+    const payload =
+      await response.json();
+
+
     if (
-      /[\u0B80-\u0BFF]/.test(
-        value
-      )
+      !response.ok ||
+      !payload ||
+      payload.success !== true ||
+      !payload.romanizedText
     ) {
 
-      return 'Tamil';
+      console.warn(
+        'Transliteration unavailable:',
+        payload
+      );
+
+
+      return text;
 
     }
 
 
-    if (
-      /[\u0C00-\u0C7F]/.test(
-        value
-      )
-    ) {
-
-      return 'Telugu';
-
-    }
-
-
-    if (
-      /[\u0900-\u097F]/.test(
-        value
-      )
-    ) {
-
-      const liveLanguage =
-        getConversationLanguage();
-
-
-      if (
-        liveLanguage ===
-        'Marathi'
-      ) {
-
-        return 'Marathi';
-
-      }
-
-
-      return 'Hindi';
-
-    }
-
-
-    return '';
+    return payload.romanizedText;
 
   }
 
+  catch (error) {
 
-  function containsNativeIndicScript(
-    text
-  ) {
-
-    return (
-      /[\u0900-\u097F]/.test(
-        text
-      ) ||
-      /[\u0B80-\u0BFF]/.test(
-        text
-      ) ||
-      /[\u0C00-\u0C7F]/.test(
-        text
-      )
+    console.error(
+      'Transliteration failed:',
+      error
     );
 
+
+    return text;
+
   }
 
-
-  /* =========================================================
-     TRANSLITERATION
-  ========================================================= */
-
-  async function transliterateText(
-    text,
-    language
-  ) {
-
-    if (!text) {
-
-      return text;
-
-    }
+}
 
 
-    if (
-      !language ||
-      language === 'English'
-    ) {
+/* =========================================================
+   SEND LIVE TURN
+========================================================= */
 
-      return text;
+async function sendMessage() {
 
-    }
-
+  if (listening) {
 
     try {
 
-      const response =
-        await fetch(
-          RUNTIME_URL +
-          '/transliterate',
-          {
-            method:
-              'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-
-              'Accept':
-                'application/json'
-            },
-
-            body:
-              JSON.stringify(
-                {
-                  text:
-                    text,
-
-                  language:
-                    language
-                }
-              )
-          }
-        );
-
-
-      const payload =
-        await response.json();
-
-
-      if (
-        !response.ok ||
-        !payload ||
-        payload.success !== true ||
-        !payload.romanizedText
-      ) {
-
-        console.warn(
-          'Transliteration unavailable:',
-          payload
-        );
-
-
-        return text;
-
-      }
-
-
-      return payload.romanizedText;
+      recognition.stop();
 
     }
 
     catch (error) {
 
-      console.error(
-        'Transliteration failed:',
-        error
-      );
-
-
-      return text;
-
     }
+
+
+    return;
 
   }
 
 
-  /* =========================================================
-     SEND LIVE TURN
-  ========================================================= */
+  if (
+    turnInProgress ||
+    transliterationInProgress
+  ) {
 
-  async function sendMessage() {
+    return;
 
-    if (listening) {
-
-      try {
-
-        recognition.stop();
-
-      }
-
-      catch (error) {
-
-      }
+  }
 
 
-      return;
+  const input =
+    document.getElementById(
+      'messageInput'
+    );
+
+
+  const displayedMessage =
+    input.value.trim();
+
+
+  if (!displayedMessage) {
+
+    return;
+
+  }
+
+
+  const conversationLanguage =
+    getConversationLanguage();
+
+
+  const messageForAI =
+    originalSpeechTranscript
+      ? originalSpeechTranscript
+      : displayedMessage;
+
+
+  clearRuntimeError();
+
+
+  turnInProgress =
+    true;
+
+
+  setComposerBusy(
+    true
+  );
+
+
+  const localConversation =
+    Array.isArray(
+      roomData.conversationHistory
+    )
+      ? [
+          ...roomData.conversationHistory
+        ]
+      : [];
+
+
+  localConversation.push(
+    {
+      speaker:
+        'Academic Counsellor',
+
+      text:
+        messageForAI,
+
+      displayText:
+        displayedMessage,
+
+      timestamp:
+        new Date().toISOString(),
+
+      language:
+        conversationLanguage
+    }
+  );
+
+
+  roomData.conversationHistory =
+    localConversation;
+
+
+  renderConversation(
+    localConversation
+  );
+
+
+  setInputValue(
+    ''
+  );
+
+
+  resizeInput();
+
+
+  renderThinkingMessage();
+
+
+  setSessionStatus(
+    'AI Responding...',
+    'loading'
+  );
+
+
+  setSpeechStatus(
+    'AI is responding...'
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        RUNTIME_URL +
+        '/turn',
+        {
+          method:
+            'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+
+            'Accept':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify(
+              {
+                sessionId:
+                  currentSessionId,
+
+                message:
+                  messageForAI,
+
+                conversationLanguage:
+                  conversationLanguage
+              }
+            )
+        }
+      );
+
+
+    let payload;
+
+
+    try {
+
+      payload =
+        await response.json();
+
+    }
+
+    catch (error) {
+
+      throw new Error(
+        'Runtime returned an invalid response.'
+      );
+
+    }
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        payload &&
+        payload.error
+          ? payload.error
+          : 'Runtime returned HTTP ' +
+            response.status
+      );
 
     }
 
 
     if (
-      turnInProgress ||
-      transliterationInProgress
+      !payload ||
+      payload.success !== true ||
+      !payload.reply
     ) {
 
-      return;
-
-    }
-
-
-    const input =
-      document.getElementById(
-        'messageInput'
+      throw new Error(
+        'AI response could not be generated.'
       );
 
-
-    const displayedMessage =
-      input.value.trim();
-
-
-    if (!displayedMessage) {
-
-      return;
-
     }
 
 
-    const conversationLanguage =
-      getConversationLanguage();
+    removeThinkingMessage();
 
 
-    const messageForAI =
-      originalSpeechTranscript
-        ? originalSpeechTranscript
-        : displayedMessage;
-
-
-    clearRuntimeError();
-
-
-    turnInProgress =
-      true;
-
-
-    setComposerBusy(
-      true
-    );
-
-
-    const localConversation =
+    const serverHistory =
       Array.isArray(
-        roomData.conversationHistory
+        payload.conversationHistory
       )
-        ? [
-            ...roomData.conversationHistory
-          ]
+        ? payload.conversationHistory
+          .map(
+            function(turn) {
+
+              return {
+                ...turn
+              };
+
+            }
+          )
         : [];
 
 
-    localConversation.push(
-      {
-        speaker:
-          'Academic Counsellor',
+    if (
+      serverHistory.length >= 2
+    ) {
 
-        text:
-          messageForAI,
+      const counsellorIndex =
+        serverHistory.length -
+        2;
 
-        displayText:
-          displayedMessage,
 
-        timestamp:
-          new Date().toISOString(),
+      serverHistory[
+        counsellorIndex
+      ].displayText =
+        displayedMessage;
 
-        language:
-          conversationLanguage
-      }
-    );
+    }
+
+
+    if (
+      serverHistory.length >= 1
+    ) {
+
+      const customerIndex =
+        serverHistory.length -
+        1;
+
+
+      serverHistory[
+        customerIndex
+      ].displayText =
+        payload.displayReply ||
+        serverHistory[
+          customerIndex
+        ].displayText ||
+        payload.reply;
+
+    }
 
 
     roomData.conversationHistory =
-      localConversation;
+      serverHistory.length
+        ? serverHistory
+        : localConversation;
+
+
+    const customerSpeaker =
+      getLatestCustomerSpeaker(
+        roomData.conversationHistory
+      );
+
+
+    if (
+      customerSpeaker
+    ) {
+
+      activeAvatarRole =
+        resolveAvatarRoleFromSpeaker(
+          customerSpeaker
+        );
+
+
+      lastAvatarSpeaker =
+        customerSpeaker;
+
+    }
 
 
     renderConversation(
-      localConversation
+      roomData.conversationHistory
     );
-
-
-    setInputValue(
-      ''
-    );
-
-
-    resizeInput();
-
-
-    renderThinkingMessage();
 
 
     setSessionStatus(
-      'AI Responding...',
-      'loading'
+      'Live Session',
+      'active'
     );
 
 
     setSpeechStatus(
-      'AI is responding...'
+      'Microphone ready.'
     );
 
 
-    try {
-
-      const response =
-        await fetch(
-          RUNTIME_URL +
-          '/turn',
-          {
-            method:
-              'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-
-              'Accept':
-                'application/json'
-            },
-
-            body:
-              JSON.stringify(
-                {
-                  sessionId:
-                    currentSessionId,
-
-                  message:
-                    messageForAI,
-
-                  conversationLanguage:
-                    conversationLanguage
-                }
-              )
-          }
-        );
-
-
-      let payload;
-
-
-      try {
-
-        payload =
-          await response.json();
-
-      }
-
-      catch (error) {
-
-        throw new Error(
-          'Runtime returned an invalid response.'
-        );
-
-      }
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          payload &&
-          payload.error
-            ? payload.error
-            : 'Runtime returned HTTP ' +
-              response.status
-        );
-
-      }
-
-
-      if (
-        !payload ||
-        payload.success !== true ||
-        !payload.reply
-      ) {
-
-        throw new Error(
-          'AI response could not be generated.'
-        );
-
-      }
-
-
-      removeThinkingMessage();
-
-
-      const serverHistory =
-        Array.isArray(
-          payload.conversationHistory
+    const voiceEnabled =
+      document
+        .getElementById(
+          'aiVoiceToggle'
         )
-          ? payload.conversationHistory
-            .map(
-              function(turn) {
-
-                return {
-                  ...turn
-                };
-
-              }
-            )
-          : [];
+        .checked;
 
 
-      if (
-        serverHistory.length >= 2
-      ) {
+    if (
+      voiceEnabled &&
+      payload.reply
+    ) {
 
-        const counsellorIndex =
-          serverHistory.length -
-          2;
-
-
-        serverHistory[
-          counsellorIndex
-        ].displayText =
-          displayedMessage;
-
-      }
-
-
-      if (
-        serverHistory.length >= 1
-      ) {
-
-        const customerIndex =
-          serverHistory.length -
-          1;
-
-
-        serverHistory[
-          customerIndex
-        ].displayText =
-          payload.displayReply ||
-          serverHistory[
-            customerIndex
-          ].displayText ||
-          payload.reply;
-
-      }
-
-
-      roomData.conversationHistory =
-        serverHistory.length
-          ? serverHistory
-          : localConversation;
-
-
-      renderConversation(
-        roomData.conversationHistory
+      speakCustomerReply(
+        payload.reply,
+        customerSpeaker
       );
 
+    }
 
-      setSessionStatus(
-        'Live Session',
-        'active'
+    else {
+
+      setAvatarStageState(
+        'idle',
+        customerSpeaker
       );
 
-
-      setSpeechStatus(
-        'Microphone ready.'
-      );
+    }
 
 
-      const voiceEnabled =
-        document
-          .getElementById(
-            'aiVoiceToggle'
-          )
-          .checked;
+    originalSpeechTranscript =
+      '';
+
+  }
+
+  catch (error) {
+
+    console.error(
+      'Live turn failed:',
+      error
+    );
 
 
-      if (
-        voiceEnabled &&
-        payload.reply
-      ) {
+    removeThinkingMessage();
 
-        speakCustomerReply(
-          payload.reply
-        );
 
-      }
+    setAvatarStageState(
+      'idle'
+    );
+
+
+    showRuntimeError(
+      error &&
+      error.message
+        ? error.message
+        : String(error)
+    );
+
+
+    setSessionStatus(
+      'Live Session',
+      'active'
+    );
+
+
+    setSpeechStatus(
+      'The AI response failed. You can retry.'
+    );
+
+  }
+
+  finally {
+
+    turnInProgress =
+      false;
+
+
+    setComposerBusy(
+      false
+    );
+
+
+    input.focus();
+
+  }
+
+}
+
+
+function setComposerBusy(
+  busy
+) {
+
+  document
+    .getElementById(
+      'sendButton'
+    )
+    .disabled =
+    busy;
+
+
+  document
+    .getElementById(
+      'micButton'
+    )
+    .disabled =
+    busy ||
+    transliterationInProgress ||
+    !recognitionSupported;
+
+
+  document
+    .getElementById(
+      'messageInput'
+    )
+    .disabled =
+    busy;
+
+
+  document
+    .getElementById(
+      'speechLanguage'
+    )
+    .disabled =
+    busy;
+
+}
+/* =========================================================
+   SPEECH RECOGNITION
+========================================================= */
+
+function initialiseSpeechRecognition() {
+
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+  if (!Recognition) {
+
+    recognitionSupported =
+      false;
+
+
+    document
+      .getElementById(
+        'micButton'
+      )
+      .disabled =
+      true;
+
+
+    setSpeechStatus(
+      'Speech recognition is unavailable in this browser. You can still type your response.'
+    );
+
+
+    return;
+
+  }
+
+
+  recognitionSupported =
+    true;
+
+
+  recognition =
+    new Recognition();
+
+
+  recognition.continuous =
+    true;
+
+
+  recognition.interimResults =
+    true;
+
+
+  recognition.maxAlternatives =
+    1;
+
+
+  recognition.onstart =
+    function() {
+
+      listening =
+        true;
+
+
+      finalTranscript =
+        '';
 
 
       originalSpeechTranscript =
         '';
 
-    }
 
-    catch (error) {
+      setInputValue(
+        ''
+      );
+
+
+      const button =
+        document.getElementById(
+          'micButton'
+        );
+
+
+      button.classList.add(
+        'listening'
+      );
+
+
+      button.textContent =
+        '■ Stop Speaking';
+
+
+      setSpeechStatus(
+        'Listening… speak naturally.'
+      );
+
+
+      setAvatarStageState(
+        'listening'
+      );
+
+    };
+
+
+  recognition.onresult =
+    function(event) {
+
+      let interim =
+        '';
+
+
+      for (
+        let i =
+          event.resultIndex;
+        i <
+          event.results.length;
+        i++
+      ) {
+
+        const transcript =
+          event.results[
+            i
+          ][0].transcript;
+
+
+        if (
+          event.results[
+            i
+          ].isFinal
+        ) {
+
+          finalTranscript +=
+            transcript +
+            ' ';
+
+        }
+
+        else {
+
+          interim +=
+            transcript;
+
+        }
+
+      }
+
+
+      const combined =
+        (
+          finalTranscript +
+          interim
+        )
+          .replace(
+            /\s+/g,
+            ' '
+          )
+          .trim();
+
+
+      originalSpeechTranscript =
+        combined;
+
+
+      const language =
+        getConversationLanguage();
+
+
+      if (
+        language ===
+        'English'
+      ) {
+
+        setInputValue(
+          combined
+        );
+
+
+        resizeInput();
+
+      }
+
+
+      if (combined) {
+
+        setSpeechStatus(
+          language ===
+            'English'
+            ? 'Listening…'
+            : 'Listening… transcript will appear in Roman script when you stop.'
+        );
+
+      }
+
+    };
+
+
+  recognition.onerror =
+    function(event) {
+
+      listening =
+        false;
+
+
+      resetMicButton();
+
+
+      setAvatarStageState(
+        'idle'
+      );
+
 
       console.error(
-        'Live turn failed:',
-        error
+        'Speech recognition error:',
+        {
+          error:
+            event.error,
+
+          message:
+            event.message || '',
+
+          event:
+            event
+        }
       );
 
 
-      removeThinkingMessage();
+      let message =
+        'Speech recognition error: ' +
+        event.error;
 
 
-      showRuntimeError(
-        error &&
-        error.message
-          ? error.message
-          : String(error)
+      if (
+        event.error ===
+        'not-allowed'
+      ) {
+
+        message =
+          'Speech recognition microphone access was blocked by the browser. Check site microphone permission and retry.';
+
+      }
+
+      else if (
+        event.error ===
+        'audio-capture'
+      ) {
+
+        message =
+          'Chrome could not access the selected microphone. Check the active microphone device and retry.';
+
+      }
+
+      else if (
+        event.error ===
+        'no-speech'
+      ) {
+
+        message =
+          'No speech was detected. Click Start Speaking and try again.';
+
+      }
+
+      else if (
+        event.error ===
+        'network'
+      ) {
+
+        message =
+          'Speech recognition encountered a network error. Please retry or type your response.';
+
+      }
+
+
+      setSpeechStatus(
+        message
+      );
+
+    };
+
+
+  recognition.onend =
+    async function() {
+
+      listening =
+        false;
+
+
+      resetMicButton();
+
+
+      setAvatarStageState(
+        'idle'
       );
 
 
-      setSessionStatus(
-        'Live Session',
-        'active'
+      const originalText =
+        String(
+          originalSpeechTranscript ||
+          ''
+        ).trim();
+
+
+      if (!originalText) {
+
+        setSpeechStatus(
+          'Microphone ready.'
+        );
+
+
+        return;
+
+      }
+
+
+      const language =
+        getConversationLanguage();
+
+
+      if (
+        language ===
+        'English'
+      ) {
+
+        setInputValue(
+          originalText
+        );
+
+
+        resizeInput();
+
+
+        setSpeechStatus(
+          'Speech captured. Review and send.'
+        );
+
+
+        return;
+
+      }
+
+
+      transliterationInProgress =
+        true;
+
+
+      setComposerBusy(
+        true
       );
 
 
       setSpeechStatus(
-        'The AI response failed. You can retry.'
+        'Converting transcript to Roman script...'
       );
 
-    }
 
-    finally {
+      const romanized =
+        await transliterateText(
+          originalText,
+          language
+        );
 
-      turnInProgress =
+
+      setInputValue(
+        romanized
+      );
+
+
+      resizeInput();
+
+
+      transliterationInProgress =
         false;
 
 
@@ -2082,901 +3801,448 @@
       );
 
 
-      input.focus();
-
-    }
-
-  }
-
-
-  function setComposerBusy(
-    busy
-  ) {
-
-    document
-      .getElementById(
-        'sendButton'
-      )
-      .disabled =
-      busy;
-
-
-    document
-      .getElementById(
-        'micButton'
-      )
-      .disabled =
-      busy ||
-      transliterationInProgress ||
-      !recognitionSupported;
-
-
-    document
-      .getElementById(
-        'messageInput'
-      )
-      .disabled =
-      busy;
-
-
-    document
-      .getElementById(
-        'speechLanguage'
-      )
-      .disabled =
-      busy;
-
-  }
-    /* =========================================================
-     SPEECH RECOGNITION
-  ========================================================= */
-
-  function initialiseSpeechRecognition() {
-
-    const Recognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
-
-
-    if (!Recognition) {
-
-      recognitionSupported =
-        false;
-
-
-      document
-        .getElementById(
-          'micButton'
-        )
-        .disabled =
-        true;
-
-
       setSpeechStatus(
-        'Speech recognition is unavailable in this browser. You can still type your response.'
+        'Speech captured in Roman script. Review and send.'
       );
 
+    };
 
-      return;
 
-    }
+  setSpeechStatus(
+    'Microphone ready.'
+  );
 
+}
 
-    recognitionSupported =
-      true;
 
+/* =========================================================
+   MICROPHONE
+========================================================= */
 
-    recognition =
-      new Recognition();
+async function toggleMicrophone() {
 
+  if (
+    turnInProgress ||
+    transliterationInProgress ||
+    !recognitionSupported ||
+    !recognition
+  ) {
 
-    recognition.continuous =
-      true;
-
-
-    recognition.interimResults =
-      true;
-
-
-    recognition.maxAlternatives =
-      1;
-
-
-    recognition.onstart =
-      function() {
-
-        listening =
-          true;
-
-
-        finalTranscript =
-          '';
-
-
-        originalSpeechTranscript =
-          '';
-
-
-        setInputValue(
-          ''
-        );
-
-
-        const button =
-          document.getElementById(
-            'micButton'
-          );
-
-
-        button.classList.add(
-          'listening'
-        );
-
-
-        button.textContent =
-          '■ Stop Speaking';
-
-
-        setSpeechStatus(
-          'Listening… speak naturally.'
-        );
-
-      };
-
-
-    recognition.onresult =
-      function(event) {
-
-        let interim =
-          '';
-
-
-        for (
-          let i =
-            event.resultIndex;
-          i <
-            event.results.length;
-          i++
-        ) {
-
-          const transcript =
-            event.results[
-              i
-            ][0].transcript;
-
-
-          if (
-            event.results[
-              i
-            ].isFinal
-          ) {
-
-            finalTranscript +=
-              transcript +
-              ' ';
-
-          }
-
-          else {
-
-            interim +=
-              transcript;
-
-          }
-
-        }
-
-
-        const combined =
-          (
-            finalTranscript +
-            interim
-          )
-            .replace(
-              /\s+/g,
-              ' '
-            )
-            .trim();
-
-
-        originalSpeechTranscript =
-          combined;
-
-
-        const language =
-          getConversationLanguage();
-
-
-        if (
-          language ===
-          'English'
-        ) {
-
-          setInputValue(
-            combined
-          );
-
-
-          resizeInput();
-
-        }
-
-
-        if (combined) {
-
-          setSpeechStatus(
-            language ===
-              'English'
-              ? 'Listening…'
-              : 'Listening… transcript will appear in Roman script when you stop.'
-          );
-
-        }
-
-      };
-
-
-    recognition.onerror =
-      function(event) {
-
-        listening =
-          false;
-
-
-        resetMicButton();
-
-
-        console.error(
-          'Speech recognition error:',
-          {
-            error:
-              event.error,
-            message:
-              event.message || '',
-            event:
-              event
-          }
-        );
-
-
-        let message =
-          'Speech recognition error: ' +
-          event.error;
-
-
-        if (
-          event.error ===
-          'not-allowed'
-        ) {
-
-          message =
-            'Speech recognition microphone access was blocked by the browser. Check site microphone permission and retry.';
-
-        }
-
-        else if (
-          event.error ===
-          'audio-capture'
-        ) {
-
-          message =
-            'Chrome could not access the selected microphone. Check the active microphone device and retry.';
-
-        }
-
-        else if (
-          event.error ===
-          'no-speech'
-        ) {
-
-          message =
-            'No speech was detected. Click Start Speaking and try again.';
-
-        }
-
-        else if (
-          event.error ===
-          'network'
-        ) {
-
-          message =
-            'Speech recognition encountered a network error. Please retry or type your response.';
-
-        }
-
-
-        setSpeechStatus(
-          message
-        );
-
-      };
-
-
-    recognition.onend =
-      async function() {
-
-        listening =
-          false;
-
-
-        resetMicButton();
-
-
-        const originalText =
-          String(
-            originalSpeechTranscript ||
-            ''
-          ).trim();
-
-
-        if (!originalText) {
-
-          setSpeechStatus(
-            'Microphone ready.'
-          );
-
-
-          return;
-
-        }
-
-
-        const language =
-          getConversationLanguage();
-
-
-        if (
-          language ===
-          'English'
-        ) {
-
-          setInputValue(
-            originalText
-          );
-
-
-          resizeInput();
-
-
-          setSpeechStatus(
-            'Speech captured. Review and send.'
-          );
-
-
-          return;
-
-        }
-
-
-        transliterationInProgress =
-          true;
-
-
-        setComposerBusy(
-          true
-        );
-
-
-        setSpeechStatus(
-          'Converting transcript to Roman script...'
-        );
-
-
-        const romanized =
-          await transliterateText(
-            originalText,
-            language
-          );
-
-
-        setInputValue(
-          romanized
-        );
-
-
-        resizeInput();
-
-
-        transliterationInProgress =
-          false;
-
-
-        setComposerBusy(
-          false
-        );
-
-
-        setSpeechStatus(
-          'Speech captured in Roman script. Review and send.'
-        );
-
-      };
-
-
-    setSpeechStatus(
-      'Microphone ready.'
-    );
+    return;
 
   }
 
 
-  /* =========================================================
-     MICROPHONE
-  ========================================================= */
-
-  async function toggleMicrophone() {
-
-    if (
-      turnInProgress ||
-      transliterationInProgress ||
-      !recognitionSupported ||
-      !recognition
-    ) {
-
-      return;
-
-    }
-
-
-    if (listening) {
-
-      try {
-
-        recognition.stop();
-
-      }
-
-      catch (error) {
-
-        console.warn(
-          'Recognition stop warning:',
-          error
-        );
-
-      }
-
-
-      return;
-
-    }
-
-
-    recognition.lang =
-      document
-        .getElementById(
-          'speechLanguage'
-        )
-        .value ||
-      'en-IN';
-
-
-    finalTranscript =
-      '';
-
-
-    originalSpeechTranscript =
-      '';
-
-
-    setInputValue(
-      ''
-    );
-
-
-    resizeInput();
-
-
-    setSpeechStatus(
-      'Starting microphone...'
-    );
-
+  if (listening) {
 
     try {
 
-      recognition.start();
+      recognition.stop();
 
     }
 
     catch (error) {
 
-      console.error(
-        'Speech recognition start failed:',
-        {
-          name:
-            error.name,
-
-          message:
-            error.message,
-
-          error:
-            error
-        }
+      console.warn(
+        'Recognition stop warning:',
+        error
       );
 
-
-      if (
-        error.name ===
-        'InvalidStateError'
-      ) {
-
-        setSpeechStatus(
-          'Microphone is already starting. Please wait a moment and try again.'
-        );
-
-      }
-
-      else {
-
-        setSpeechStatus(
-          'Could not start speech recognition: ' +
-          (
-            error.message ||
-            error.name ||
-            'Unknown browser error'
-          )
-        );
-
-      }
-
     }
+
+
+    return;
 
   }
 
 
-  function resetMicButton() {
-
-    const button =
-      document.getElementById(
-        'micButton'
-      );
-
-
-    button.classList.remove(
-      'listening'
-    );
-
-
-    button.textContent =
-      '🎙 Start Speaking';
-
-  }
-
-
-  function setSpeechStatus(
-    text
-  ) {
-
-    document
-      .getElementById(
-        'speechStatus'
-      )
-      .textContent =
-      text;
-
-  }
-
-
-  /* =========================================================
-     INPUT
-  ========================================================= */
-
-  function setInputValue(
-    value
-  ) {
-
-    suppressManualInputReset =
-      true;
-
-
-    document
-      .getElementById(
-        'messageInput'
-      )
-      .value =
-      value;
-
-
-    suppressManualInputReset =
-      false;
-
-  }
-
-
-  function handleManualInput() {
-
-    if (
-      suppressManualInputReset
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      !listening &&
-      !transliterationInProgress
-    ) {
-
-      originalSpeechTranscript =
-        '';
-
-    }
-
-
-    resizeInput();
-
-  }
-
-
-  function handleKeydown(
-    event
-  ) {
-
-    if (
-      event.key ===
-        'Enter' &&
-      !event.shiftKey
-    ) {
-
-      event.preventDefault();
-
-
-      sendMessage();
-
-    }
-
-  }
-
-
-  function resizeInput() {
-
-    const input =
-      document.getElementById(
-        'messageInput'
-      );
-
-
-    input.style.height =
-      'auto';
-
-
-    input.style.height =
-      Math.min(
-        input.scrollHeight,
-        150
-      ) +
-      'px';
-
-  }
-
-
-  /* =========================================================
-     INITIAL LANGUAGE
-  ========================================================= */
-
-  function configureSpeechLanguage(
-    scenario
-  ) {
-
-    const language =
-      String(
-        scenario.language ||
-        ''
-      )
-        .trim()
-        .toLowerCase();
-
-
-    let locale =
-      'en-IN';
-
-
-    if (
-      language.includes(
-        'hindi'
-      ) ||
-      language.includes(
-        'hinglish'
-      )
-    ) {
-
-      locale =
-        'hi-IN';
-
-    }
-
-    else if (
-      language.includes(
-        'tamil'
-      )
-    ) {
-
-      locale =
-        'ta-IN';
-
-    }
-
-    else if (
-      language.includes(
-        'telugu'
-      )
-    ) {
-
-      locale =
-        'te-IN';
-
-    }
-
-    else if (
-      language.includes(
-        'marathi'
-      )
-    ) {
-
-      locale =
-        'mr-IN';
-
-    }
-
-
+  recognition.lang =
     document
       .getElementById(
         'speechLanguage'
       )
-      .value =
-      locale;
+      .value ||
+    'en-IN';
+
+
+  finalTranscript =
+    '';
+
+
+  originalSpeechTranscript =
+    '';
+
+
+  setInputValue(
+    ''
+  );
+
+
+  resizeInput();
+
+
+  setSpeechStatus(
+    'Starting microphone...'
+  );
+
+
+  try {
+
+    recognition.start();
 
   }
 
+  catch (error) {
 
-  /* =========================================================
-     MULTILINGUAL BROWSER TTS
-  ========================================================= */
+    setAvatarStageState(
+      'idle'
+    );
 
-  function initialiseSpeechVoices() {
+
+    console.error(
+      'Speech recognition start failed:',
+      {
+        name:
+          error.name,
+
+        message:
+          error.message,
+
+        error:
+          error
+      }
+    );
+
 
     if (
-      !window.speechSynthesis
+      error.name ===
+      'InvalidStateError'
     ) {
 
-      console.warn(
-        'Browser speech synthesis is unavailable.'
+      setSpeechStatus(
+        'Microphone is already starting. Please wait a moment and try again.'
       );
 
-      return;
+    }
+
+    else {
+
+      setSpeechStatus(
+        'Could not start speech recognition: ' +
+        (
+          error.message ||
+          error.name ||
+          'Unknown browser error'
+        )
+      );
 
     }
 
-
-    refreshSpeechVoices();
-
-
-    window
-      .speechSynthesis
-      .onvoiceschanged =
-      function() {
-
-        refreshSpeechVoices();
-
-      };
-
-
-    setTimeout(
-      refreshSpeechVoices,
-      250
-    );
-
-
-    setTimeout(
-      refreshSpeechVoices,
-      1000
-    );
-
   }
 
-
-  function refreshSpeechVoices() {
-
-    if (
-      !window.speechSynthesis
-    ) {
-
-      availableSpeechVoices =
-        [];
-
-      return;
-
-    }
+}
 
 
-    availableSpeechVoices =
-      window
-        .speechSynthesis
-        .getVoices() ||
-      [];
+function resetMicButton() {
 
-
-    console.log(
-      'Speech voices loaded:',
-      availableSpeechVoices.length
+  const button =
+    document.getElementById(
+      'micButton'
     );
 
-  }
+
+  button.classList.remove(
+    'listening'
+  );
 
 
-  function findVoiceByName(
-    names
+  button.textContent =
+    '🎙 Start Speaking';
+
+}
+
+
+function setSpeechStatus(
+  text
+) {
+
+  document
+    .getElementById(
+      'speechStatus'
+    )
+    .textContent =
+    text;
+
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+function setInputValue(
+  value
+) {
+
+  suppressManualInputReset =
+    true;
+
+
+  document
+    .getElementById(
+      'messageInput'
+    )
+    .value =
+    value;
+
+
+  suppressManualInputReset =
+    false;
+
+}
+
+
+function handleManualInput() {
+
+  if (
+    suppressManualInputReset
   ) {
 
-    if (
-      !Array.isArray(
-        names
-      )
-    ) {
+    return;
 
-      return null;
-
-    }
+  }
 
 
-    for (
-      const preferredName of names
-    ) {
+  if (
+    !listening &&
+    !transliterationInProgress
+  ) {
 
-      const exactMatch =
-        availableSpeechVoices
-          .find(
-            function(voice) {
+    originalSpeechTranscript =
+      '';
 
-              return (
-                String(
-                  voice.name ||
-                  ''
-                )
-                  .toLowerCase() ===
-                String(
-                  preferredName
-                )
-                  .toLowerCase()
-              );
-
-            }
-          );
+  }
 
 
-      if (exactMatch) {
+  resizeInput();
 
-        return exactMatch;
+}
 
-      }
 
-    }
+function handleKeydown(
+  event
+) {
 
+  if (
+    event.key ===
+      'Enter' &&
+    !event.shiftKey
+  ) {
+
+    event.preventDefault();
+
+
+    sendMessage();
+
+  }
+
+}
+
+
+function resizeInput() {
+
+  const input =
+    document.getElementById(
+      'messageInput'
+    );
+
+
+  input.style.height =
+    'auto';
+
+
+  input.style.height =
+    Math.min(
+      input.scrollHeight,
+      150
+    ) +
+    'px';
+
+}
+
+
+/* =========================================================
+   INITIAL LANGUAGE
+========================================================= */
+
+function configureSpeechLanguage(
+  scenario
+) {
+
+  const language =
+    String(
+      scenario.language ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  let locale =
+    'en-IN';
+
+
+  if (
+    language.includes(
+      'hindi'
+    ) ||
+    language.includes(
+      'hinglish'
+    )
+  ) {
+
+    locale =
+      'hi-IN';
+
+  }
+
+  else if (
+    language.includes(
+      'tamil'
+    )
+  ) {
+
+    locale =
+      'ta-IN';
+
+  }
+
+  else if (
+    language.includes(
+      'telugu'
+    )
+  ) {
+
+    locale =
+      'te-IN';
+
+  }
+
+  else if (
+    language.includes(
+      'marathi'
+    )
+  ) {
+
+    locale =
+      'mr-IN';
+
+  }
+
+
+  document
+    .getElementById(
+      'speechLanguage'
+    )
+    .value =
+    locale;
+
+}
+
+
+/* =========================================================
+   MULTILINGUAL BROWSER TTS
+========================================================= */
+
+function initialiseSpeechVoices() {
+
+  if (
+    !window.speechSynthesis
+  ) {
+
+    console.warn(
+      'Browser speech synthesis is unavailable.'
+    );
+
+    return;
+
+  }
+
+
+  refreshSpeechVoices();
+
+
+  window
+    .speechSynthesis
+    .onvoiceschanged =
+    function() {
+
+      refreshSpeechVoices();
+
+    };
+
+
+  setTimeout(
+    refreshSpeechVoices,
+    250
+  );
+
+
+  setTimeout(
+    refreshSpeechVoices,
+    1000
+  );
+
+}
+
+
+function refreshSpeechVoices() {
+
+  if (
+    !window.speechSynthesis
+  ) {
+
+    availableSpeechVoices =
+      [];
+
+    return;
+
+  }
+
+
+  availableSpeechVoices =
+    window
+      .speechSynthesis
+      .getVoices() ||
+    [];
+
+
+  console.log(
+    'Speech voices loaded:',
+    availableSpeechVoices.length
+  );
+
+}
+
+
+function findVoiceByName(
+  names
+) {
+
+  if (
+    !Array.isArray(
+      names
+    )
+  ) {
 
     return null;
 
   }
 
 
-  function findVoiceByLocale(
-    locale
+  for (
+    const preferredName of names
   ) {
-
-    const desired =
-      String(
-        locale ||
-        ''
-      )
-        .toLowerCase();
-
-
-    if (!desired) {
-
-      return null;
-
-    }
-
 
     const exactMatch =
       availableSpeechVoices
@@ -2985,11 +4251,14 @@
 
             return (
               String(
-                voice.lang ||
+                voice.name ||
                 ''
               )
                 .toLowerCase() ===
-              desired
+              String(
+                preferredName
+              )
+                .toLowerCase()
             );
 
           }
@@ -3002,26 +4271,217 @@
 
     }
 
-
-    const baseLanguage =
-      desired
-        .split('-')[0];
+  }
 
 
-    const baseMatch =
+  return null;
+
+}
+
+
+function findVoiceByLocale(
+  locale
+) {
+
+  const desired =
+    String(
+      locale ||
+      ''
+    )
+      .toLowerCase();
+
+
+  if (!desired) {
+
+    return null;
+
+  }
+
+
+  const exactMatch =
+    availableSpeechVoices
+      .find(
+        function(voice) {
+
+          return (
+            String(
+              voice.lang ||
+              ''
+            )
+              .toLowerCase() ===
+            desired
+          );
+
+        }
+      );
+
+
+  if (exactMatch) {
+
+    return exactMatch;
+
+  }
+
+
+  const baseLanguage =
+    desired
+      .split('-')[0];
+
+
+  const baseMatch =
+    availableSpeechVoices
+      .find(
+        function(voice) {
+
+          return (
+            String(
+              voice.lang ||
+              ''
+            )
+              .toLowerCase()
+              .startsWith(
+                baseLanguage +
+                '-'
+              )
+          );
+
+        }
+      );
+
+
+  return baseMatch ||
+    null;
+
+}
+
+
+function getBestVoiceForLocale(
+  locale
+) {
+
+  refreshSpeechVoices();
+
+
+  const selectedLocale =
+    String(
+      locale ||
+      'en-IN'
+    );
+
+
+  if (
+    selectedLocale ===
+    'ta-IN'
+  ) {
+
+    return (
+      findVoiceByName(
+        [
+          'Vani'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'ta-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    selectedLocale ===
+    'hi-IN'
+  ) {
+
+    return (
+      findVoiceByName(
+        [
+          'Lekha',
+          'Google हिन्दी'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'hi-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    selectedLocale ===
+    'te-IN'
+  ) {
+
+    return (
+      findVoiceByName(
+        [
+          'Geeta'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'te-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    selectedLocale ===
+    'mr-IN'
+  ) {
+
+    return (
+      findVoiceByLocale(
+        'mr-IN'
+      ) ||
+      findVoiceByName(
+        [
+          'Lekha',
+          'Google हिन्दी'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'hi-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    selectedLocale ===
+    'en-IN'
+  ) {
+
+    const indianEnglish =
+      findVoiceByLocale(
+        'en-IN'
+      );
+
+
+    if (indianEnglish) {
+
+      return indianEnglish;
+
+    }
+
+
+    const defaultEnglish =
       availableSpeechVoices
         .find(
           function(voice) {
 
             return (
+              voice.default &&
               String(
                 voice.lang ||
                 ''
               )
                 .toLowerCase()
                 .startsWith(
-                  baseLanguage +
-                  '-'
+                  'en'
                 )
             );
 
@@ -3029,744 +4489,638 @@
         );
 
 
-    return baseMatch ||
-      null;
+    if (defaultEnglish) {
 
-  }
-
-
-  function getBestVoiceForLocale(
-    locale
-  ) {
-
-    refreshSpeechVoices();
-
-
-    const selectedLocale =
-      String(
-        locale ||
-        'en-IN'
-      );
-
-
-    if (
-      selectedLocale ===
-      'ta-IN'
-    ) {
-
-      return (
-        findVoiceByName(
-          [
-            'Vani'
-          ]
-        ) ||
-        findVoiceByLocale(
-          'ta-IN'
-        )
-      );
-
-    }
-
-
-    if (
-      selectedLocale ===
-      'hi-IN'
-    ) {
-
-      return (
-        findVoiceByName(
-          [
-            'Lekha',
-            'Google हिन्दी'
-          ]
-        ) ||
-        findVoiceByLocale(
-          'hi-IN'
-        )
-      );
-
-    }
-
-
-    if (
-      selectedLocale ===
-      'te-IN'
-    ) {
-
-      return (
-        findVoiceByName(
-          [
-            'Geeta'
-          ]
-        ) ||
-        findVoiceByLocale(
-          'te-IN'
-        )
-      );
-
-    }
-
-
-    if (
-      selectedLocale ===
-      'mr-IN'
-    ) {
-
-      return (
-        findVoiceByLocale(
-          'mr-IN'
-        ) ||
-        findVoiceByName(
-          [
-            'Lekha',
-            'Google हिन्दी'
-          ]
-        ) ||
-        findVoiceByLocale(
-          'hi-IN'
-        )
-      );
-
-    }
-
-
-    if (
-      selectedLocale ===
-      'en-IN'
-    ) {
-
-      const indianEnglish =
-        findVoiceByLocale(
-          'en-IN'
-        );
-
-
-      if (indianEnglish) {
-
-        return indianEnglish;
-
-      }
-
-
-      const defaultEnglish =
-        availableSpeechVoices
-          .find(
-            function(voice) {
-
-              return (
-                voice.default &&
-                String(
-                  voice.lang ||
-                  ''
-                )
-                  .toLowerCase()
-                  .startsWith(
-                    'en'
-                  )
-              );
-
-            }
-          );
-
-
-      if (defaultEnglish) {
-
-        return defaultEnglish;
-
-      }
-
-
-      return findVoiceByLocale(
-        'en-US'
-      ) ||
-      findVoiceByLocale(
-        'en-GB'
-      );
+      return defaultEnglish;
 
     }
 
 
     return findVoiceByLocale(
-      selectedLocale
+      'en-US'
+    ) ||
+    findVoiceByLocale(
+      'en-GB'
     );
 
   }
-    function speakCustomerReply(
-    text
+
+
+  return findVoiceByLocale(
+    selectedLocale
+  );
+
+}
+function speakCustomerReply(
+  text,
+  speaker
+) {
+
+  if (
+    !window.speechSynthesis ||
+    !text
   ) {
 
+    setAvatarStageState(
+      'idle',
+      speaker
+    );
+
+
+    return;
+
+  }
+
+
+  refreshSpeechVoices();
+
+
+  const locale =
+    document
+      .getElementById(
+        'speechLanguage'
+      )
+      .value ||
+    'en-IN';
+
+
+  const selectedVoice =
+    getBestVoiceForLocale(
+      locale
+    );
+
+
+  window
+    .speechSynthesis
+    .cancel();
+
+
+  const utterance =
+    new SpeechSynthesisUtterance(
+      text
+    );
+
+
+  utterance.lang =
+    locale;
+
+
+  if (selectedVoice) {
+
+    utterance.voice =
+      selectedVoice;
+
+
     if (
-      !window.speechSynthesis ||
-      !text
+      locale === 'mr-IN' &&
+      selectedVoice.lang
     ) {
 
-      return;
+      utterance.lang =
+        selectedVoice.lang;
 
     }
 
 
-    refreshSpeechVoices();
+    console.log(
+      'AI TTS voice:',
+      {
+        requestedLocale:
+          locale,
 
+        voice:
+          selectedVoice.name,
 
-    const locale =
-      document
-        .getElementById(
-          'speechLanguage'
-        )
-        .value ||
-      'en-IN';
+        voiceLanguage:
+          selectedVoice.lang,
 
-
-    const selectedVoice =
-      getBestVoiceForLocale(
-        locale
-      );
-
-
-    window
-      .speechSynthesis
-      .cancel();
-
-
-    const utterance =
-      new SpeechSynthesisUtterance(
-        text
-      );
-
-
-    utterance.lang =
-      locale;
-
-
-    if (selectedVoice) {
-
-      utterance.voice =
-        selectedVoice;
-
-
-      if (
-        locale === 'mr-IN' &&
-        selectedVoice.lang
-      ) {
-
-        utterance.lang =
-          selectedVoice.lang;
-
+        localService:
+          selectedVoice.localService
       }
+    );
+
+  }
+
+  else {
+
+    console.warn(
+      'No matching TTS voice found for:',
+      locale
+    );
+
+  }
 
 
-      console.log(
-        'AI TTS voice:',
+  utterance.rate =
+    0.96;
+
+
+  utterance.pitch =
+    1;
+
+
+  utterance.volume =
+    1;
+
+
+  utterance.onerror =
+    function(event) {
+
+      console.error(
+        'AI TTS error:',
         {
-          requestedLocale:
+          error:
+            event.error,
+
+          locale:
             locale,
 
           voice:
-            selectedVoice.name,
-
-          voiceLanguage:
-            selectedVoice.lang,
-
-          localService:
-            selectedVoice.localService
+            selectedVoice
+              ? selectedVoice.name
+              : null
         }
       );
 
-    }
 
-    else {
-
-      console.warn(
-        'No matching TTS voice found for:',
-        locale
+      setAvatarStageState(
+        'idle',
+        speaker
       );
 
-    }
+    };
 
 
-    utterance.rate =
-      0.96;
-
-
-    utterance.pitch =
-      1;
-
-
-    utterance.volume =
-      1;
-
-
-    utterance.onerror =
-      function(event) {
-
-        console.error(
-          'AI TTS error:',
-          {
-            error:
-              event.error,
-
-            locale:
-              locale,
-
-            voice:
-              selectedVoice
-                ? selectedVoice.name
-                : null
-          }
-        );
-
-      };
-
-
-    utterance.onstart =
-      function() {
-
-        console.log(
-          'AI TTS started:',
-          selectedVoice
-            ? selectedVoice.name
-            : 'browser default'
-        );
-
-      };
-
-
-    utterance.onend =
-      function() {
-
-        console.log(
-          'AI TTS completed.'
-        );
-
-      };
-
-
-    setTimeout(
-      function() {
-
-        window
-          .speechSynthesis
-          .speak(
-            utterance
-          );
-
-      },
-      80
-    );
-
-  }
-
-
-  /* =========================================================
-     END SESSION
-  ========================================================= */
-
-  async function endSession() {
-
-    if (!currentSessionId) {
-
-      alert(
-        'Session ID is missing.'
-      );
-
-      return;
-
-    }
-
-
-    const confirmed =
-      window.confirm(
-        'End this simulation now? You will not be able to continue the conversation after ending it.'
-      );
-
-
-    if (!confirmed) {
-
-      return;
-
-    }
-
-
-    try {
-
-      const response =
-        await fetch(
-          RUNTIME_URL + '/end',
-          {
-            method:
-              'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-
-              'Accept':
-                'application/json'
-            },
-
-            body:
-              JSON.stringify(
-                {
-                  sessionId:
-                    currentSessionId
-                }
-              )
-          }
-        );
-
-
-      const result =
-        await response.json();
-
-
-      if (
-        !response.ok ||
-        !result ||
-        result.success !== true
-      ) {
-
-        throw new Error(
-          result &&
-          result.error
-            ? result.error
-            : 'Session could not be ended.'
-        );
-
-      }
-
-
-      if (
-        window.speechSynthesis
-      ) {
-
-        window
-          .speechSynthesis
-          .cancel();
-
-      }
-
-
-      if (
-        listening &&
-        recognition
-      ) {
-
-        try {
-
-          recognition.stop();
-
-        }
-
-        catch (error) {
-
-        }
-
-      }
-
-
-      setSessionStatus(
-        'Session Completed',
-        'loading'
-      );
-
-
-      setSpeechStatus(
-        'Simulation ended successfully. Redirecting...'
-      );
-
-
-      document
-        .getElementById(
-          'endSessionButton'
-        )
-        .disabled =
-        true;
-
-
-      document
-        .getElementById(
-          'sendButton'
-        )
-        .disabled =
-        true;
-
-
-      document
-        .getElementById(
-          'micButton'
-        )
-        .disabled =
-        true;
-
-
-      document
-        .getElementById(
-          'messageInput'
-        )
-        .disabled =
-        true;
-
-
-      document
-        .getElementById(
-          'speechLanguage'
-        )
-        .disabled =
-        true;
-
-
-      if (roomData) {
-
-        roomData.status =
-          'COMPLETED';
-
-      }
-
+  utterance.onstart =
+    function() {
 
       console.log(
-        'SESSION ENDED:',
-        result
+        'AI TTS started:',
+        selectedVoice
+          ? selectedVoice.name
+          : 'browser default'
       );
 
 
-      const postSessionUrl =
-        APPS_SCRIPT_URL +
-        '?page=postsession' +
-        '&sessionId=' +
-        encodeURIComponent(
-          currentSessionId
+      setAvatarStageState(
+        'speaking',
+        speaker
+      );
+
+    };
+
+
+  utterance.onend =
+    function() {
+
+      console.log(
+        'AI TTS completed.'
+      );
+
+
+      setAvatarStageState(
+        'idle',
+        speaker
+      );
+
+    };
+
+
+  setAvatarStageState(
+    'thinking',
+    speaker
+  );
+
+
+  setTimeout(
+    function() {
+
+      window
+        .speechSynthesis
+        .speak(
+          utterance
         );
 
+    },
+    80
+  );
 
-      window.location.href =
-        postSessionUrl;
-
-    }
-
-    catch (error) {
-
-      console.error(
-        'END SESSION FAILED:',
-        error
-      );
+}
 
 
-      showRuntimeError(
-        error &&
-        error.message
-          ? error.message
-          : 'Unable to end the simulation.'
-      );
+/* =========================================================
+   END SESSION
+========================================================= */
 
+async function endSession() {
 
-      alert(
-        'Unable to end the simulation. ' +
-        (
-          error &&
-          error.message
-            ? error.message
-            : 'Please try again.'
-        )
-      );
+  if (!currentSessionId) {
 
-    }
-
-  }
-
-
-  /* =========================================================
-     GENERAL UI
-  ========================================================= */
-
-  function scrollToBottom() {
-
-    const messages =
-      document.getElementById(
-        'messages'
-      );
-
-
-    requestAnimationFrame(
-      function() {
-
-        messages.scrollTop =
-          messages.scrollHeight;
-
-      }
+    alert(
+      'Session ID is missing.'
     );
 
+    return;
+
   }
 
 
-  function showRuntimeError(
-    message
-  ) {
-
-    const element =
-      document.getElementById(
-        'runtimeError'
-      );
-
-
-    element.textContent =
-      message;
-
-
-    element.classList.add(
-      'visible'
+  const confirmed =
+    window.confirm(
+      'End this simulation now? You will not be able to continue the conversation after ending it.'
     );
 
-  }
 
+  if (!confirmed) {
 
-  function clearRuntimeError() {
-
-    const element =
-      document.getElementById(
-        'runtimeError'
-      );
-
-
-    element.textContent =
-      '';
-
-
-    element.classList.remove(
-      'visible'
-    );
+    return;
 
   }
 
 
-  function setSessionStatus(
-    text,
-    state
-  ) {
+  try {
 
-    document
-      .getElementById(
-        'sessionStatus'
-      )
-      .textContent =
-      text;
+    const response =
+      await fetch(
+        RUNTIME_URL + '/end',
+        {
+          method:
+            'POST',
 
+          headers: {
+            'Content-Type':
+              'application/json',
 
-    const dot =
-      document.getElementById(
-        'statusDot'
+            'Accept':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify(
+              {
+                sessionId:
+                  currentSessionId
+              }
+            )
+        }
       );
+
+
+    const result =
+      await response.json();
 
 
     if (
-      state ===
-      'active'
+      !response.ok ||
+      !result ||
+      result.success !== true
     ) {
 
-      dot.style.background =
-        '#28a745';
-
-    }
-
-    else if (
-      state ===
-      'error'
-    ) {
-
-      dot.style.background =
-        '#d92d20';
-
-    }
-
-    else {
-
-      dot.style.background =
-        '#f5a623';
-
-    }
-
-  }
-
-
-  function hideLoadingOverlay() {
-
-    document
-      .getElementById(
-        'loadingOverlay'
-      )
-      .classList.add(
-        'hidden'
+      throw new Error(
+        result &&
+        result.error
+          ? result.error
+          : 'Session could not be ended.'
       );
 
-  }
+    }
 
 
-  function showLoadError(
-    message
-  ) {
+    if (
+      window.speechSynthesis
+    ) {
+
+      window
+        .speechSynthesis
+        .cancel();
+
+    }
+
+
+    if (
+      listening &&
+      recognition
+    ) {
+
+      try {
+
+        recognition.stop();
+
+      }
+
+      catch (error) {
+
+      }
+
+    }
+
+
+    setAvatarStageState(
+      'idle'
+    );
+
 
     setSessionStatus(
-      'Connection Error',
-      'error'
+      'Session Completed',
+      'loading'
+    );
+
+
+    setSpeechStatus(
+      'Simulation ended successfully. Redirecting...'
     );
 
 
     document
       .getElementById(
-        'loadingTitle'
+        'endSessionButton'
       )
-      .textContent =
-      'Unable to open voice simulation';
+      .disabled =
+      true;
 
 
-    const text =
-      document.getElementById(
-        'loadingText'
-      );
+    document
+      .getElementById(
+        'sendButton'
+      )
+      .disabled =
+      true;
 
 
-    text.classList.add(
-      'error-text'
+    document
+      .getElementById(
+        'micButton'
+      )
+      .disabled =
+      true;
+
+
+    document
+      .getElementById(
+        'messageInput'
+      )
+      .disabled =
+      true;
+
+
+    document
+      .getElementById(
+        'speechLanguage'
+      )
+      .disabled =
+      true;
+
+
+    if (roomData) {
+
+      roomData.status =
+        'COMPLETED';
+
+    }
+
+
+    console.log(
+      'SESSION ENDED:',
+      result
     );
 
 
-    text.textContent =
-      message;
-
-  }
-
-
-  function escapeHtml(
-    value
-  ) {
-
-    return String(
-      value === undefined ||
-      value === null
-        ? ''
-        : value
-    )
-      .replace(
-        /&/g,
-        '&amp;'
-      )
-      .replace(
-        /</g,
-        '&lt;'
-      )
-      .replace(
-        />/g,
-        '&gt;'
-      )
-      .replace(
-        /"/g,
-        '&quot;'
-      )
-      .replace(
-        /'/g,
-        '&#039;'
+    const postSessionUrl =
+      APPS_SCRIPT_URL +
+      '?page=postsession' +
+      '&sessionId=' +
+      encodeURIComponent(
+        currentSessionId
       );
 
+
+    window.location.href =
+      postSessionUrl;
+
   }
+
+  catch (error) {
+
+    console.error(
+      'END SESSION FAILED:',
+      error
+    );
+
+
+    showRuntimeError(
+      error &&
+      error.message
+        ? error.message
+        : 'Unable to end the simulation.'
+    );
+
+
+    alert(
+      'Unable to end the simulation. ' +
+      (
+        error &&
+        error.message
+          ? error.message
+          : 'Please try again.'
+      )
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   GENERAL UI
+========================================================= */
+
+function scrollToBottom() {
+
+  const messages =
+    document.getElementById(
+      'messages'
+    );
+
+
+  requestAnimationFrame(
+    function() {
+
+      messages.scrollTop =
+        messages.scrollHeight;
+
+    }
+  );
+
+}
+
+
+function showRuntimeError(
+  message
+) {
+
+  const element =
+    document.getElementById(
+      'runtimeError'
+    );
+
+
+  element.textContent =
+    message;
+
+
+  element.classList.add(
+    'visible'
+  );
+
+}
+
+
+function clearRuntimeError() {
+
+  const element =
+    document.getElementById(
+      'runtimeError'
+    );
+
+
+  element.textContent =
+    '';
+
+
+  element.classList.remove(
+    'visible'
+  );
+
+}
+function setSessionStatus(
+  text,
+  state
+) {
+
+  document
+    .getElementById(
+      'sessionStatus'
+    )
+    .textContent =
+    text;
+
+
+  const dot =
+    document.getElementById(
+      'statusDot'
+    );
+
+
+  if (
+    state ===
+    'active'
+  ) {
+
+    dot.style.background =
+      '#28a745';
+
+  }
+
+  else if (
+    state ===
+    'error'
+  ) {
+
+    dot.style.background =
+      '#d92d20';
+
+  }
+
+  else {
+
+    dot.style.background =
+      '#f5a623';
+
+  }
+
+}
+
+
+function hideLoadingOverlay() {
+
+  document
+    .getElementById(
+      'loadingOverlay'
+    )
+    .classList.add(
+      'hidden'
+    );
+
+}
+
+
+function showLoadError(
+  message
+) {
+
+  setSessionStatus(
+    'Connection Error',
+    'error'
+  );
+
+
+  document
+    .getElementById(
+      'loadingTitle'
+    )
+    .textContent =
+    'Unable to open voice simulation';
+
+
+  const text =
+    document.getElementById(
+      'loadingText'
+    );
+
+
+  text.classList.add(
+    'error-text'
+  );
+
+
+  text.textContent =
+    message;
+
+}
+
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value === undefined ||
+    value === null
+      ? ''
+      : value
+  )
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+    .replace(
+      /</g,
+      '&lt;'
+    )
+    .replace(
+      />/g,
+      '&gt;'
+    )
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+
+}
 
 </script>
 
