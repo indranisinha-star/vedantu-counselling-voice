@@ -16,6 +16,10 @@
 
   <style>
 
+    /* =========================================================
+       GLOBAL
+    ========================================================= */
+
     * {
       box-sizing: border-box;
     }
@@ -23,737 +27,2749 @@
     html,
     body {
       margin: 0;
+      width: 100%;
       min-height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f6f7f8;
+      font-family:
+        Poppins,
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+      background: #f4f5f7;
       color: #202124;
+    }
+
+    body {
+      overflow: hidden;
     }
 
     button,
     textarea,
-    select {
-      font-family: inherit;
+    select,
+    input {
+      font: inherit;
     }
 
-    .app {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    button {
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .topbar {
-      height: 68px;
-      background: #ffffff;
-      border-bottom: 1px solid #e8e8e8;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      flex-shrink: 0;
-    }
-
-    .brand {
-      color: #f35427;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
-    }
-
-    .top-title {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .session-status-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .status-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #f5a623;
-    }
-
-    .workspace {
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 300px 1fr;
-    }
-
-    .sidebar {
-      background: #ffffff;
-      border-right: 1px solid #e8e8e8;
-      padding: 24px;
-      overflow-y: auto;
-    }
-
-    .sidebar h2 {
-      margin: 0 0 6px;
-      font-size: 18px;
-    }
-
-    .sidebar-subtitle {
-      color: #777;
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
-    .scenario-item {
-      padding: 13px 0;
-      border-bottom: 1px solid #eeeeee;
-    }
-
-    .scenario-label {
-      font-size: 11px;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .scenario-value {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.4;
-    }
-
-    .locked-note {
-      margin-top: 20px;
-      padding: 12px;
-      background: #f7f7f7;
-      border-radius: 10px;
-      color: #666;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .chat-area {
-      min-width: 0;
-      height: calc(100vh - 68px);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chat-header {
-      background: #ffffff;
-      border-bottom: 1px solid #ececec;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .participant-name {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .participant-subtitle {
-      margin-top: 3px;
-      color: #777;
-      font-size: 12px;
+    .hidden {
+      display: none !important;
     }
 
 
     /* =========================================================
-       AVATAR STAGE
+       BRAND VARIABLES
     ========================================================= */
 
-    .avatar-stage {
-      background: #ffffff;
-      border-bottom: 1px solid #ececec;
-      padding: 14px 24px 16px;
-      flex-shrink: 0;
-    }
-
-    .avatar-stage-shell {
-      max-width: 950px;
-      margin: 0 auto;
-    }
-
-    .avatar-stage-label-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 10px;
-    }
-
-    .avatar-stage-title {
-      font-size: 12px;
-      font-weight: 800;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .avatar-stage-status {
-      font-size: 12px;
-      color: #777;
-      text-align: right;
-    }
-
-    .avatar-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      max-width: 560px;
-      margin: 0 auto;
-    }
-
-    .avatar-grid.single {
-      grid-template-columns: minmax(0, 280px);
-      justify-content: center;
-    }
-
-    .avatar-card {
-      position: relative;
-      min-width: 0;
-      background: #fff7f3;
-      border: 1px solid #f2d4c8;
-      border-radius: 18px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      transition:
-        border-color 160ms ease,
-        box-shadow 160ms ease,
-        transform 160ms ease,
-        background 160ms ease;
-      overflow: hidden;
-    }
-
-    .avatar-card.active {
-      border-color: #f35427;
-      background: #fff4ef;
-      box-shadow:
-        0 8px 22px rgba(243, 84, 39, 0.13);
-      transform: translateY(-1px);
-    }
-
-    .avatar-card.listening {
-      border-color: #f0c7b8;
-    }
-
-    .avatar-card.thinking {
-      border-color: #efbda9;
-    }
-
-    .avatar-image-wrap {
-      position: relative;
-      width: 82px;
-      height: 82px;
-      flex: 0 0 82px;
-      border-radius: 50%;
-      background: #ffffff;
-      border: 3px solid #ffffff;
-      box-shadow:
-        0 3px 12px rgba(0, 0, 0, 0.08);
-      overflow: visible;
-    }
-
-    .avatar-image-wrap::after {
-      content: '';
-      position: absolute;
-      inset: -5px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      pointer-events: none;
-    }
-
-    .avatar-card.speaking
-    .avatar-image-wrap::after {
-      border-color: rgba(243, 84, 39, 0.48);
-      animation:
-        avatarSpeakingRing 1.1s ease-in-out infinite;
-    }
-
-    .avatar-image {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      border-radius: 50%;
-      background: #ffffff;
-    }
-
-    .avatar-fallback {
-      width: 100%;
-      height: 100%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: #f35427;
-      color: #ffffff;
-      font-size: 26px;
-      font-weight: 800;
-    }
-
-    .avatar-meta {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .avatar-name {
-      font-size: 15px;
-      line-height: 1.3;
-      font-weight: 800;
-      color: #222;
-    }
-
-    .avatar-role {
-      margin-top: 3px;
-      font-size: 12px;
-      line-height: 1.35;
-      color: #777;
-    }
-
-    .avatar-state {
-      margin-top: 8px;
-      min-height: 18px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #777;
-    }
-
-    .avatar-state-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #b8b8b8;
-      flex-shrink: 0;
-    }
-
-    .avatar-card.listening
-    .avatar-state-dot {
-      background: #f5a623;
-    }
-
-    .avatar-card.thinking
-    .avatar-state-dot {
-      background: #8a63d2;
-      animation:
-        avatarThinking 1s ease-in-out infinite;
-    }
-
-    .avatar-card.speaking
-    .avatar-state-dot {
-      background: #f35427;
-    }
-
-    .avatar-bars {
-      height: 15px;
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      opacity: 0;
-      transition: opacity 120ms ease;
-    }
-
-    .avatar-card.speaking
-    .avatar-bars {
-      opacity: 1;
-    }
-
-    .avatar-bar {
-      width: 3px;
-      height: 5px;
-      background: #f35427;
-      border-radius: 3px;
-      animation:
-        avatarBar 0.72s ease-in-out infinite;
-    }
-
-    .avatar-bar:nth-child(2) {
-      animation-delay: 0.12s;
-    }
-
-    .avatar-bar:nth-child(3) {
-      animation-delay: 0.24s;
-    }
-
-    .avatar-bar:nth-child(4) {
-      animation-delay: 0.36s;
-    }
-
-    @keyframes avatarSpeakingRing {
-
-      0%,
-      100% {
-        transform: scale(1);
-        opacity: 0.55;
-      }
-
-      50% {
-        transform: scale(1.07);
-        opacity: 1;
-      }
-
-    }
-
-    @keyframes avatarThinking {
-
-      0%,
-      100% {
-        opacity: 0.45;
-      }
-
-      50% {
-        opacity: 1;
-      }
-
-    }
-
-    @keyframes avatarBar {
-
-      0%,
-      100% {
-        height: 4px;
-      }
-
-      50% {
-        height: 14px;
-      }
-
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .voice-toggle {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      color: #666;
-    }
-
-    .end-button {
-      border: 1px solid #e1e1e1;
-      background: #ffffff;
-      color: #b42318;
-      border-radius: 10px;
-      padding: 9px 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .empty-state {
-      margin: auto;
-      max-width: 520px;
-      text-align: center;
-      color: #777;
-      line-height: 1.6;
-    }
-
-    .message-row {
-      display: flex;
-      width: 100%;
-    }
-
-    .message-row.counsellor {
-      justify-content: flex-end;
-    }
-
-    .message-row.customer {
-      justify-content: flex-start;
-    }
-
-    .message {
-      max-width: 72%;
-    }
-
-    .speaker {
-      margin-bottom: 5px;
-      font-size: 11px;
-      color: #777;
-      font-weight: 700;
-    }
+    :root {
 
-    .counsellor .speaker {
-      text-align: right;
-    }
-
-    .bubble {
-      border-radius: 16px;
-      padding: 13px 16px;
-      font-size: 14px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+      --vedantu-orange:
+        #f35427;
 
-    .counsellor .bubble {
-      background: #f35427;
-      color: #ffffff;
-      border-bottom-right-radius: 5px;
-    }
-
-    .customer .bubble {
-      background: #ffffff;
-      border: 1px solid #e5e5e5;
-      border-bottom-left-radius: 5px;
-    }
+      --vedantu-orange-dark:
+        #dc4720;
 
-    .thinking-bubble {
-      color: #777;
-      font-style: italic;
-    }
+      --vedantu-orange-soft:
+        #fff2ed;
 
-    .composer-wrap {
-      background: #ffffff;
-      border-top: 1px solid #e8e8e8;
-      padding: 16px 24px 20px;
-    }
+      --vedantu-orange-border:
+        #f6c5b5;
 
-    .voice-panel {
-      max-width: 950px;
-      margin: 0 auto 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      --text-primary:
+        #202124;
 
-    .mic-button {
-      border: none;
-      border-radius: 12px;
-      padding: 11px 16px;
-      background: #202124;
-      color: #ffffff;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 150px;
-    }
+      --text-secondary:
+        #6f7278;
 
-    .mic-button.listening {
-      background: #d92d20;
-    }
+      --text-muted:
+        #8d9096;
 
-    .mic-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+      --border:
+        #e5e7eb;
 
-    .speech-status {
-      flex: 1;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      padding: 8px 12px;
-      background: #f7f7f8;
-      border-radius: 10px;
-      font-size: 12px;
-      color: #666;
-    }
+      --panel:
+        #ffffff;
 
-    .language-select {
-      max-width: 175px;
-      border: 1px solid #dedede;
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 12px;
-    }
+      --page:
+        #f4f5f7;
 
-    .composer {
-      max-width: 950px;
-      margin: 0 auto;
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-    }
+      --video-bg:
+        #17181b;
 
-    textarea {
-      flex: 1;
-      min-height: 54px;
-      max-height: 150px;
-      resize: none;
-      border: 1px solid #dcdcdc;
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 14px;
-      line-height: 1.45;
-      outline: none;
-    }
+      --success:
+        #20a464;
 
-    textarea:focus {
-      border-color: #f35427;
-    }
+      --warning:
+        #f5a623;
 
-    textarea:disabled {
-      background: #f7f7f8;
-      color: #777;
-    }
+      --danger:
+        #d92d20;
 
-    .send-button {
-      width: 54px;
-      height: 54px;
-      border: none;
-      border-radius: 13px;
-      background: #f35427;
-      color: #ffffff;
-      font-size: 20px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+      --purple:
+        #8a63d2;
 
-    .send-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
     }
 
-    .composer-note {
-      max-width: 950px;
-      margin: 8px auto 0;
-      color: #999;
-      font-size: 11px;
-    }
 
-    .runtime-error {
-      max-width: 950px;
-      margin: 10px auto 0;
-      padding: 10px 12px;
-      background: #fff3f2;
-      color: #b42318;
-      border: 1px solid #f5c2be;
-      border-radius: 10px;
-      font-size: 12px;
-      display: none;
-    }
+    /* =========================================================
+       LOADING SCREEN
+    ========================================================= */
 
-    .runtime-error.visible {
-      display: block;
-    }
+    .loading-overlay {
 
-    .overlay {
       position: fixed;
+
       inset: 0;
-      background: #f6f7f8;
+
+      z-index: 1000;
+
       display: flex;
+
       align-items: center;
+
       justify-content: center;
-      z-index: 100;
+
+      padding: 24px;
+
+      background: #f7f7f8;
+
     }
 
-    .overlay.hidden {
-      display: none;
-    }
 
     .loading-card {
+
       width: 440px;
-      max-width: calc(100% - 32px);
+
+      max-width: 100%;
+
+      padding: 34px 30px;
+
       background: #ffffff;
-      border-radius: 18px;
-      padding: 30px;
+
+      border:
+        1px solid #ececec;
+
+      border-radius: 22px;
+
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+
+      box-shadow:
+        0 18px 50px
+        rgba(
+          0,
+          0,
+          0,
+          0.08
+        );
+
     }
+
+
+    .loading-logo {
+
+      color:
+        var(--vedantu-orange);
+
+      font-size: 18px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.6px;
+
+      margin-bottom: 18px;
+
+    }
+
 
     .loading-title {
-      font-size: 18px;
+
+      font-size: 20px;
+
       font-weight: 700;
-      margin-bottom: 8px;
+
+      margin-bottom: 9px;
+
     }
+
 
     .loading-text {
-      color: #777;
+
+      color:
+        var(--text-secondary);
+
       font-size: 14px;
-      line-height: 1.5;
+
+      line-height: 1.55;
+
     }
+
 
     .error-text {
-      color: #b42318;
+
+      color:
+        var(--danger);
+
     }
 
-    @media (max-width: 850px) {
+
+    /* =========================================================
+       PRE-CALL DEVICE CHECK
+    ========================================================= */
+
+    .precall-overlay {
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 900;
+
+      overflow-y: auto;
+
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #f6f7f8 100%
+        );
+
+    }
+
+
+    .precall-shell {
+
+      width: 100%;
+
+      min-height: 100vh;
+
+      display: flex;
+
+      flex-direction: column;
+
+    }
+
+
+    .precall-header {
+
+      height: 70px;
+
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      padding:
+        0 34px;
+
+      background: #ffffff;
+
+      border-bottom:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .brand {
+
+      color:
+        var(--vedantu-orange);
+
+      font-size: 18px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.5px;
+
+    }
+
+
+    .precall-header-title {
+
+      font-size: 15px;
+
+      font-weight: 700;
+
+      color:
+        var(--text-secondary);
+
+    }
+
+
+    .precall-content {
+
+      flex: 1;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding:
+        34px 24px;
+
+    }
+
+
+    .precall-card {
+
+      width: 100%;
+
+      max-width: 1080px;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(
+          0,
+          1.35fr
+        )
+        minmax(
+          320px,
+          0.65fr
+        );
+
+      overflow: hidden;
+
+      background: #ffffff;
+
+      border:
+        1px solid
+        var(--border);
+
+      border-radius: 24px;
+
+      box-shadow:
+        0 22px 60px
+        rgba(
+          0,
+          0,
+          0,
+          0.08
+        );
+
+    }
+
+
+    .precall-preview-panel {
+
+      min-height: 560px;
+
+      padding: 24px;
+
+      background:
+        #111316;
+
+      display: flex;
+
+      flex-direction: column;
+
+    }
+
+
+    .precall-preview-top {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 14px;
+
+      margin-bottom: 16px;
+
+      color: #ffffff;
+
+    }
+
+
+    .precall-preview-title {
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+    }
+
+
+    .local-badge {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      padding:
+        6px 10px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
+
+      font-size: 11px;
+
+      font-weight: 600;
+
+      color: #ffffff;
+
+    }
+
+
+    .precall-video-frame {
+
+      position: relative;
+
+      flex: 1;
+
+      min-height: 420px;
+
+      overflow: hidden;
+
+      border-radius: 18px;
+
+      background:
+        #202226;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+    }
+
+
+    .precall-video {
+
+      position: absolute;
+
+      inset: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+      transform:
+        scaleX(-1);
+
+      background: #202226;
+
+    }
+
+
+    .camera-placeholder {
+
+      position: relative;
+
+      z-index: 2;
+
+      width: 100%;
+
+      height: 100%;
+
+      min-height: 420px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 14px;
+
+      padding: 30px;
+
+      text-align: center;
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.78
+        );
+
+      background:
+        radial-gradient(
+          circle at center,
+          #2c2e33 0%,
+          #1c1e21 70%
+        );
+
+    }
+
+
+    .camera-placeholder-icon {
+
+      width: 68px;
+
+      height: 68px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.09
+        );
+
+      font-size: 28px;
+
+    }
+
+
+    .camera-placeholder-title {
+
+      font-size: 16px;
+
+      font-weight: 700;
+
+      color: #ffffff;
+
+    }
+
+
+    .camera-placeholder-text {
+
+      max-width: 340px;
+
+      font-size: 13px;
+
+      line-height: 1.55;
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.62
+        );
+
+    }
+
+
+    .precall-preview-footer {
+
+      margin-top: 16px;
+
+      font-size: 11px;
+
+      line-height: 1.45;
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.58
+        );
+
+    }
+
+
+    .precall-settings-panel {
+
+      padding:
+        38px 34px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      justify-content: center;
+
+    }
+
+
+    .precall-eyebrow {
+
+      color:
+        var(--vedantu-orange);
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.7px;
+
+      text-transform: uppercase;
+
+      margin-bottom: 8px;
+
+    }
+
+
+    .precall-title {
+
+      margin: 0;
+
+      font-size: 28px;
+
+      line-height: 1.25;
+
+      font-weight: 800;
+
+      color:
+        var(--text-primary);
+
+    }
+
+
+    .precall-description {
+
+      margin-top: 12px;
+
+      margin-bottom: 24px;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 14px;
+
+      line-height: 1.6;
+
+    }
+
+
+    .permission-list {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 10px;
+
+      margin-bottom: 22px;
+
+    }
+
+
+    .permission-row {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 12px;
+
+      min-height: 54px;
+
+      padding:
+        10px 13px;
+
+      border:
+        1px solid
+        var(--border);
+
+      border-radius: 13px;
+
+      background:
+        #fafafa;
+
+    }
+
+
+    .permission-icon {
+
+      width: 34px;
+
+      height: 34px;
+
+      flex:
+        0 0 34px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background: #eeeeef;
+
+      font-size: 16px;
+
+    }
+
+
+    .permission-copy {
+
+      min-width: 0;
+
+      flex: 1;
+
+    }
+
+
+    .permission-name {
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+      color:
+        var(--text-primary);
+
+    }
+
+
+    .permission-status {
+
+      margin-top: 2px;
+
+      font-size: 11px;
+
+      color:
+        var(--text-secondary);
+
+    }
+
+
+    .permission-indicator {
+
+      width: 9px;
+
+      height: 9px;
+
+      border-radius: 50%;
+
+      background:
+        #b8bbc0;
+
+      flex-shrink: 0;
+
+    }
+
+
+    .permission-row.allowed
+    .permission-indicator {
+
+      background:
+        var(--success);
+
+    }
+
+
+    .permission-row.denied
+    .permission-indicator {
+
+      background:
+        var(--danger);
+
+    }
+
+
+    .device-field {
+
+      margin-bottom: 14px;
+
+    }
+
+
+    .device-label {
+
+      display: block;
+
+      margin-bottom: 6px;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 11px;
+
+      font-weight: 700;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.35px;
+
+    }
+
+
+    .device-select {
+
+      width: 100%;
+
+      height: 44px;
+
+      padding:
+        0 12px;
+
+      border:
+        1px solid
+        #dadce0;
+
+      border-radius: 11px;
+
+      outline: none;
+
+      background: #ffffff;
+
+      color:
+        var(--text-primary);
+
+      font-size: 12px;
+
+    }
+
+
+    .device-select:focus {
+
+      border-color:
+        var(--vedantu-orange);
+
+    }
+
+
+    .precall-actions {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 10px;
+
+      margin-top: 12px;
+
+    }
+
+
+    .permission-button,
+    .join-button {
+
+      width: 100%;
+
+      min-height: 48px;
+
+      border-radius: 12px;
+
+      border: none;
+
+      cursor: pointer;
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      transition:
+        transform 120ms ease,
+        opacity 120ms ease;
+
+    }
+
+
+    .permission-button {
+
+      background:
+        #202124;
+
+      color: #ffffff;
+
+    }
+
+
+    .join-button {
+
+      background:
+        var(--vedantu-orange);
+
+      color: #ffffff;
+
+    }
+
+
+    .permission-button:hover,
+    .join-button:hover {
+
+      transform:
+        translateY(-1px);
+
+    }
+
+
+    .permission-button:disabled,
+    .join-button:disabled {
+
+      cursor:
+        not-allowed;
+
+      opacity:
+        0.45;
+
+      transform:
+        none;
+
+    }
+
+
+    .precall-error {
+
+      display: none;
+
+      margin-top: 12px;
+
+      padding:
+        10px 12px;
+
+      background:
+        #fff2f1;
+
+      border:
+        1px solid
+        #f5c5c1;
+
+      border-radius: 10px;
+
+      color:
+        var(--danger);
+
+      font-size: 11px;
+
+      line-height: 1.5;
+
+    }
+
+
+    .precall-error.visible {
+
+      display: block;
+
+    }
+
+
+    /* =========================================================
+       MAIN APPLICATION
+    ========================================================= */
+
+    .app-root {
+
+      width: 100vw;
+
+      height: 100vh;
+
+      display: flex;
+
+      flex-direction: column;
+
+      overflow: hidden;
+
+      background:
+        var(--page);
+
+    }
+
+
+    /* =========================================================
+       TOP BAR
+    ========================================================= */
+
+    .topbar {
+
+      height: 66px;
+
+      flex-shrink: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        1fr
+        auto
+        1fr;
+
+      align-items: center;
+
+      padding:
+        0 24px;
+
+      background:
+        #ffffff;
+
+      border-bottom:
+        1px solid
+        var(--border);
+
+      z-index: 20;
+
+    }
+
+
+    .topbar-brand {
+
+      justify-self: start;
+
+      color:
+        var(--vedantu-orange);
+
+      font-size: 17px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.45px;
+
+    }
+
+
+    .topbar-title {
+
+      justify-self: center;
+
+      font-size: 16px;
+
+      font-weight: 800;
+
+      color:
+        var(--text-primary);
+
+    }
+
+
+    .session-status-wrap {
+
+      justify-self: end;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      color:
+        var(--text-primary);
+
+      font-size: 12px;
+
+      font-weight: 700;
+
+    }
+
+
+    .status-dot {
+
+      width: 9px;
+
+      height: 9px;
+
+      border-radius: 50%;
+
+      background:
+        var(--warning);
+
+    }
+
+
+    /* =========================================================
+       3-COLUMN WORKSPACE
+    ========================================================= */
+
+    .workspace {
+
+      flex: 1;
+
+      min-height: 0;
+
+      display: grid;
+
+      grid-template-columns:
+        280px
+        minmax(
+          520px,
+          1fr
+        )
+        350px;
+
+      overflow: hidden;
+
+    }
+
+
+    /* =========================================================
+       LEFT — SCENARIO
+    ========================================================= */
+
+    .scenario-panel {
+
+      min-width: 0;
+
+      overflow-y: auto;
+
+      padding:
+        24px 20px;
+
+      background:
+        #ffffff;
+
+      border-right:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .panel-title {
+
+      margin: 0;
+
+      font-size: 18px;
+
+      font-weight: 800;
+
+      color:
+        var(--text-primary);
+
+    }
+
+
+    .panel-description {
+
+      margin-top: 6px;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 12px;
+
+      line-height: 1.55;
+
+    }
+
+
+    .scenario-details {
+
+      margin-top: 22px;
+
+    }
+
+
+    .scenario-item {
+
+      padding:
+        12px 0;
+
+      border-bottom:
+        1px solid
+        #eeeeef;
+
+    }
+
+
+    .scenario-label {
+
+      margin-bottom: 4px;
+
+      color:
+        var(--text-muted);
+
+      font-size: 10px;
+
+      font-weight: 600;
+
+      letter-spacing: 0.45px;
+
+      text-transform: uppercase;
+
+    }
+
+
+    .scenario-value {
+
+      color:
+        var(--text-primary);
+
+      font-size: 13px;
+
+      font-weight: 700;
+
+      line-height: 1.45;
+
+    }
+
+
+    .scenario-lock-note {
+
+      margin-top: 18px;
+
+      padding:
+        11px 12px;
+
+      border-radius: 10px;
+
+      background:
+        #f7f7f8;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 10px;
+
+      line-height: 1.5;
+
+    }
+
+
+    /* =========================================================
+       CENTRE — LIVE MEETING
+    ========================================================= */
+
+    .meeting-panel {
+
+      min-width: 0;
+
+      min-height: 0;
+
+      display: flex;
+
+      flex-direction: column;
+
+      background:
+        #f0f1f3;
+
+    }
+
+
+    .meeting-header {
+
+      min-height: 58px;
+
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 18px;
+
+      padding:
+        10px 18px;
+
+      background:
+        #ffffff;
+
+      border-bottom:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .meeting-heading {
+
+      min-width: 0;
+
+    }
+
+
+    .meeting-title {
+
+      font-size: 14px;
+
+      font-weight: 800;
+
+      color:
+        var(--text-primary);
+
+    }
+
+
+    .meeting-subtitle {
+
+      margin-top: 2px;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 10px;
+
+    }
+
+
+    .call-status {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 7px;
+
+      min-width: 0;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 11px;
+
+      font-weight: 600;
+
+    }
+
+
+    .call-status-dot {
+
+      width: 7px;
+
+      height: 7px;
+
+      border-radius: 50%;
+
+      background:
+        var(--success);
+
+    }
+
+
+    .meeting-stage {
+
+      position: relative;
+
+      flex: 1;
+
+      min-height: 0;
+
+      overflow-y: auto;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding:
+        18px;
+
+      background:
+        #edeef0;
+
+    }
+
+
+    .video-grid {
+
+      width: 100%;
+
+      max-width: 1050px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap: 14px;
+
+      align-items: stretch;
+
+    }
+
+
+    .video-grid.three-participants {
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+    }
+
+
+    .video-grid.three-participants
+    .counsellor-tile {
+
+      grid-row:
+        span 2;
+
+    }
+
+
+    /* =========================================================
+       VIDEO TILE
+    ========================================================= */
+
+    .video-tile {
+
+      position: relative;
+
+      min-width: 0;
+
+      min-height: 280px;
+
+      overflow: hidden;
+
+      border:
+        2px solid
+        transparent;
+
+      border-radius: 18px;
+
+      background:
+        var(--video-bg);
+
+      box-shadow:
+        0 6px 20px
+        rgba(
+          0,
+          0,
+          0,
+          0.10
+        );
+
+      transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease,
+        transform 150ms ease;
+
+    }
+
+
+    .video-tile.active-speaker {
+
+      border-color:
+        var(--vedantu-orange);
+
+      box-shadow:
+        0 0 0 2px
+        rgba(
+          243,
+          84,
+          39,
+          0.18
+        ),
+        0 10px 28px
+        rgba(
+          0,
+          0,
+          0,
+          0.14
+        );
+
+    }
+
+
+    .video-tile.thinking {
+
+      border-color:
+        rgba(
+          138,
+          99,
+          210,
+          0.75
+        );
+
+    }
+
+
+    .tile-video {
+
+      position: absolute;
+
+      inset: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+      background:
+        var(--video-bg);
+
+    }
+
+
+    .counsellor-video {
+
+      transform:
+        scaleX(-1);
+
+    }
+
+
+    .video-off-state {
+
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background:
+        radial-gradient(
+          circle at center,
+          #34363c 0%,
+          #1a1c20 72%
+        );
+
+    }
+
+
+    .video-off-avatar {
+
+      width: 92px;
+
+      height: 92px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background:
+        #44474e;
+
+      color: #ffffff;
+
+      font-size: 30px;
+
+      font-weight: 800;
+
+    }
+
+
+    .tile-overlay {
+
+      position: absolute;
+
+      inset:
+        auto 0 0 0;
+
+      min-height: 64px;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      padding:
+        22px 14px 12px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(
+            0,
+            0,
+            0,
+            0
+          )
+          0%,
+          rgba(
+            0,
+            0,
+            0,
+            0.66
+          )
+          100%
+        );
+
+      color: #ffffff;
+
+    }
+
+
+    .tile-name-wrap {
+
+      min-width: 0;
+
+    }
+
+
+    .tile-name {
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      white-space: nowrap;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+    }
+
+
+    .tile-role {
+
+      margin-top: 2px;
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.72
+        );
+
+      font-size: 9px;
+
+    }
+
+
+    .tile-state {
+
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+      padding:
+        5px 8px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.42
+        );
+
+      color: #ffffff;
+
+      font-size: 9px;
+
+      font-weight: 700;
+
+      backdrop-filter:
+        blur(6px);
+
+    }
+
+
+    .tile-state-dot {
+
+      width: 6px;
+
+      height: 6px;
+
+      border-radius: 50%;
+
+      background:
+        #c2c4c8;
+
+    }
+
+
+    .video-tile.active-speaker
+    .tile-state-dot {
+
+      background:
+        var(--vedantu-orange);
+
+    }
+
+
+    .video-tile.thinking
+    .tile-state-dot {
+
+      background:
+        var(--purple);
+
+      animation:
+        thinkingPulse
+        1s
+        ease-in-out
+        infinite;
+
+    }
+
+
+    @keyframes thinkingPulse {
+
+      0%,
+      100% {
+
+        opacity: 0.45;
+
+      }
+
+      50% {
+
+        opacity: 1;
+
+      }
+
+    }
+
+
+    /* =========================================================
+       AI AVATAR TILE
+    ========================================================= */
+
+    .ai-avatar-stage {
+
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 50% 34%,
+          #fff7f3 0%,
+          #f5e7e0 58%,
+          #e8dad3 100%
+        );
+
+    }
+
+
+    .ai-avatar-image {
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+      object-position:
+        center center;
+
+      transform:
+        scale(1.02);
+
+      transition:
+        transform 180ms ease,
+        filter 180ms ease;
+
+    }
+
+
+    .video-tile.active-speaker
+    .ai-avatar-image {
+
+      transform:
+        scale(1.045);
+
+    }
+
+
+    .ai-avatar-fallback {
+
+      display: none;
+
+      width: 112px;
+
+      height: 112px;
+
+      align-items: center;
+
+      justify-content: center;
+
+      border-radius: 50%;
+
+      background:
+        var(--vedantu-orange);
+
+      color: #ffffff;
+
+      font-size: 34px;
+
+      font-weight: 800;
+
+    }
+
+
+    .speaking-pulse {
+
+      position: absolute;
+
+      left: 14px;
+
+      top: 14px;
+
+      z-index: 4;
+
+      display: none;
+
+      align-items: center;
+
+      gap: 3px;
+
+      padding:
+        7px 9px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.48
+        );
+
+      backdrop-filter:
+        blur(6px);
+
+    }
+
+
+    .video-tile.active-speaker
+    .speaking-pulse {
+
+      display: flex;
+
+    }
+
+
+    .speaking-bar {
+
+      width: 3px;
+
+      height: 5px;
+
+      border-radius: 3px;
+
+      background: #ffffff;
+
+      animation:
+        speakingBar
+        0.65s
+        ease-in-out
+        infinite;
+
+    }
+
+
+    .speaking-bar:nth-child(2) {
+
+      animation-delay:
+        0.10s;
+
+    }
+
+
+    .speaking-bar:nth-child(3) {
+
+      animation-delay:
+        0.20s;
+
+    }
+
+
+    .speaking-bar:nth-child(4) {
+
+      animation-delay:
+        0.30s;
+
+    }
+
+
+    @keyframes speakingBar {
+
+      0%,
+      100% {
+
+        height: 4px;
+
+      }
+
+      50% {
+
+        height: 14px;
+
+      }
+
+    }
+
+
+    /* =========================================================
+       COUNSELLOR RESPONSE CAPTURE
+    ========================================================= */
+
+    .response-dock {
+
+      flex-shrink: 0;
+
+      padding:
+        12px 16px;
+
+      background:
+        #ffffff;
+
+      border-top:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .response-status-row {
+
+      max-width: 1040px;
+
+      margin:
+        0 auto 8px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+    }
+
+
+    .speech-status {
+
+      min-width: 0;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 10px;
+
+      line-height: 1.4;
+
+    }
+
+
+    .language-select {
+
+      min-width: 120px;
+
+      height: 34px;
+
+      padding:
+        0 9px;
+
+      border:
+        1px solid
+        #dedfe2;
+
+      border-radius: 9px;
+
+      background: #ffffff;
+
+      color:
+        var(--text-primary);
+
+      font-size: 10px;
+
+    }
+
+
+    .response-composer {
+
+      max-width: 1040px;
+
+      margin: 0 auto;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      gap: 9px;
+
+    }
+
+
+    .response-input {
+
+      flex: 1;
+
+      min-width: 0;
+
+      min-height: 46px;
+
+      max-height: 110px;
+
+      resize: none;
+
+      padding:
+        12px 13px;
+
+      border:
+        1px solid
+        #dadce0;
+
+      border-radius: 12px;
+
+      outline: none;
+
+      background: #ffffff;
+
+      color:
+        var(--text-primary);
+
+      font-size: 12px;
+
+      line-height: 1.45;
+
+    }
+
+
+    .response-input:focus {
+
+      border-color:
+        var(--vedantu-orange);
+
+    }
+
+
+    .send-button {
+
+      width: 46px;
+
+      height: 46px;
+
+      flex:
+        0 0 46px;
+
+      border: none;
+
+      border-radius: 12px;
+
+      cursor: pointer;
+
+      background:
+        var(--vedantu-orange);
+
+      color: #ffffff;
+
+      font-size: 19px;
+
+      font-weight: 800;
+
+    }
+
+
+    .send-button:disabled {
+
+      opacity: 0.45;
+
+      cursor:
+        not-allowed;
+
+    }
+
+
+    .runtime-error {
+
+      display: none;
+
+      max-width: 1040px;
+
+      margin:
+        8px auto 0;
+
+      padding:
+        9px 11px;
+
+      border:
+        1px solid
+        #f4c6c1;
+
+      border-radius: 9px;
+
+      background:
+        #fff3f2;
+
+      color:
+        var(--danger);
+
+      font-size: 10px;
+
+      line-height: 1.45;
+
+    }
+
+
+    .runtime-error.visible {
+
+      display: block;
+
+    }
+
+
+    /* =========================================================
+       MEETING CONTROLS
+    ========================================================= */
+
+    .meeting-controls {
+
+      flex-shrink: 0;
+
+      min-height: 66px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 9px;
+
+      padding:
+        10px 14px;
+
+      background:
+        #ffffff;
+
+      border-top:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .call-control {
+
+      min-width: 48px;
+
+      height: 42px;
+
+      padding:
+        0 13px;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 7px;
+
+      border:
+        1px solid
+        #dedfe2;
+
+      border-radius: 11px;
+
+      background:
+        #ffffff;
+
+      color:
+        var(--text-primary);
+
+      cursor: pointer;
+
+      font-size: 11px;
+
+      font-weight: 700;
+
+    }
+
+
+    .call-control:hover {
+
+      background:
+        #f7f7f8;
+
+    }
+
+
+    .call-control.active {
+
+      background:
+        #202124;
+
+      border-color:
+        #202124;
+
+      color: #ffffff;
+
+    }
+
+
+    .call-control.off {
+
+      background:
+        #fff1ef;
+
+      border-color:
+        #f3bdb5;
+
+      color:
+        var(--danger);
+
+    }
+
+
+    .end-call-button {
+
+      border-color:
+        #f2c4be;
+
+      background:
+        #fff5f4;
+
+      color:
+        var(--danger);
+
+    }
+
+
+    .ai-voice-control {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 6px;
+
+    }
+
+
+    .ai-voice-control input {
+
+      accent-color:
+        var(--vedantu-orange);
+
+    }
+
+
+    /* =========================================================
+       RIGHT — TRANSCRIPT
+    ========================================================= */
+
+    .transcript-panel {
+
+      min-width: 0;
+
+      min-height: 0;
+
+      display: flex;
+
+      flex-direction: column;
+
+      background:
+        #ffffff;
+
+      border-left:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .transcript-header {
+
+      flex-shrink: 0;
+
+      padding:
+        20px 18px 14px;
+
+      border-bottom:
+        1px solid
+        var(--border);
+
+    }
+
+
+    .transcript-title-row {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+    }
+
+
+    .transcript-title {
+
+      font-size: 15px;
+
+      font-weight: 800;
+
+    }
+
+
+    .live-pill {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 5px;
+
+      padding:
+        5px 8px;
+
+      border-radius: 999px;
+
+      background:
+        #eef9f3;
+
+      color:
+        #157a49;
+
+      font-size: 9px;
+
+      font-weight: 800;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.35px;
+
+    }
+
+
+    .live-pill-dot {
+
+      width: 6px;
+
+      height: 6px;
+
+      border-radius: 50%;
+
+      background:
+        var(--success);
+
+    }
+
+
+    .transcript-description {
+
+      margin-top: 5px;
+
+      color:
+        var(--text-secondary);
+
+      font-size: 10px;
+
+      line-height: 1.45;
+
+    }
+
+
+    .transcript-list {
+
+      flex: 1;
+
+      min-height: 0;
+
+      overflow-y: auto;
+
+      padding:
+        16px 16px 28px;
+
+    }
+
+
+    .transcript-empty {
+
+      margin-top: 30px;
+
+      padding:
+        18px 14px;
+
+      text-align: center;
+
+      color:
+        var(--text-muted);
+
+      font-size: 11px;
+
+      line-height: 1.55;
+
+    }
+
+
+    .transcript-turn {
+
+      position: relative;
+
+      padding:
+        0 0 17px 16px;
+
+      margin-bottom: 3px;
+
+      border-left:
+        2px solid
+        #eeeeef;
+
+    }
+
+
+    .transcript-turn::before {
+
+      content: '';
+
+      position: absolute;
+
+      left: -5px;
+
+      top: 3px;
+
+      width: 8px;
+
+      height: 8px;
+
+      border-radius: 50%;
+
+      background:
+        #c8cacf;
+
+    }
+
+
+    .transcript-turn.counsellor::before {
+
+      background:
+        var(--vedantu-orange);
+
+    }
+
+
+    .transcript-turn.customer::before {
+
+      background:
+        #5e7ce2;
+
+    }
+
+
+    .transcript-speaker {
+
+      color:
+        var(--text-primary);
+
+      font-size: 10px;
+
+      font-weight: 800;
+
+    }
+
+
+    .transcript-time {
+
+      margin-left: 5px;
+
+      color:
+        var(--text-muted);
+
+      font-size: 8px;
+
+      font-weight: 500;
+
+    }
+
+
+    .transcript-text {
+
+      margin-top: 4px;
+
+      color:
+        #56595f;
+
+      font-size: 11px;
+
+      line-height: 1.55;
+
+      word-break:
+        break-word;
+
+    }
+
+
+    .transcript-thinking {
+
+      color:
+        var(--text-muted);
+
+      font-style: italic;
+
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (
+      max-width: 1180px
+    ) {
 
       .workspace {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          240px
+          minmax(
+            480px,
+            1fr
+          )
+          310px;
+
       }
 
-      .sidebar {
-        display: none;
-      }
 
-      .top-title {
-        display: none;
-      }
+      .scenario-panel {
 
-      .chat-area {
-        height: calc(100vh - 68px);
-      }
-
-      .message {
-        max-width: 86%;
-      }
-
-      .voice-panel {
-        flex-wrap: wrap;
-      }
-
-      .speech-status {
-        order: 3;
-        flex-basis: 100%;
-      }
-
-      .avatar-stage {
         padding:
-          12px 14px 14px;
+          20px 16px;
+
       }
 
-      .avatar-grid {
+    }
+
+
+    @media (
+      max-width: 980px
+    ) {
+
+      body {
+
+        overflow: auto;
+
+      }
+
+
+      .app-root {
+
+        min-height: 100vh;
+
+        height: auto;
+
+        overflow: visible;
+
+      }
+
+
+      .workspace {
+
         grid-template-columns:
-          repeat(2, minmax(0, 1fr));
-        gap: 9px;
+          220px
+          minmax(
+            0,
+            1fr
+          );
+
+        grid-template-areas:
+          "scenario meeting"
+          "transcript transcript";
+
+        overflow: visible;
+
       }
 
-      .avatar-grid.single {
+
+      .scenario-panel {
+
+        grid-area:
+          scenario;
+
+      }
+
+
+      .meeting-panel {
+
+        grid-area:
+          meeting;
+
+        min-height:
+          calc(
+            100vh - 66px
+          );
+
+      }
+
+
+      .transcript-panel {
+
+        grid-area:
+          transcript;
+
+        min-height:
+          420px;
+
+        border-left: none;
+
+        border-top:
+          1px solid
+          var(--border);
+
+      }
+
+
+      .transcript-list {
+
+        max-height: 460px;
+
+      }
+
+    }
+
+
+    @media (
+      max-width: 760px
+    ) {
+
+      .precall-card {
+
         grid-template-columns:
-          minmax(0, 280px);
+          1fr;
+
       }
 
-      .avatar-card {
-        padding: 10px;
-        gap: 10px;
+
+      .precall-preview-panel {
+
+        min-height:
+          420px;
+
       }
 
-      .avatar-image-wrap {
-        width: 66px;
-        height: 66px;
-        flex-basis: 66px;
+
+      .precall-settings-panel {
+
+        padding:
+          28px 22px;
+
       }
 
-      .avatar-name {
-        font-size: 14px;
+
+      .workspace {
+
+        display: block;
+
       }
 
-      .avatar-role {
-        font-size: 11px;
+
+      .scenario-panel {
+
+        display: none;
+
+      }
+
+
+      .meeting-panel {
+
+        min-height:
+          calc(
+            100vh - 66px
+          );
+
+      }
+
+
+      .video-grid,
+      .video-grid.three-participants {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+
+      .video-grid.three-participants
+      .counsellor-tile {
+
+        grid-row:
+          auto;
+
+      }
+
+
+      .video-tile {
+
+        min-height:
+          245px;
+
+      }
+
+
+      .topbar {
+
+        grid-template-columns:
+          1fr
+          auto;
+
+      }
+
+
+      .topbar-title {
+
+        display: none;
+
+      }
+
+
+      .response-status-row {
+
+        flex-wrap: wrap;
+
+      }
+
+
+      .language-select {
+
+        width: 100%;
+
+      }
+
+
+      .meeting-controls {
+
+        overflow-x: auto;
+
+        justify-content:
+          flex-start;
+
       }
 
     }
@@ -762,26 +2778,336 @@
 
 </head>
 
+
 <body>
 
-<div class="app">
 
-  <header class="topbar">
+<!-- =========================================================
+     INITIAL SESSION LOADER
+========================================================= -->
 
-    <div class="brand">
+<div
+  id="loadingOverlay"
+  class="loading-overlay"
+>
+
+  <div class="loading-card">
+
+    <div class="loading-logo">
       VEDANTU
     </div>
 
-    <div class="top-title">
+    <div
+      id="loadingTitle"
+      class="loading-title"
+    >
+      Preparing your simulation...
+    </div>
+
+    <div
+      id="loadingText"
+      class="loading-text"
+    >
+      Connecting to the counselling room.
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     PRE-CALL CAMERA + MICROPHONE CHECK
+========================================================= -->
+
+<section
+  id="preCallOverlay"
+  class="precall-overlay hidden"
+>
+
+  <div class="precall-shell">
+
+    <header class="precall-header">
+
+      <div class="brand">
+        VEDANTU
+      </div>
+
+      <div class="precall-header-title">
+        AI Counselling Coach
+      </div>
+
+    </header>
+
+
+    <div class="precall-content">
+
+      <div class="precall-card">
+
+
+        <!-- CAMERA PREVIEW -->
+
+        <div class="precall-preview-panel">
+
+          <div class="precall-preview-top">
+
+            <div class="precall-preview-title">
+              Your Preview
+            </div>
+
+            <div class="local-badge">
+              You · Academic Counsellor
+            </div>
+
+          </div>
+
+
+          <div class="precall-video-frame">
+
+            <video
+              id="preCallCameraPreview"
+              class="precall-video hidden"
+              autoplay
+              muted
+              playsinline
+            ></video>
+
+
+            <div
+              id="preCallCameraPlaceholder"
+              class="camera-placeholder"
+            >
+
+              <div class="camera-placeholder-icon">
+                📹
+              </div>
+
+              <div class="camera-placeholder-title">
+                Camera preview
+              </div>
+
+              <div class="camera-placeholder-text">
+                Allow camera and microphone access to
+                check your setup before joining the
+                counselling simulation.
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="precall-preview-footer">
+            Your camera and microphone are used for the
+            live simulation experience. Recording will
+            only be introduced as part of the dedicated
+            recording stage.
+          </div>
+
+        </div>
+
+
+        <!-- DEVICE SETTINGS -->
+
+        <div class="precall-settings-panel">
+
+          <div class="precall-eyebrow">
+            Device Check
+          </div>
+
+          <h1 class="precall-title">
+            Ready to join your counselling simulation?
+          </h1>
+
+          <div class="precall-description">
+            Check your camera and microphone before you
+            enter the live AI counselling call.
+          </div>
+
+
+          <div class="permission-list">
+
+            <div
+              id="cameraPermissionRow"
+              class="permission-row"
+            >
+
+              <div class="permission-icon">
+                📹
+              </div>
+
+              <div class="permission-copy">
+
+                <div class="permission-name">
+                  Camera
+                </div>
+
+                <div
+                  id="cameraPermissionStatus"
+                  class="permission-status"
+                >
+                  Permission required
+                </div>
+
+              </div>
+
+              <div
+                class="permission-indicator"
+              ></div>
+
+            </div>
+
+
+            <div
+              id="microphonePermissionRow"
+              class="permission-row"
+            >
+
+              <div class="permission-icon">
+                🎙
+              </div>
+
+              <div class="permission-copy">
+
+                <div class="permission-name">
+                  Microphone
+                </div>
+
+                <div
+                  id="microphonePermissionStatus"
+                  class="permission-status"
+                >
+                  Permission required
+                </div>
+
+              </div>
+
+              <div
+                class="permission-indicator"
+              ></div>
+
+            </div>
+
+          </div>
+
+
+          <div class="device-field">
+
+            <label
+              class="device-label"
+              for="cameraDeviceSelect"
+            >
+              Camera
+            </label>
+
+            <select
+              id="cameraDeviceSelect"
+              class="device-select"
+              disabled
+            >
+
+              <option value="">
+                Default Camera
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="device-field">
+
+            <label
+              class="device-label"
+              for="microphoneDeviceSelect"
+            >
+              Microphone
+            </label>
+
+            <select
+              id="microphoneDeviceSelect"
+              class="device-select"
+              disabled
+            >
+
+              <option value="">
+                Default Microphone
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="precall-actions">
+
+            <button
+              id="requestMediaButton"
+              class="permission-button"
+              type="button"
+              onclick="requestMediaPermissions()"
+            >
+              Allow Camera & Microphone
+            </button>
+
+
+            <button
+              id="joinSimulationButton"
+              class="join-button"
+              type="button"
+              onclick="joinSimulation()"
+              disabled
+            >
+              Join Simulation
+            </button>
+
+          </div>
+
+
+          <div
+            id="preCallError"
+            class="precall-error"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     LIVE SIMULATION APP
+========================================================= -->
+
+<div
+  id="appRoot"
+  class="app-root hidden"
+>
+
+
+  <!-- TOP BAR -->
+
+  <header class="topbar">
+
+    <div class="topbar-brand">
+      VEDANTU
+    </div>
+
+    <div class="topbar-title">
       AI Counselling Coach
     </div>
 
     <div class="session-status-wrap">
 
-      <div
+      <span
         id="statusDot"
         class="status-dot"
-      ></div>
+      ></span>
 
       <span id="sessionStatus">
         Connecting...
@@ -791,127 +3117,190 @@
 
   </header>
 
+
+  <!-- WORKSPACE -->
+
   <div class="workspace">
 
-    <aside class="sidebar">
 
-      <h2>
+    <!-- =====================================================
+         LEFT: SCENARIO
+    ====================================================== -->
+
+    <aside class="scenario-panel">
+
+      <h2 class="panel-title">
         Scenario
       </h2>
 
-      <div class="sidebar-subtitle">
-        Information available to you before the counselling conversation.
+      <div class="panel-description">
+        Information available to you before the
+        counselling conversation.
       </div>
 
-      <div id="scenarioDetails"></div>
+      <div
+        id="scenarioDetails"
+        class="scenario-details"
+      ></div>
 
-      <div class="locked-note">
-        🔒 Hidden customer information is intentionally not shown.
-        Discover it naturally during the conversation.
+      <div class="scenario-lock-note">
+        🔒 Hidden customer information is intentionally
+        not shown. Discover it naturally during the
+        counselling conversation.
       </div>
 
     </aside>
 
-    <main class="chat-area">
 
-      <div class="chat-header">
+    <!-- =====================================================
+         CENTRE: VIDEO CALL
+    ====================================================== -->
 
-        <div>
+    <main class="meeting-panel">
+
+
+      <!-- CALL HEADER -->
+
+      <div class="meeting-header">
+
+        <div class="meeting-heading">
 
           <div
-            id="participantName"
-            class="participant-name"
+            id="meetingTitle"
+            class="meeting-title"
           >
-            Customer
+            Counselling Simulation
           </div>
 
-          <div class="participant-subtitle">
-            Live AI Voice Simulation
+          <div class="meeting-subtitle">
+            Live AI counselling call
           </div>
 
         </div>
 
-        <div class="header-actions">
 
-          <label class="voice-toggle">
+        <div class="call-status">
 
-            <input
-              id="aiVoiceToggle"
-              type="checkbox"
-              checked
-            >
+          <span
+            class="call-status-dot"
+          ></span>
 
-            AI Voice
-
-          </label>
-
-          <button
-            id="endSessionButton"
-            class="end-button"
-            onclick="endSession()"
-          >
-            End Session
-          </button>
+          <span id="callStatusText">
+            Ready
+          </span>
 
         </div>
 
       </div>
 
+
+      <!-- VIDEO TILES -->
+
       <section
-        id="avatarStage"
-        class="avatar-stage"
-        aria-label="Live AI participants"
+        id="meetingStage"
+        class="meeting-stage"
       >
 
-        <div class="avatar-stage-shell">
+        <div
+          id="videoGrid"
+          class="video-grid"
+        >
 
-          <div class="avatar-stage-label-row">
 
-            <div class="avatar-stage-title">
-              Live Participants
-            </div>
+          <!-- COUNSELLOR TILE -->
+
+          <article
+            id="counsellorTile"
+            class="video-tile counsellor-tile"
+          >
+
+            <video
+              id="counsellorVideo"
+              class="tile-video counsellor-video"
+              autoplay
+              muted
+              playsinline
+            ></video>
+
 
             <div
-              id="avatarStageStatus"
-              class="avatar-stage-status"
+              id="counsellorVideoOff"
+              class="video-off-state hidden"
             >
-              Preparing participants...
+
+              <div class="video-off-avatar">
+                YOU
+              </div>
+
             </div>
 
-          </div>
+
+            <div class="tile-overlay">
+
+              <div class="tile-name-wrap">
+
+                <div class="tile-name">
+                  You
+                </div>
+
+                <div class="tile-role">
+                  Academic Counsellor
+                </div>
+
+              </div>
+
+
+              <div
+                id="counsellorTileState"
+                class="tile-state"
+              >
+
+                <span
+                  class="tile-state-dot"
+                ></span>
+
+                <span
+                  id="counsellorTileStateText"
+                >
+                  Ready
+                </span>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <!--
+            Parent / Student AI avatar tiles
+            are inserted here dynamically.
+          -->
 
           <div
-            id="avatarGrid"
-            class="avatar-grid"
+            id="aiParticipantMount"
+            style="display: contents;"
           ></div>
+
 
         </div>
 
       </section>
 
-      <div
-        id="messages"
-        class="messages"
-      ></div>
 
-      <div class="composer-wrap">
+      <!-- RESPONSE CAPTURE -->
 
-        <div class="voice-panel">
+      <section class="response-dock">
 
-          <button
-            id="micButton"
-            class="mic-button"
-            onclick="toggleMicrophone()"
-          >
-            🎙 Start Speaking
-          </button>
+        <div class="response-status-row">
 
           <div
             id="speechStatus"
             class="speech-status"
           >
-            Checking microphone support...
+            Microphone ready.
           </div>
+
 
           <select
             id="speechLanguage"
@@ -942,1380 +3331,2795 @@
 
         </div>
 
-        <div class="composer">
+
+        <div class="response-composer">
 
           <textarea
             id="messageInput"
+            class="response-input"
             rows="1"
-            placeholder="Speak using the microphone or type as the Academic Counsellor..."
+            placeholder="Your speech transcript will appear here. Review it, then send."
             onkeydown="handleKeydown(event)"
             oninput="handleManualInput()"
           ></textarea>
 
+
           <button
             id="sendButton"
             class="send-button"
+            type="button"
             onclick="sendMessage()"
+            aria-label="Send response"
           >
             ↑
           </button>
 
         </div>
 
-        <div class="composer-note">
-          Speak or type your response, then send.
-        </div>
 
         <div
           id="runtimeError"
           class="runtime-error"
         ></div>
 
+      </section>
+
+
+      <!-- CALL CONTROLS -->
+
+      <div class="meeting-controls">
+
+
+        <button
+          id="micButton"
+          class="call-control active"
+          type="button"
+          onclick="toggleMicrophone()"
+        >
+          🎙
+          <span id="micButtonText">
+            Start Speaking
+          </span>
+        </button>
+
+
+        <button
+          id="cameraButton"
+          class="call-control active"
+          type="button"
+          onclick="toggleCamera()"
+        >
+          📹
+          <span id="cameraButtonText">
+            Camera On
+          </span>
+        </button>
+
+
+        <label class="call-control ai-voice-control">
+
+          <input
+            id="aiVoiceToggle"
+            type="checkbox"
+            checked
+          >
+
+          🔊 AI Voice
+
+        </label>
+
+
+        <button
+          id="endSessionButton"
+          class="call-control end-call-button"
+          type="button"
+          onclick="endSession()"
+        >
+          ☎
+          End Call
+        </button>
+
+
       </div>
 
     </main>
 
-  </div>
 
-</div>
+    <!-- =====================================================
+         RIGHT: LIVE TRANSCRIPT
+    ====================================================== -->
 
-<div
-  id="loadingOverlay"
-  class="overlay"
->
+    <aside class="transcript-panel">
 
-  <div class="loading-card">
 
-    <div
-      id="loadingTitle"
-      class="loading-title"
-    >
-      Connecting to counselling room...
-    </div>
+      <div class="transcript-header">
 
-    <div
-      id="loadingText"
-      class="loading-text"
-    >
-      Preparing your voice simulation.
-    </div>
+        <div class="transcript-title-row">
+
+          <div class="transcript-title">
+            Live Transcript
+          </div>
+
+          <div class="live-pill">
+
+            <span
+              class="live-pill-dot"
+            ></span>
+
+            Live
+
+          </div>
+
+        </div>
+
+
+        <div class="transcript-description">
+          The conversation is captured here for your
+          post-session coaching and audit.
+        </div>
+
+      </div>
+
+
+      <div
+        id="transcriptList"
+        class="transcript-list"
+      >
+
+        <div
+          id="transcriptEmpty"
+          class="transcript-empty"
+        >
+          Your conversation transcript will appear here
+          once the counselling simulation begins.
+        </div>
+
+      </div>
+
+    </aside>
+
 
   </div>
 
 </div>
 <script>
 
-  const RUNTIME_URL =
-    'https://vedantu-counselling-runtime.indrani-sinha.workers.dev';
+/* =========================================================
+   RUNTIME CONFIGURATION
+========================================================= */
+
+const RUNTIME_URL =
+  'https://vedantu-counselling-runtime.indrani-sinha.workers.dev';
 
 
-  const APPS_SCRIPT_URL =
-    'https://script.google.com/a/macros/vedantu.com/s/AKfycbwETFO-mKP1Swv_NAworx4D0BFN3_ZYm2e6g1AGpdrrJ8M4W1ybsWSsOi3yNg3Tv9wS/exec';
+const APPS_SCRIPT_URL =
+  'https://script.google.com/a/macros/vedantu.com/s/AKfycbwETFO-mKP1Swv_NAworx4D0BFN3_ZYm2e6g1AGpdrrJ8M4W1ybsWSsOi3yNg3Tv9wS/exec';
 
 
-  let currentSessionId = '';
+const AVATAR_ASSETS = {
 
-  let roomData = null;
+  father:
+    'assets/avatar-father.png',
 
-  let recognition = null;
+  mother:
+    'assets/avatar-mother.png',
 
-  let recognitionSupported = false;
+  daughter:
+    'assets/avatar-daughter.png',
 
-  let listening = false;
+  son:
+    'assets/avatar-son.png'
 
-  let finalTranscript = '';
-
-  let originalSpeechTranscript = '';
-
-  let turnInProgress = false;
-
-  let transliterationInProgress = false;
-
-  let suppressManualInputReset = false;
-
-  let availableSpeechVoices = [];
+};
 
 
-  /* =========================================================
-     AVATAR ASSETS
+/* =========================================================
+   APPLICATION STATE
+========================================================= */
 
-     These files must exist in the GitHub repo:
-
-     assets/avatar-father.png
-     assets/avatar-mother.png
-     assets/avatar-daughter.png
-     assets/avatar-son.png
-  ========================================================= */
-
-  const AVATAR_ASSETS = {
-
-    father:
-      'assets/avatar-father.png',
-
-    mother:
-      'assets/avatar-mother.png',
-
-    daughter:
-      'assets/avatar-daughter.png',
-
-    son:
-      'assets/avatar-son.png'
-
-  };
+let currentSessionId =
+  '';
 
 
-  let avatarParticipants = [];
-
-  let activeAvatarRole = '';
-
-  let lastAvatarSpeaker = '';
+let roomData =
+  null;
 
 
-  window.addEventListener(
-    'DOMContentLoaded',
-    initialiseVoiceSimulation
+let localMediaStream =
+  null;
+
+
+let cameraEnabled =
+  true;
+
+
+let mediaPermissionGranted =
+  false;
+
+
+let selectedCameraDeviceId =
+  '';
+
+
+let selectedMicrophoneDeviceId =
+  '';
+
+
+let recognition =
+  null;
+
+
+let recognitionSupported =
+  false;
+
+
+let listening =
+  false;
+
+
+let finalTranscript =
+  '';
+
+
+let originalSpeechTranscript =
+  '';
+
+
+let turnInProgress =
+  false;
+
+
+let transliterationInProgress =
+  false;
+
+
+let suppressManualInputReset =
+  false;
+
+
+let availableSpeechVoices =
+  [];
+
+
+let avatarParticipants =
+  [];
+
+
+let activeAvatarRole =
+  '';
+
+
+let lastAvatarSpeaker =
+  '';
+
+
+let simulationJoined =
+  false;
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+window.addEventListener(
+  'DOMContentLoaded',
+  initialiseVoiceSimulation
+);
+
+
+window.addEventListener(
+  'beforeunload',
+  function() {
+
+    stopLocalMediaStream();
+
+  }
+);
+
+
+async function initialiseVoiceSimulation() {
+
+  initialiseSpeechRecognition();
+
+  initialiseSpeechVoices();
+
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  currentSessionId =
+    String(
+      params.get(
+        'sessionId'
+      ) ||
+      ''
+    ).trim();
+
+
+  if (!currentSessionId) {
+
+    showLoadError(
+      'No simulation session was supplied.'
+    );
+
+    return;
+
+  }
+
+
+  setupDeviceSelectors();
+
+
+  await loadRuntimeSession();
+
+}
+
+
+/* =========================================================
+   LOAD RUNTIME SESSION
+========================================================= */
+
+async function loadRuntimeSession() {
+
+  setSessionStatus(
+    'Connecting...',
+    'loading'
   );
 
 
-  async function initialiseVoiceSimulation() {
+  try {
 
-    initialiseSpeechRecognition();
+    const response =
+      await fetch(
+        RUNTIME_URL +
+        '/session?sessionId=' +
+        encodeURIComponent(
+          currentSessionId
+        ),
+        {
+          method:
+            'GET',
 
-    initialiseSpeechVoices();
+          headers: {
+            'Accept':
+              'application/json'
+          },
 
-
-    const params =
-      new URLSearchParams(
-        window.location.search
+          cache:
+            'no-store'
+        }
       );
 
 
-    currentSessionId =
-      String(
-        params.get('sessionId') ||
-        ''
-      ).trim();
+    const payload =
+      await response.json();
 
 
-    if (!currentSessionId) {
+    if (!response.ok) {
 
-      showLoadError(
-        'No simulation session was supplied.'
-      );
-
-      return;
-
-    }
-
-
-    await loadRuntimeSession();
-
-  }
-
-
-  /* =========================================================
-     LOAD SESSION
-  ========================================================= */
-
-  async function loadRuntimeSession() {
-
-    setSessionStatus(
-      'Connecting...',
-      'loading'
-    );
-
-
-    const url =
-      RUNTIME_URL +
-      '/session?sessionId=' +
-      encodeURIComponent(
-        currentSessionId
-      );
-
-
-    try {
-
-      const response =
-        await fetch(
-          url,
-          {
-            method: 'GET',
-
-            headers: {
-              'Accept':
-                'application/json'
-            },
-
-            cache:
-              'no-store'
-          }
-        );
-
-
-      const payload =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          payload &&
-          payload.error
-            ? payload.error
-            : 'Runtime returned HTTP ' +
-              response.status
-        );
-
-      }
-
-
-      if (
-        !payload ||
-        payload.success !== true ||
-        !payload.data
-      ) {
-
-        throw new Error(
-          'Simulation session could not be loaded.'
-        );
-
-      }
-
-
-      await handleRoomData(
-        payload.data
+      throw new Error(
+        payload &&
+        payload.error
+          ? payload.error
+          : 'Runtime returned HTTP ' +
+            response.status
       );
 
     }
-
-    catch (error) {
-
-      console.error(
-        'Runtime session load failed:',
-        error
-      );
-
-
-      showLoadError(
-        error &&
-        error.message
-          ? error.message
-          : String(error)
-      );
-
-    }
-
-  }
-
-
-  async function handleRoomData(
-    data
-  ) {
-
-    roomData =
-      data;
 
 
     if (
-      roomData.status !==
-      'ACTIVE'
+      !payload ||
+      payload.success !== true ||
+      !payload.data
     ) {
 
-      showLoadError(
-        'This simulation session is no longer active.'
+      throw new Error(
+        'Simulation session could not be loaded.'
       );
-
-      return;
 
     }
 
 
-    document
-      .getElementById(
-        'participantName'
-      )
-      .textContent =
-      roomData.participant ||
-      'Customer';
+    await handleRoomData(
+      payload.data
+    );
 
+  }
 
-    renderScenario(
-      roomData.scenario ||
-      {}
+  catch (error) {
+
+    console.error(
+      'Runtime session load failed:',
+      error
     );
 
 
-    configureSpeechLanguage(
-      roomData.scenario ||
-      {}
+    showLoadError(
+      error &&
+      error.message
+        ? error.message
+        : String(error)
     );
 
+  }
 
-    configureAvatarStage(
-      roomData
+}
+
+
+async function handleRoomData(
+  data
+) {
+
+  roomData =
+    data;
+
+
+  if (
+    roomData.status !==
+    'ACTIVE'
+  ) {
+
+    showLoadError(
+      'This simulation session is no longer active.'
     );
 
-
-    setSpeechStatus(
-      'Preparing conversation...'
-    );
-
-
-    roomData.conversationHistory =
-      await prepareDisplayHistory(
-        roomData.conversationHistory ||
-        []
-      );
-
-
-    renderConversation(
-      roomData.conversationHistory
-    );
-
-
-    setSessionStatus(
-      'Live Session',
-      'active'
-    );
-
-
-    setSpeechStatus(
-      'Microphone ready.'
-    );
-
-
-    hideLoadingOverlay();
-
-
-    document
-      .getElementById(
-        'messageInput'
-      )
-      .focus();
+    return;
 
   }
 
 
-  /* =========================================================
-     SCENARIO
-  ========================================================= */
+  renderScenario(
+    roomData.scenario ||
+    {}
+  );
 
-  function renderScenario(
-    scenario
-  ) {
 
-    const items = [
+  configureSpeechLanguage(
+    roomData.scenario ||
+    {}
+  );
 
-      [
-        'Language',
-        scenario.language
-      ],
 
-      [
-        'Location',
-        [
-          scenario.centre,
-          scenario.city,
-          scenario.zone
-        ]
-          .filter(Boolean)
-          .join(' • ')
-      ],
+  configureAvatarParticipants(
+    roomData
+  );
 
-      [
-        'Grade',
-        scenario.grade
-          ? (
-              String(
-                scenario.grade
-              ) ===
-              'Dropper'
-                ? 'Dropper'
-                : 'Grade ' +
-                  scenario.grade
-            )
-          : ''
-      ],
 
-      [
-        'Board',
-        scenario.board
-      ],
+  roomData.conversationHistory =
+    await prepareDisplayHistory(
+      roomData.conversationHistory ||
+      []
+    );
 
-      [
-        'Who Is Present',
-        scenario.whoPresent
-      ],
 
-      [
-        'Course Intent',
-        scenario.courseIntent
-      ],
+  renderTranscript(
+    roomData.conversationHistory
+  );
 
-      [
-        'Lead Source',
-        scenario.leadSource
-      ],
 
-      [
-        'Interaction Stage',
-        scenario.interactionStage
-      ],
-
-      [
-        'Test / Scholarship',
-        getTestText(
-          scenario
+  document
+    .getElementById(
+      'meetingTitle'
+    )
+    .textContent =
+    roomData.participant
+      ? (
+          'Counselling Call · ' +
+          roomData.participant
         )
-      ]
+      : 'Counselling Simulation';
 
-    ];
+
+  hideLoadingOverlay();
+
+
+  showPreCallScreen();
+
+}
+
+
+/* =========================================================
+   PRE-CALL SCREEN
+========================================================= */
+
+function showPreCallScreen() {
+
+  document
+    .getElementById(
+      'preCallOverlay'
+    )
+    .classList.remove(
+      'hidden'
+    );
+
+
+  document
+    .getElementById(
+      'appRoot'
+    )
+    .classList.add(
+      'hidden'
+    );
+
+}
+
+
+function setupDeviceSelectors() {
+
+  const cameraSelect =
+    document.getElementById(
+      'cameraDeviceSelect'
+    );
+
+
+  const microphoneSelect =
+    document.getElementById(
+      'microphoneDeviceSelect'
+    );
+
+
+  cameraSelect.addEventListener(
+    'change',
+    async function() {
+
+      selectedCameraDeviceId =
+        cameraSelect.value;
+
+
+      if (
+        mediaPermissionGranted
+      ) {
+
+        await restartLocalMediaStream();
+
+      }
+
+    }
+  );
+
+
+  microphoneSelect.addEventListener(
+    'change',
+    async function() {
+
+      selectedMicrophoneDeviceId =
+        microphoneSelect.value;
+
+
+      if (
+        mediaPermissionGranted
+      ) {
+
+        await restartLocalMediaStream();
+
+      }
+
+    }
+  );
+
+}
+
+
+async function requestMediaPermissions() {
+
+  clearPreCallError();
+
+
+  const button =
+    document.getElementById(
+      'requestMediaButton'
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    'Requesting access...';
+
+
+  try {
+
+    await startLocalMediaStream(
+      true
+    );
+
+
+    mediaPermissionGranted =
+      true;
+
+
+    updatePermissionState(
+      'camera',
+      true,
+      'Camera ready'
+    );
+
+
+    updatePermissionState(
+      'microphone',
+      true,
+      'Microphone ready'
+    );
+
+
+    await populateMediaDevices();
 
 
     document
       .getElementById(
-        'scenarioDetails'
+        'joinSimulationButton'
       )
-      .innerHTML =
-      items
-        .filter(
-          function(item) {
+      .disabled =
+      false;
 
-            return Boolean(
-              item[1]
-            );
 
+    button.textContent =
+      'Camera & Microphone Ready';
+
+  }
+
+  catch (error) {
+
+    console.error(
+      'Media permission failed:',
+      error
+    );
+
+
+    mediaPermissionGranted =
+      false;
+
+
+    updatePermissionState(
+      'camera',
+      false,
+      'Camera permission required'
+    );
+
+
+    updatePermissionState(
+      'microphone',
+      false,
+      'Microphone permission required'
+    );
+
+
+    showPreCallError(
+      getMediaPermissionErrorMessage(
+        error
+      )
+    );
+
+
+    button.disabled =
+      false;
+
+
+    button.textContent =
+      'Try Camera & Microphone Again';
+
+  }
+
+}
+
+
+async function startLocalMediaStream(
+  useDefaultDevices
+) {
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ) {
+
+    throw new Error(
+      'Camera and microphone access is not supported in this browser.'
+    );
+
+  }
+
+
+  stopLocalMediaStream();
+
+
+  const videoConstraints =
+    useDefaultDevices ||
+    !selectedCameraDeviceId
+      ? true
+      : {
+          deviceId: {
+            exact:
+              selectedCameraDeviceId
           }
-        )
-        .map(
-          function(item) {
+        };
 
-            return `
-              <div class="scenario-item">
 
-                <div class="scenario-label">
+  const audioConstraints =
+    useDefaultDevices ||
+    !selectedMicrophoneDeviceId
+      ? true
+      : {
+          deviceId: {
+            exact:
+              selectedMicrophoneDeviceId
+          }
+        };
+
+
+  localMediaStream =
+    await navigator
+      .mediaDevices
+      .getUserMedia(
+        {
+          video:
+            videoConstraints,
+
+          audio:
+            audioConstraints
+        }
+      );
+
+
+  const videoTrack =
+    localMediaStream
+      .getVideoTracks()[0];
+
+
+  const audioTrack =
+    localMediaStream
+      .getAudioTracks()[0];
+
+
+  if (!videoTrack) {
+
+    throw new Error(
+      'No working camera was detected.'
+    );
+
+  }
+
+
+  if (!audioTrack) {
+
+    throw new Error(
+      'No working microphone was detected.'
+    );
+
+  }
+
+
+  const videoSettings =
+    videoTrack.getSettings
+      ? videoTrack.getSettings()
+      : {};
+
+
+  const audioSettings =
+    audioTrack.getSettings
+      ? audioTrack.getSettings()
+      : {};
+
+
+  if (
+    videoSettings.deviceId
+  ) {
+
+    selectedCameraDeviceId =
+      videoSettings.deviceId;
+
+  }
+
+
+  if (
+    audioSettings.deviceId
+  ) {
+
+    selectedMicrophoneDeviceId =
+      audioSettings.deviceId;
+
+  }
+
+
+  attachStreamToPreview();
+
+
+  if (
+    simulationJoined
+  ) {
+
+    attachStreamToCounsellorTile();
+
+  }
+
+}
+
+
+async function restartLocalMediaStream() {
+
+  clearPreCallError();
+
+
+  try {
+
+    await startLocalMediaStream(
+      false
+    );
+
+
+    await populateMediaDevices();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      'Device switch failed:',
+      error
+    );
+
+
+    showPreCallError(
+      'Unable to switch to the selected device. Please choose another camera or microphone.'
+    );
+
+  }
+
+}
+
+
+function attachStreamToPreview() {
+
+  const preview =
+    document.getElementById(
+      'preCallCameraPreview'
+    );
+
+
+  const placeholder =
+    document.getElementById(
+      'preCallCameraPlaceholder'
+    );
+
+
+  if (
+    !localMediaStream
+  ) {
+
+    preview.classList.add(
+      'hidden'
+    );
+
+
+    placeholder.classList.remove(
+      'hidden'
+    );
+
+
+    return;
+
+  }
+
+
+  preview.srcObject =
+    localMediaStream;
+
+
+  preview.classList.remove(
+    'hidden'
+  );
+
+
+  placeholder.classList.add(
+    'hidden'
+  );
+
+
+  preview.play()
+    .catch(
+      function(error) {
+
+        console.warn(
+          'Pre-call preview playback warning:',
+          error
+        );
+
+      }
+    );
+
+}
+
+
+function attachStreamToCounsellorTile() {
+
+  const video =
+    document.getElementById(
+      'counsellorVideo'
+    );
+
+
+  const offState =
+    document.getElementById(
+      'counsellorVideoOff'
+    );
+
+
+  if (
+    !localMediaStream ||
+    !cameraEnabled
+  ) {
+
+    video.classList.add(
+      'hidden'
+    );
+
+
+    offState.classList.remove(
+      'hidden'
+    );
+
+
+    return;
+
+  }
+
+
+  video.srcObject =
+    localMediaStream;
+
+
+  video.classList.remove(
+    'hidden'
+  );
+
+
+  offState.classList.add(
+    'hidden'
+  );
+
+
+  video.play()
+    .catch(
+      function(error) {
+
+        console.warn(
+          'Counsellor camera playback warning:',
+          error
+        );
+
+      }
+    );
+
+}
+
+
+function stopLocalMediaStream() {
+
+  if (!localMediaStream) {
+
+    return;
+
+  }
+
+
+  localMediaStream
+    .getTracks()
+    .forEach(
+      function(track) {
+
+        try {
+
+          track.stop();
+
+        }
+
+        catch (error) {
+
+        }
+
+      }
+    );
+
+
+  localMediaStream =
+    null;
+
+}
+
+
+async function populateMediaDevices() {
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.enumerateDevices
+  ) {
+
+    return;
+
+  }
+
+
+  const devices =
+    await navigator
+      .mediaDevices
+      .enumerateDevices();
+
+
+  const cameras =
+    devices.filter(
+      function(device) {
+
+        return (
+          device.kind ===
+          'videoinput'
+        );
+
+      }
+    );
+
+
+  const microphones =
+    devices.filter(
+      function(device) {
+
+        return (
+          device.kind ===
+          'audioinput'
+        );
+
+      }
+    );
+
+
+  populateDeviceSelect(
+    'cameraDeviceSelect',
+    cameras,
+    selectedCameraDeviceId,
+    'Camera'
+  );
+
+
+  populateDeviceSelect(
+    'microphoneDeviceSelect',
+    microphones,
+    selectedMicrophoneDeviceId,
+    'Microphone'
+  );
+
+}
+
+
+function populateDeviceSelect(
+  elementId,
+  devices,
+  selectedId,
+  defaultLabel
+) {
+
+  const select =
+    document.getElementById(
+      elementId
+    );
+
+
+  select.innerHTML =
+    '';
+
+
+  if (
+    !devices.length
+  ) {
+
+    const option =
+      document.createElement(
+        'option'
+      );
+
+
+    option.value =
+      '';
+
+
+    option.textContent =
+      'No ' +
+      defaultLabel +
+      ' detected';
+
+
+    select.appendChild(
+      option
+    );
+
+
+    select.disabled =
+      true;
+
+
+    return;
+
+  }
+
+
+  devices.forEach(
+    function(device, index) {
+
+      const option =
+        document.createElement(
+          'option'
+        );
+
+
+      option.value =
+        device.deviceId;
+
+
+      option.textContent =
+        device.label ||
+        (
+          defaultLabel +
+          ' ' +
+          (
+            index + 1
+          )
+        );
+
+
+      if (
+        device.deviceId ===
+        selectedId
+      ) {
+
+        option.selected =
+          true;
+
+      }
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  select.disabled =
+    false;
+
+
+  if (
+    !select.value &&
+    devices[0]
+  ) {
+
+    select.value =
+      devices[0].deviceId;
+
+  }
+
+}
+
+
+function updatePermissionState(
+  type,
+  allowed,
+  text
+) {
+
+  const row =
+    document.getElementById(
+      type === 'camera'
+        ? 'cameraPermissionRow'
+        : 'microphonePermissionRow'
+    );
+
+
+  const status =
+    document.getElementById(
+      type === 'camera'
+        ? 'cameraPermissionStatus'
+        : 'microphonePermissionStatus'
+    );
+
+
+  row.classList.remove(
+    'allowed',
+    'denied'
+  );
+
+
+  row.classList.add(
+    allowed
+      ? 'allowed'
+      : 'denied'
+  );
+
+
+  status.textContent =
+    text;
+
+}
+
+
+function getMediaPermissionErrorMessage(
+  error
+) {
+
+  const name =
+    error &&
+    error.name
+      ? error.name
+      : '';
+
+
+  if (
+    name ===
+    'NotAllowedError' ||
+    name ===
+    'PermissionDeniedError'
+  ) {
+
+    return (
+      'Camera or microphone permission was blocked. ' +
+      'Allow both permissions in your browser settings and try again.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'NotFoundError' ||
+    name ===
+    'DevicesNotFoundError'
+  ) {
+
+    return (
+      'A camera or microphone could not be detected. ' +
+      'Connect the required devices and try again.'
+    );
+
+  }
+
+
+  if (
+    name ===
+    'NotReadableError' ||
+    name ===
+    'TrackStartError'
+  ) {
+
+    return (
+      'Your camera or microphone is currently being used by another application. ' +
+      'Close the other application and try again.'
+    );
+
+  }
+
+
+  return (
+    error &&
+    error.message
+      ? error.message
+      : 'Unable to access your camera and microphone.'
+  );
+
+}
+
+
+function showPreCallError(
+  message
+) {
+
+  const element =
+    document.getElementById(
+      'preCallError'
+    );
+
+
+  element.textContent =
+    message;
+
+
+  element.classList.add(
+    'visible'
+  );
+
+}
+
+
+function clearPreCallError() {
+
+  const element =
+    document.getElementById(
+      'preCallError'
+    );
+
+
+  element.textContent =
+    '';
+
+
+  element.classList.remove(
+    'visible'
+  );
+
+}
+
+
+/* =========================================================
+   JOIN LIVE SIMULATION
+========================================================= */
+
+function joinSimulation() {
+
+  if (
+    !mediaPermissionGranted ||
+    !localMediaStream
+  ) {
+
+    showPreCallError(
+      'Please allow both camera and microphone access before joining the simulation.'
+    );
+
+    return;
+
+  }
+
+
+  simulationJoined =
+    true;
+
+
+  document
+    .getElementById(
+      'preCallOverlay'
+    )
+    .classList.add(
+      'hidden'
+    );
+
+
+  document
+    .getElementById(
+      'appRoot'
+    )
+    .classList.remove(
+      'hidden'
+    );
+
+
+  attachStreamToCounsellorTile();
+
+
+  renderAIParticipantTiles();
+
+
+  renderTranscript(
+    roomData &&
+    Array.isArray(
+      roomData.conversationHistory
+    )
+      ? roomData.conversationHistory
+      : []
+  );
+
+
+  setSessionStatus(
+    'Live Session',
+    'active'
+  );
+
+
+  setCallStatus(
+    'Call in progress'
+  );
+
+
+  setSpeechStatus(
+    'Microphone ready. Click Start Speaking when you are ready.'
+  );
+
+
+  setCounsellorState(
+    'ready'
+  );
+
+
+  setAIParticipantState(
+    'ready'
+  );
+
+}
+
+
+/* =========================================================
+   SCENARIO
+========================================================= */
+
+function renderScenario(
+  scenario
+) {
+
+  const items = [
+
+    [
+      'Language',
+      scenario.language
+    ],
+
+    [
+      'Location',
+      [
+        scenario.centre,
+        scenario.city,
+        scenario.zone
+      ]
+        .filter(Boolean)
+        .join(' • ')
+    ],
+
+    [
+      'Grade',
+      scenario.grade
+        ? (
+            String(
+              scenario.grade
+            ) ===
+            'Dropper'
+              ? 'Dropper'
+              : 'Grade ' +
+                scenario.grade
+          )
+        : ''
+    ],
+
+    [
+      'Board',
+      scenario.board
+    ],
+
+    [
+      'Who Is Present',
+      scenario.whoPresent
+    ],
+
+    [
+      'Course Intent',
+      scenario.courseIntent
+    ],
+
+    [
+      'Lead Source',
+      scenario.leadSource
+    ],
+
+    [
+      'Interaction Stage',
+      scenario.interactionStage
+    ],
+
+    [
+      'Test / Scholarship',
+      getTestText(
+        scenario
+      )
+    ]
+
+  ];
+
+
+  document
+    .getElementById(
+      'scenarioDetails'
+    )
+    .innerHTML =
+    items
+      .filter(
+        function(item) {
+
+          return Boolean(
+            item[1]
+          );
+
+        }
+      )
+      .map(
+        function(item) {
+
+          return `
+            <div class="scenario-item">
+
+              <div class="scenario-label">
+                ${escapeHtml(
+                  item[0]
+                )}
+              </div>
+
+              <div class="scenario-value">
+                ${escapeHtml(
+                  String(
+                    item[1]
+                  )
+                )}
+              </div>
+
+            </div>
+          `;
+
+        }
+      )
+      .join('');
+
+}
+
+
+function getTestText(
+  scenario
+) {
+
+  if (!scenario.testTaken) {
+
+    return 'Not Taken';
+
+  }
+
+
+  let output =
+    scenario.testType ||
+    'Taken';
+
+
+  if (
+    scenario.scholarshipPercentage !==
+      null &&
+    scenario.scholarshipPercentage !==
+      undefined &&
+    scenario.scholarshipPercentage !==
+      ''
+  ) {
+
+    output +=
+      ' • ' +
+      scenario.scholarshipPercentage +
+      '% Scholarship';
+
+  }
+
+
+  return output;
+
+}
+
+
+/* =========================================================
+   AVATAR IDENTITY
+========================================================= */
+
+function configureAvatarParticipants(
+  data
+) {
+
+  const scenario =
+    data &&
+    data.scenario
+      ? data.scenario
+      : {};
+
+
+  const whoPresent =
+    String(
+      scenario.whoPresent ||
+      data.participant ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const hash =
+    getStableSessionHash(
+      currentSessionId
+    );
+
+
+  const parentVariant =
+    hash % 2 === 0
+      ? 'father'
+      : 'mother';
+
+
+  const studentVariant =
+    Math.floor(
+      hash / 2
+    ) % 2 === 0
+      ? 'daughter'
+      : 'son';
+
+
+  const participants =
+    [];
+
+
+  if (
+    whoPresent.includes(
+      'both'
+    ) ||
+    (
+      whoPresent.includes(
+        'parent'
+      ) &&
+      whoPresent.includes(
+        'student'
+      )
+    )
+  ) {
+
+    participants.push(
+      buildAvatarParticipant(
+        'parent',
+        parentVariant
+      )
+    );
+
+
+    participants.push(
+      buildAvatarParticipant(
+        'student',
+        studentVariant
+      )
+    );
+
+  }
+
+  else if (
+    whoPresent.includes(
+      'student'
+    ) ||
+    whoPresent.includes(
+      'child'
+    )
+  ) {
+
+    participants.push(
+      buildAvatarParticipant(
+        'student',
+        studentVariant
+      )
+    );
+
+  }
+
+  else {
+
+    participants.push(
+      buildAvatarParticipant(
+        'parent',
+        parentVariant
+      )
+    );
+
+  }
+
+
+  avatarParticipants =
+    participants;
+
+}
+
+
+function buildAvatarParticipant(
+  role,
+  variant
+) {
+
+  let displayName =
+    'Participant';
+
+
+  let image =
+    '';
+
+
+  let fallbackLetter =
+    'P';
+
+
+  if (
+    variant ===
+    'father'
+  ) {
+
+    displayName =
+      'Father';
+
+    image =
+      AVATAR_ASSETS.father;
+
+    fallbackLetter =
+      'F';
+
+  }
+
+  else if (
+    variant ===
+    'mother'
+  ) {
+
+    displayName =
+      'Mother';
+
+    image =
+      AVATAR_ASSETS.mother;
+
+    fallbackLetter =
+      'M';
+
+  }
+
+  else if (
+    variant ===
+    'daughter'
+  ) {
+
+    displayName =
+      'Daughter';
+
+    image =
+      AVATAR_ASSETS.daughter;
+
+    fallbackLetter =
+      'D';
+
+  }
+
+  else {
+
+    displayName =
+      'Son';
+
+    image =
+      AVATAR_ASSETS.son;
+
+    fallbackLetter =
+      'S';
+
+  }
+
+
+  return {
+
+    role:
+      role,
+
+    variant:
+      variant,
+
+    displayName:
+      displayName,
+
+    roleLabel:
+      role === 'parent'
+        ? 'Parent'
+        : 'Student',
+
+    image:
+      image,
+
+    fallbackLetter:
+      fallbackLetter
+
+  };
+
+}
+
+
+function getStableSessionHash(
+  value
+) {
+
+  const input =
+    String(
+      value ||
+      'vedantu-avatar'
+    );
+
+
+  let hash =
+    0;
+
+
+  for (
+    let i = 0;
+    i < input.length;
+    i++
+  ) {
+
+    hash =
+      (
+        (
+          hash << 5
+        ) -
+        hash
+      ) +
+      input.charCodeAt(
+        i
+      );
+
+
+    hash |=
+      0;
+
+  }
+
+
+  return Math.abs(
+    hash
+  );
+
+}
+/* =========================================================
+   AI VIDEO PARTICIPANTS
+========================================================= */
+
+function renderAIParticipantTiles() {
+
+  const mount =
+    document.getElementById(
+      'aiParticipantMount'
+    );
+
+
+  const grid =
+    document.getElementById(
+      'videoGrid'
+    );
+
+
+  if (!mount) {
+
+    return;
+
+  }
+
+
+  grid.classList.toggle(
+    'three-participants',
+    avatarParticipants.length === 2
+  );
+
+
+  mount.innerHTML =
+    avatarParticipants
+      .map(
+        function(participant) {
+
+          return `
+            <article
+              id="aiTile-${escapeHtml(
+                participant.role
+              )}"
+              class="video-tile ai-video-tile"
+              data-ai-role="${escapeHtml(
+                participant.role
+              )}"
+            >
+
+              <div class="ai-avatar-stage">
+
+                <img
+                  class="ai-avatar-image"
+                  src="${escapeHtml(
+                    participant.image
+                  )}"
+                  alt="${escapeHtml(
+                    participant.displayName +
+                    ' avatar'
+                  )}"
+                  onerror="handleAvatarImageError(this)"
+                >
+
+                <div
+                  class="ai-avatar-fallback"
+                  aria-hidden="true"
+                >
                   ${escapeHtml(
-                    item[0]
-                  )}
-                </div>
-
-                <div class="scenario-value">
-                  ${escapeHtml(
-                    String(
-                      item[1]
-                    )
+                    participant.fallbackLetter
                   )}
                 </div>
 
               </div>
-            `;
 
-          }
-        )
-        .join('');
 
-  }
-
-
-  function getTestText(
-    scenario
-  ) {
-
-    if (!scenario.testTaken) {
-
-      return 'Not Taken';
-
-    }
-
-
-    let output =
-      scenario.testType ||
-      'Taken';
-
-
-    if (
-      scenario.scholarshipPercentage !== null &&
-      scenario.scholarshipPercentage !== undefined &&
-      scenario.scholarshipPercentage !== ''
-    ) {
-
-      output +=
-        ' • ' +
-        scenario.scholarshipPercentage +
-        '% Scholarship';
-
-    }
-
-
-    return output;
-
-  }
-
-
-  /* =========================================================
-     AVATAR STAGE
-  ========================================================= */
-
-  function configureAvatarStage(
-    data
-  ) {
-
-    const scenario =
-      data &&
-      data.scenario
-        ? data.scenario
-        : {};
-
-
-    const whoPresent =
-      String(
-        scenario.whoPresent ||
-        data.participant ||
-        ''
-      )
-        .trim()
-        .toLowerCase();
-
-
-    /*
-       Avatar selection is stable for the same session.
-
-       Parent:
-       Father or Mother
-
-       Student:
-       Daughter or Son
-
-       Both:
-       One Parent + One Student
-
-       Refreshing the same session will not randomly
-       switch the participant identities.
-    */
-
-    const hash =
-      getStableSessionHash(
-        currentSessionId
-      );
-
-
-    const parentVariant =
-      hash % 2 === 0
-        ? 'father'
-        : 'mother';
-
-
-    const studentVariant =
-      Math.floor(
-        hash / 2
-      ) % 2 === 0
-        ? 'daughter'
-        : 'son';
-
-
-    const participants =
-      [];
-
-
-    if (
-      whoPresent.includes(
-        'both'
-      ) ||
-      (
-        whoPresent.includes(
-          'parent'
-        ) &&
-        whoPresent.includes(
-          'student'
-        )
-      )
-    ) {
-
-      participants.push(
-        buildAvatarParticipant(
-          'parent',
-          parentVariant
-        )
-      );
-
-
-      participants.push(
-        buildAvatarParticipant(
-          'student',
-          studentVariant
-        )
-      );
-
-    }
-
-    else if (
-      whoPresent.includes(
-        'student'
-      ) ||
-      whoPresent.includes(
-        'child'
-      )
-    ) {
-
-      participants.push(
-        buildAvatarParticipant(
-          'student',
-          studentVariant
-        )
-      );
-
-    }
-
-    else {
-
-      participants.push(
-        buildAvatarParticipant(
-          'parent',
-          parentVariant
-        )
-      );
-
-    }
-
-
-    avatarParticipants =
-      participants;
-
-
-    renderAvatarStage();
-
-
-    setAvatarStageState(
-      'idle'
-    );
-
-  }
-
-
-  function buildAvatarParticipant(
-    role,
-    variant
-  ) {
-
-    const isParent =
-      role ===
-      'parent';
-
-
-    let displayName = '';
-
-    let image = '';
-
-    let fallbackLetter = '';
-
-
-    if (
-      variant ===
-      'father'
-    ) {
-
-      displayName =
-        'Father';
-
-      image =
-        AVATAR_ASSETS.father;
-
-      fallbackLetter =
-        'F';
-
-    }
-
-    else if (
-      variant ===
-      'mother'
-    ) {
-
-      displayName =
-        'Mother';
-
-      image =
-        AVATAR_ASSETS.mother;
-
-      fallbackLetter =
-        'M';
-
-    }
-
-    else if (
-      variant ===
-      'daughter'
-    ) {
-
-      displayName =
-        'Daughter';
-
-      image =
-        AVATAR_ASSETS.daughter;
-
-      fallbackLetter =
-        'D';
-
-    }
-
-    else {
-
-      displayName =
-        'Son';
-
-      image =
-        AVATAR_ASSETS.son;
-
-      fallbackLetter =
-        'S';
-
-    }
-
-
-    return {
-
-      role:
-        role,
-
-      variant:
-        variant,
-
-      displayName:
-        displayName,
-
-      roleLabel:
-        isParent
-          ? 'Parent'
-          : 'Student',
-
-      image:
-        image,
-
-      fallbackLetter:
-        fallbackLetter
-
-    };
-
-  }
-
-
-  function getStableSessionHash(
-    value
-  ) {
-
-    const input =
-      String(
-        value ||
-        'vedantu-avatar'
-      );
-
-
-    let hash =
-      0;
-
-
-    for (
-      let i = 0;
-      i < input.length;
-      i++
-    ) {
-
-      hash =
-        (
-          (
-            hash << 5
-          ) -
-          hash
-        ) +
-        input.charCodeAt(
-          i
-        );
-
-
-      hash |=
-        0;
-
-    }
-
-
-    return Math.abs(
-      hash
-    );
-
-  }
-
-
-  function renderAvatarStage() {
-
-    const grid =
-      document.getElementById(
-        'avatarGrid'
-      );
-
-
-    if (!grid) {
-
-      return;
-
-    }
-
-
-    grid.className =
-      avatarParticipants.length === 1
-        ? 'avatar-grid single'
-        : 'avatar-grid';
-
-
-    grid.innerHTML =
-      avatarParticipants
-        .map(
-          function(participant) {
-
-            return `
-              <article
-                id="avatarCard-${escapeHtml(
-                  participant.role
-                )}"
-                class="avatar-card"
-                data-avatar-role="${escapeHtml(
-                  participant.role
-                )}"
+              <div
+                class="speaking-pulse"
+                aria-hidden="true"
               >
 
-                <div class="avatar-image-wrap">
+                <span class="speaking-bar"></span>
+                <span class="speaking-bar"></span>
+                <span class="speaking-bar"></span>
+                <span class="speaking-bar"></span>
 
-                  <img
-                    class="avatar-image"
-                    src="${escapeHtml(
-                      participant.image
-                    )}"
-                    alt="${escapeHtml(
-                      participant.displayName +
-                      ' avatar'
-                    )}"
-                    onerror="handleAvatarImageError(this)"
-                  >
-
-                  <div
-                    class="avatar-fallback"
-                    aria-hidden="true"
-                  >
-                    ${escapeHtml(
-                      participant.fallbackLetter
-                    )}
-                  </div>
-
-                </div>
+              </div>
 
 
-                <div class="avatar-meta">
+              <div class="tile-overlay">
 
-                  <div class="avatar-name">
+                <div class="tile-name-wrap">
+
+                  <div class="tile-name">
                     ${escapeHtml(
                       participant.displayName
                     )}
                   </div>
 
-                  <div class="avatar-role">
+                  <div class="tile-role">
                     ${escapeHtml(
                       participant.roleLabel
                     )}
-                  </div>
-
-                  <div class="avatar-state">
-
-                    <span class="avatar-state-dot"></span>
-
-                    <span
-                      class="avatar-state-text"
-                    >
-                      Ready
-                    </span>
-
-                    <span
-                      class="avatar-bars"
-                      aria-hidden="true"
-                    >
-                      <span class="avatar-bar"></span>
-                      <span class="avatar-bar"></span>
-                      <span class="avatar-bar"></span>
-                      <span class="avatar-bar"></span>
-                    </span>
-
+                    · AI Participant
                   </div>
 
                 </div>
 
-              </article>
-            `;
 
-          }
-        )
-        .join('');
+                <div
+                  class="tile-state"
+                >
+
+                  <span
+                    class="tile-state-dot"
+                  ></span>
+
+                  <span
+                    id="aiTileStateText-${escapeHtml(
+                      participant.role
+                    )}"
+                  >
+                    Ready
+                  </span>
+
+                </div>
+
+              </div>
+
+            </article>
+          `;
+
+        }
+      )
+      .join('');
+
+}
+
+
+function handleAvatarImageError(
+  image
+) {
+
+  if (!image) {
+
+    return;
 
   }
 
 
-  function handleAvatarImageError(
-    image
+  image.style.display =
+    'none';
+
+
+  const stage =
+    image.parentElement;
+
+
+  if (!stage) {
+
+    return;
+
+  }
+
+
+  const fallback =
+    stage.querySelector(
+      '.ai-avatar-fallback'
+    );
+
+
+  if (fallback) {
+
+    fallback.style.display =
+      'flex';
+
+  }
+
+}
+
+
+/* =========================================================
+   ACTIVE SPEAKER STATES
+========================================================= */
+
+function setCounsellorState(
+  state
+) {
+
+  const tile =
+    document.getElementById(
+      'counsellorTile'
+    );
+
+
+  const text =
+    document.getElementById(
+      'counsellorTileStateText'
+    );
+
+
+  if (
+    !tile ||
+    !text
   ) {
 
-    if (!image) {
-
-      return;
-
-    }
-
-
-    image.style.display =
-      'none';
-
-
-    const wrapper =
-      image.parentElement;
-
-
-    if (!wrapper) {
-
-      return;
-
-    }
-
-
-    const fallback =
-      wrapper.querySelector(
-        '.avatar-fallback'
-      );
-
-
-    if (fallback) {
-
-      fallback.style.display =
-        'flex';
-
-    }
+    return;
 
   }
 
 
-  function resolveAvatarRoleFromSpeaker(
+  tile.classList.remove(
+    'active-speaker',
+    'thinking'
+  );
+
+
+  if (
+    state ===
+    'speaking'
+  ) {
+
+    tile.classList.add(
+      'active-speaker'
+    );
+
+
+    text.textContent =
+      'Speaking';
+
+  }
+
+  else if (
+    state ===
+    'listening'
+  ) {
+
+    text.textContent =
+      'Listening';
+
+  }
+
+  else {
+
+    text.textContent =
+      'Ready';
+
+  }
+
+}
+
+
+function setAIParticipantState(
+  state,
+  speaker
+) {
+
+  const resolvedRole =
     speaker
+      ? resolveAvatarRoleFromSpeaker(
+          speaker
+        )
+      : '';
+
+
+  if (
+    resolvedRole
   ) {
 
-    const value =
+    activeAvatarRole =
+      resolvedRole;
+
+
+    lastAvatarSpeaker =
       String(
         speaker ||
         ''
-      )
-        .trim()
-        .toLowerCase();
-
-
-    if (
-      value.includes(
-        'parent'
-      ) ||
-      value.includes(
-        'father'
-      ) ||
-      value.includes(
-        'mother'
-      ) ||
-      value.includes(
-        'dad'
-      ) ||
-      value.includes(
-        'mom'
-      ) ||
-      value.includes(
-        'mum'
-      )
-    ) {
-
-      return 'parent';
-
-    }
-
-
-    if (
-      value.includes(
-        'student'
-      ) ||
-      value.includes(
-        'son'
-      ) ||
-      value.includes(
-        'daughter'
-      ) ||
-      value.includes(
-        'child'
-      )
-    ) {
-
-      return 'student';
-
-    }
-
-
-    if (
-      avatarParticipants.length ===
-      1
-    ) {
-
-      return avatarParticipants[
-        0
-      ].role;
-
-    }
-
-
-    if (
-      activeAvatarRole
-    ) {
-
-      return activeAvatarRole;
-
-    }
-
-
-    return avatarParticipants.length
-      ? avatarParticipants[
-          0
-        ].role
-      : '';
+      );
 
   }
 
 
-  function getLatestCustomerSpeaker(
-    history
-  ) {
+  avatarParticipants.forEach(
+    function(participant) {
 
-    if (
-      !Array.isArray(
-        history
-      )
-    ) {
-
-      return '';
-
-    }
-
-
-    for (
-      let i =
-        history.length - 1;
-      i >= 0;
-      i--
-    ) {
-
-      const speaker =
-        String(
-          history[i].speaker ||
-          ''
+      const tile =
+        document.getElementById(
+          'aiTile-' +
+          participant.role
         );
 
 
-      const normalized =
-        speaker
-          .trim()
-          .toLowerCase();
-
-
-      const isCounsellor =
-        normalized ===
-          'academic counsellor' ||
-        normalized ===
-          'counsellor' ||
-        normalized ===
-          'ac';
+      const stateText =
+        document.getElementById(
+          'aiTileStateText-' +
+          participant.role
+        );
 
 
       if (
-        speaker &&
-        !isCounsellor
+        !tile ||
+        !stateText
       ) {
 
-        return speaker;
+        return;
 
       }
 
-    }
 
-
-    return '';
-
-  }
-
-
-  function setAvatarStageState(
-    state,
-    speaker
-  ) {
-
-    const normalizedState =
-      String(
-        state ||
-        'idle'
-      )
-        .trim()
-        .toLowerCase();
-
-
-    const resolvedRole =
-      speaker
-        ? resolveAvatarRoleFromSpeaker(
-            speaker
-          )
-        : '';
-
-
-    if (
-      resolvedRole
-    ) {
-
-      activeAvatarRole =
-        resolvedRole;
-
-
-      lastAvatarSpeaker =
-        String(
-          speaker ||
-          ''
-        );
-
-    }
-
-
-    const stageStatus =
-      document.getElementById(
-        'avatarStageStatus'
+      tile.classList.remove(
+        'active-speaker',
+        'thinking'
       );
 
 
-    if (
-      stageStatus
-    ) {
-
       if (
-        normalizedState ===
+        state ===
         'listening'
       ) {
 
-        stageStatus.textContent =
-          'Listening to counsellor';
+        stateText.textContent =
+          'Listening';
+
+        return;
 
       }
 
-      else if (
-        normalizedState ===
+
+      if (
+        state ===
         'thinking'
       ) {
 
-        stageStatus.textContent =
+        if (
+          !resolvedRole ||
+          participant.role ===
           resolvedRole
-            ? getAvatarDisplayName(
-                resolvedRole
-              ) +
-              ' is preparing a response'
-            : 'Preparing response...';
+        ) {
 
-      }
-
-      else if (
-        normalizedState ===
-        'speaking'
-      ) {
-
-        stageStatus.textContent =
-          getAvatarDisplayName(
-            resolvedRole
-          ) +
-          ' is speaking';
-
-      }
-
-      else {
-
-        stageStatus.textContent =
-          'Ready';
-
-      }
-
-    }
-
-
-    avatarParticipants.forEach(
-      function(participant) {
-
-        const card =
-          document.getElementById(
-            'avatarCard-' +
-            participant.role
+          tile.classList.add(
+            'thinking'
           );
 
 
-        if (!card) {
-
-          return;
-
-        }
-
-
-        card.classList.remove(
-          'active',
-          'listening',
-          'thinking',
-          'speaking'
-        );
-
-
-        const stateText =
-          card.querySelector(
-            '.avatar-state-text'
-          );
-
-
-        if (
-          normalizedState ===
-          'listening'
-        ) {
-
-          card.classList.add(
-            'listening'
-          );
-
-
-          if (stateText) {
-
-            stateText.textContent =
-              'Listening';
-
-          }
-
-
-          return;
+          stateText.textContent =
+            'Thinking';
 
         }
 
-
-        if (
-          normalizedState ===
-          'thinking'
-        ) {
-
-          if (
-            !resolvedRole ||
-            participant.role ===
-              resolvedRole
-          ) {
-
-            card.classList.add(
-              'active',
-              'thinking'
-            );
-
-
-            if (stateText) {
-
-              stateText.textContent =
-                'Thinking';
-
-            }
-
-          }
-
-          else if (
-            stateText
-          ) {
-
-            stateText.textContent =
-              'Ready';
-
-          }
-
-
-          return;
-
-        }
-
-
-        if (
-          normalizedState ===
-          'speaking'
-        ) {
-
-          if (
-            participant.role ===
-            resolvedRole
-          ) {
-
-            card.classList.add(
-              'active',
-              'speaking'
-            );
-
-
-            if (stateText) {
-
-              stateText.textContent =
-                'Speaking';
-
-            }
-
-          }
-
-          else if (
-            stateText
-          ) {
-
-            stateText.textContent =
-              'Ready';
-
-          }
-
-
-          return;
-
-        }
-
-
-        if (stateText) {
+        else {
 
           stateText.textContent =
             'Ready';
 
         }
 
+
+        return;
+
+      }
+
+
+      if (
+        state ===
+        'speaking'
+      ) {
+
+        if (
+          participant.role ===
+          resolvedRole
+        ) {
+
+          tile.classList.add(
+            'active-speaker'
+          );
+
+
+          stateText.textContent =
+            'Speaking';
+
+        }
+
+        else {
+
+          stateText.textContent =
+            'Listening';
+
+        }
+
+
+        return;
+
+      }
+
+
+      stateText.textContent =
+        'Ready';
+
+    }
+  );
+
+}
+
+
+function setCounsellorSpeaking() {
+
+  setCounsellorState(
+    'speaking'
+  );
+
+
+  setAIParticipantState(
+    'listening'
+  );
+
+
+  setCallStatus(
+    'Counsellor speaking'
+  );
+
+}
+
+
+function setAIThinking(
+  speaker
+) {
+
+  setCounsellorState(
+    'listening'
+  );
+
+
+  setAIParticipantState(
+    'thinking',
+    speaker
+  );
+
+
+  setCallStatus(
+    'AI participant thinking'
+  );
+
+}
+
+
+function setAISpeaking(
+  speaker
+) {
+
+  setCounsellorState(
+    'listening'
+  );
+
+
+  setAIParticipantState(
+    'speaking',
+    speaker
+  );
+
+
+  setCallStatus(
+    getAvatarDisplayName(
+      resolveAvatarRoleFromSpeaker(
+        speaker
+      )
+    ) +
+    ' speaking'
+  );
+
+}
+
+
+function setParticipantsReady() {
+
+  setCounsellorState(
+    'ready'
+  );
+
+
+  setAIParticipantState(
+    'ready'
+  );
+
+
+  setCallStatus(
+    'Call in progress'
+  );
+
+}
+
+
+function resolveAvatarRoleFromSpeaker(
+  speaker
+) {
+
+  const value =
+    String(
+      speaker ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    value.includes(
+      'parent'
+    ) ||
+    value.includes(
+      'father'
+    ) ||
+    value.includes(
+      'mother'
+    ) ||
+    value.includes(
+      'dad'
+    ) ||
+    value.includes(
+      'mom'
+    ) ||
+    value.includes(
+      'mum'
+    )
+  ) {
+
+    return 'parent';
+
+  }
+
+
+  if (
+    value.includes(
+      'student'
+    ) ||
+    value.includes(
+      'son'
+    ) ||
+    value.includes(
+      'daughter'
+    ) ||
+    value.includes(
+      'child'
+    )
+  ) {
+
+    return 'student';
+
+  }
+
+
+  if (
+    avatarParticipants.length ===
+    1
+  ) {
+
+    return avatarParticipants[
+      0
+    ].role;
+
+  }
+
+
+  if (
+    activeAvatarRole
+  ) {
+
+    return activeAvatarRole;
+
+  }
+
+
+  return avatarParticipants.length
+    ? avatarParticipants[
+        0
+      ].role
+    : '';
+
+}
+
+
+function getAvatarDisplayName(
+  role
+) {
+
+  const participant =
+    avatarParticipants.find(
+      function(item) {
+
+        return (
+          item.role ===
+          role
+        );
+
       }
     );
 
+
+  return participant
+    ? participant.displayName
+    : 'Participant';
+
+}
+
+
+function getLatestCustomerSpeaker(
+  history
+) {
+
+  if (
+    !Array.isArray(
+      history
+    )
+  ) {
+
+    return '';
+
   }
 
 
-  function getAvatarDisplayName(
-    role
+  for (
+    let i =
+      history.length - 1;
+    i >= 0;
+    i--
   ) {
 
-    const participant =
-      avatarParticipants.find(
-        function(item) {
-
-          return (
-            item.role ===
-            role
-          );
-
-        }
+    const speaker =
+      String(
+        history[i].speaker ||
+        ''
       );
 
 
-    return participant
-      ? participant.displayName
-      : 'Participant';
+    if (
+      !isCounsellorSpeaker(
+        speaker
+      ) &&
+      speaker
+    ) {
+
+      return speaker;
+
+    }
 
   }
-  /* =========================================================
-   HISTORY DISPLAY PREPARATION
+
+
+  return '';
+
+}
+
+
+function isCounsellorSpeaker(
+  speaker
+) {
+
+  const value =
+    String(
+      speaker ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return (
+    value ===
+      'academic counsellor' ||
+    value ===
+      'counsellor' ||
+    value ===
+      'ac'
+  );
+
+}
+
+
+/* =========================================================
+   TRANSCRIPT
+========================================================= */
+
+function renderTranscript(
+  history
+) {
+
+  const list =
+    document.getElementById(
+      'transcriptList'
+    );
+
+
+  if (!list) {
+
+    return;
+
+  }
+
+
+  if (
+    !Array.isArray(history) ||
+    history.length === 0
+  ) {
+
+    list.innerHTML = `
+      <div
+        id="transcriptEmpty"
+        class="transcript-empty"
+      >
+        Your conversation transcript will appear here
+        once the counselling simulation begins.
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    history
+      .map(
+        renderTranscriptTurn
+      )
+      .join('');
+
+
+  scrollTranscriptToBottom();
+
+}
+
+
+function renderTranscriptTurn(
+  turn
+) {
+
+  const speaker =
+    String(
+      turn.speaker ||
+      ''
+    );
+
+
+  const counsellor =
+    isCounsellorSpeaker(
+      speaker
+    );
+
+
+  const text =
+    String(
+      turn.displayText ||
+      turn.text ||
+      turn.message ||
+      ''
+    );
+
+
+  return `
+    <div
+      class="transcript-turn ${
+        counsellor
+          ? 'counsellor'
+          : 'customer'
+      }"
+    >
+
+      <div>
+
+        <span class="transcript-speaker">
+          ${escapeHtml(
+            speaker ||
+            (
+              counsellor
+                ? 'Academic Counsellor'
+                : 'Participant'
+            )
+          )}
+        </span>
+
+        <span class="transcript-time">
+          ${escapeHtml(
+            formatTurnTime(
+              turn.timestamp
+            )
+          )}
+        </span>
+
+      </div>
+
+      <div class="transcript-text">
+        ${escapeHtml(
+          text
+        )}
+      </div>
+
+    </div>
+  `;
+
+}
+
+
+function renderThinkingTranscript(
+  speaker
+) {
+
+  removeThinkingTranscript();
+
+
+  const list =
+    document.getElementById(
+      'transcriptList'
+    );
+
+
+  const empty =
+    document.getElementById(
+      'transcriptEmpty'
+    );
+
+
+  if (empty) {
+
+    empty.remove();
+
+  }
+
+
+  const wrapper =
+    document.createElement(
+      'div'
+    );
+
+
+  wrapper.id =
+    'transcriptThinking';
+
+
+  wrapper.className =
+    'transcript-turn customer';
+
+
+  wrapper.innerHTML = `
+    <div>
+
+      <span class="transcript-speaker">
+        ${escapeHtml(
+          speaker ||
+          'AI Participant'
+        )}
+      </span>
+
+    </div>
+
+    <div
+      class="transcript-text transcript-thinking"
+    >
+      Thinking...
+    </div>
+  `;
+
+
+  list.appendChild(
+    wrapper
+  );
+
+
+  scrollTranscriptToBottom();
+
+}
+
+
+function removeThinkingTranscript() {
+
+  const element =
+    document.getElementById(
+      'transcriptThinking'
+    );
+
+
+  if (element) {
+
+    element.remove();
+
+  }
+
+}
+
+
+function scrollTranscriptToBottom() {
+
+  const list =
+    document.getElementById(
+      'transcriptList'
+    );
+
+
+  if (!list) {
+
+    return;
+
+  }
+
+
+  requestAnimationFrame(
+    function() {
+
+      list.scrollTop =
+        list.scrollHeight;
+
+    }
+  );
+
+}
+
+
+function formatTurnTime(
+  timestamp
+) {
+
+  if (!timestamp) {
+
+    return '';
+
+  }
+
+
+  const date =
+    new Date(
+      timestamp
+    );
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return '';
+
+  }
+
+
+  return date.toLocaleTimeString(
+    [],
+    {
+      hour:
+        '2-digit',
+
+      minute:
+        '2-digit'
+    }
+  );
+
+}
+
+
+/* =========================================================
+   PREPARE STORED HISTORY
 ========================================================= */
 
 async function prepareDisplayHistory(
@@ -2436,7 +6240,8 @@ function getLanguageForStoredTurn(
 
   if (
     turnLanguage &&
-    turnLanguage !== 'English'
+    turnLanguage !==
+      'English'
   ) {
 
     return turnLanguage;
@@ -2457,226 +6262,10 @@ function getLanguageForStoredTurn(
   }
 
 
-  return turnLanguage ||
-    'English';
-
-}
-
-
-/* =========================================================
-   CONVERSATION RENDERING
-========================================================= */
-
-function renderConversation(
-  history
-) {
-
-  const messages =
-    document.getElementById(
-      'messages'
-    );
-
-
-  if (
-    !Array.isArray(history) ||
-    history.length === 0
-  ) {
-
-    messages.innerHTML = `
-      <div class="empty-state">
-
-        <strong>
-          Begin the counselling conversation
-        </strong>
-
-        <br><br>
-
-        Use the microphone and speak exactly as you would
-        with a real student or parent visiting the centre.
-
-      </div>
-    `;
-
-
-    return;
-
-  }
-
-
-  messages.innerHTML =
-    history
-      .map(
-        renderMessage
-      )
-      .join('');
-
-
-  scrollToBottom();
-
-}
-
-
-function renderMessage(
-  turn
-) {
-
-  const speaker =
-    String(
-      turn.speaker ||
-      ''
-    );
-
-
-  const isCounsellor =
-    speaker ===
-      'Academic Counsellor' ||
-    speaker ===
-      'Counsellor' ||
-    speaker ===
-      'AC';
-
-
-  const rowClass =
-    isCounsellor
-      ? 'counsellor'
-      : 'customer';
-
-
-  const displayText =
-    String(
-      turn.displayText ||
-      turn.text ||
-      turn.message ||
-      ''
-    );
-
-
-  return `
-    <div class="message-row ${rowClass}">
-
-      <div class="message">
-
-        <div class="speaker">
-          ${escapeHtml(
-            speaker
-          )}
-        </div>
-
-        <div class="bubble">
-          ${escapeHtml(
-            displayText
-          )}
-        </div>
-
-      </div>
-
-    </div>
-  `;
-
-}
-
-
-function renderThinkingMessage() {
-
-  const messages =
-    document.getElementById(
-      'messages'
-    );
-
-
-  const emptyState =
-    messages.querySelector(
-      '.empty-state'
-    );
-
-
-  if (emptyState) {
-
-    emptyState.remove();
-
-  }
-
-
-  const wrapper =
-    document.createElement(
-      'div'
-    );
-
-
-  wrapper.id =
-    'thinkingMessage';
-
-
-  wrapper.className =
-    'message-row customer';
-
-
-  wrapper.innerHTML = `
-    <div class="message">
-
-      <div class="speaker">
-        ${escapeHtml(
-          roomData &&
-          roomData.participant
-            ? roomData.participant
-            : 'Customer'
-        )}
-      </div>
-
-      <div class="bubble thinking-bubble">
-        Thinking...
-      </div>
-
-    </div>
-  `;
-
-
-  messages.appendChild(
-    wrapper
+  return (
+    turnLanguage ||
+    'English'
   );
-
-
-  const previousCustomerSpeaker =
-    getLatestCustomerSpeaker(
-      roomData &&
-      Array.isArray(
-        roomData.conversationHistory
-      )
-        ? roomData.conversationHistory
-        : []
-    );
-
-
-  setAvatarStageState(
-    'thinking',
-    previousCustomerSpeaker ||
-    activeAvatarRole ||
-    (
-      avatarParticipants.length
-        ? avatarParticipants[0].role
-        : ''
-    )
-  );
-
-
-  scrollToBottom();
-
-}
-
-
-function removeThinkingMessage() {
-
-  const element =
-    document.getElementById(
-      'thinkingMessage'
-    );
-
-
-  if (element) {
-
-    element.remove();
-
-  }
 
 }
 
@@ -2721,6 +6310,81 @@ function getConversationLanguage() {
     ] ||
     'English'
   );
+
+}
+
+
+function configureSpeechLanguage(
+  scenario
+) {
+
+  const language =
+    String(
+      scenario.language ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  let locale =
+    'en-IN';
+
+
+  if (
+    language.includes(
+      'hindi'
+    ) ||
+    language.includes(
+      'hinglish'
+    )
+  ) {
+
+    locale =
+      'hi-IN';
+
+  }
+
+  else if (
+    language.includes(
+      'tamil'
+    )
+  ) {
+
+    locale =
+      'ta-IN';
+
+  }
+
+  else if (
+    language.includes(
+      'telugu'
+    )
+  ) {
+
+    locale =
+      'te-IN';
+
+  }
+
+  else if (
+    language.includes(
+      'marathi'
+    )
+  ) {
+
+    locale =
+      'mr-IN';
+
+  }
+
+
+  document
+    .getElementById(
+      'speechLanguage'
+    )
+    .value =
+    locale;
 
 }
 
@@ -2892,14 +6556,8 @@ async function transliterateText(
   language
 ) {
 
-  if (!text) {
-
-    return text;
-
-  }
-
-
   if (
+    !text ||
     !language ||
     language === 'English'
   ) {
@@ -2980,8 +6638,1039 @@ async function transliterateText(
   }
 
 }
+/* =========================================================
+   SPEECH RECOGNITION
+========================================================= */
+
+function initialiseSpeechRecognition() {
+
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
 
 
+  if (!Recognition) {
+
+    recognitionSupported =
+      false;
+
+
+    setSpeechStatus(
+      'Speech recognition is unavailable in this browser. You can still type your response.'
+    );
+
+
+    return;
+
+  }
+
+
+  recognitionSupported =
+    true;
+
+
+  recognition =
+    new Recognition();
+
+
+  recognition.continuous =
+    true;
+
+
+  recognition.interimResults =
+    true;
+
+
+  recognition.maxAlternatives =
+    1;
+
+
+  recognition.onstart =
+    function() {
+
+      listening =
+        true;
+
+
+      finalTranscript =
+        '';
+
+
+      originalSpeechTranscript =
+        '';
+
+
+      setInputValue(
+        ''
+      );
+
+
+      updateMicButton(
+        true
+      );
+
+
+      setSpeechStatus(
+        'Listening… speak naturally.'
+      );
+
+
+      setCounsellorSpeaking();
+
+    };
+
+
+  recognition.onresult =
+    function(event) {
+
+      let interim =
+        '';
+
+
+      for (
+        let i =
+          event.resultIndex;
+        i <
+          event.results.length;
+        i++
+      ) {
+
+        const transcript =
+          event.results[
+            i
+          ][0].transcript;
+
+
+        if (
+          event.results[
+            i
+          ].isFinal
+        ) {
+
+          finalTranscript +=
+            transcript +
+            ' ';
+
+        }
+
+        else {
+
+          interim +=
+            transcript;
+
+        }
+
+      }
+
+
+      const combined =
+        (
+          finalTranscript +
+          interim
+        )
+          .replace(
+            /\s+/g,
+            ' '
+          )
+          .trim();
+
+
+      originalSpeechTranscript =
+        combined;
+
+
+      const language =
+        getConversationLanguage();
+
+
+      if (
+        language ===
+        'English'
+      ) {
+
+        setInputValue(
+          combined
+        );
+
+
+        resizeInput();
+
+      }
+
+
+      if (combined) {
+
+        setSpeechStatus(
+          language ===
+            'English'
+            ? 'Listening…'
+            : 'Listening… transcript will appear in Roman script when you stop.'
+        );
+
+      }
+
+    };
+
+
+  recognition.onerror =
+    function(event) {
+
+      listening =
+        false;
+
+
+      updateMicButton(
+        false
+      );
+
+
+      setParticipantsReady();
+
+
+      console.error(
+        'Speech recognition error:',
+        {
+          error:
+            event.error,
+
+          message:
+            event.message ||
+            ''
+        }
+      );
+
+
+      let message =
+        'Speech recognition error: ' +
+        event.error;
+
+
+      if (
+        event.error ===
+        'not-allowed'
+      ) {
+
+        message =
+          'Speech recognition microphone access was blocked by the browser. Check microphone permission and retry.';
+
+      }
+
+      else if (
+        event.error ===
+        'audio-capture'
+      ) {
+
+        message =
+          'Chrome could not access the selected microphone. Check the active microphone device and retry.';
+
+      }
+
+      else if (
+        event.error ===
+        'no-speech'
+      ) {
+
+        message =
+          'No speech was detected. Click Start Speaking and try again.';
+
+      }
+
+      else if (
+        event.error ===
+        'network'
+      ) {
+
+        message =
+          'Speech recognition encountered a network error. Please retry or type your response.';
+
+      }
+
+
+      setSpeechStatus(
+        message
+      );
+
+    };
+
+
+  recognition.onend =
+    async function() {
+
+      listening =
+        false;
+
+
+      updateMicButton(
+        false
+      );
+
+
+      setParticipantsReady();
+
+
+      const originalText =
+        String(
+          originalSpeechTranscript ||
+          ''
+        ).trim();
+
+
+      if (!originalText) {
+
+        setSpeechStatus(
+          'Microphone ready.'
+        );
+
+
+        return;
+
+      }
+
+
+      const language =
+        getConversationLanguage();
+
+
+      if (
+        language ===
+        'English'
+      ) {
+
+        setInputValue(
+          originalText
+        );
+
+
+        resizeInput();
+
+
+        setSpeechStatus(
+          'Speech captured. Review the transcript and send.'
+        );
+
+
+        return;
+
+      }
+
+
+      transliterationInProgress =
+        true;
+
+
+      setComposerBusy(
+        true
+      );
+
+
+      setSpeechStatus(
+        'Converting transcript to Roman script...'
+      );
+
+
+      const romanized =
+        await transliterateText(
+          originalText,
+          language
+        );
+
+
+      setInputValue(
+        romanized
+      );
+
+
+      resizeInput();
+
+
+      transliterationInProgress =
+        false;
+
+
+      setComposerBusy(
+        false
+      );
+
+
+      setSpeechStatus(
+        'Speech captured in Roman script. Review and send.'
+      );
+
+    };
+
+}
+
+
+/* =========================================================
+   COUNSELLOR MICROPHONE
+========================================================= */
+
+async function toggleMicrophone() {
+
+  if (
+    !simulationJoined ||
+    turnInProgress ||
+    transliterationInProgress ||
+    !recognitionSupported ||
+    !recognition
+  ) {
+
+    return;
+
+  }
+
+
+  if (listening) {
+
+    try {
+
+      recognition.stop();
+
+    }
+
+    catch (error) {
+
+      console.warn(
+        'Recognition stop warning:',
+        error
+      );
+
+    }
+
+
+    return;
+
+  }
+
+
+  recognition.lang =
+    document
+      .getElementById(
+        'speechLanguage'
+      )
+      .value ||
+    'en-IN';
+
+
+  finalTranscript =
+    '';
+
+
+  originalSpeechTranscript =
+    '';
+
+
+  setInputValue(
+    ''
+  );
+
+
+  resizeInput();
+
+
+  setSpeechStatus(
+    'Starting microphone...'
+  );
+
+
+  try {
+
+    recognition.start();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      'Speech recognition start failed:',
+      error
+    );
+
+
+    setParticipantsReady();
+
+
+    setSpeechStatus(
+      'Could not start speech recognition: ' +
+      (
+        error.message ||
+        error.name ||
+        'Unknown browser error'
+      )
+    );
+
+  }
+
+}
+
+
+function updateMicButton(
+  active
+) {
+
+  const button =
+    document.getElementById(
+      'micButton'
+    );
+
+
+  const text =
+    document.getElementById(
+      'micButtonText'
+    );
+
+
+  button.classList.toggle(
+    'off',
+    active
+  );
+
+
+  button.classList.toggle(
+    'active',
+    !active
+  );
+
+
+  text.textContent =
+    active
+      ? 'Stop Speaking'
+      : 'Start Speaking';
+
+}
+
+
+/* =========================================================
+   CAMERA CONTROL
+========================================================= */
+
+function toggleCamera() {
+
+  if (
+    !localMediaStream
+  ) {
+
+    return;
+
+  }
+
+
+  const tracks =
+    localMediaStream
+      .getVideoTracks();
+
+
+  if (!tracks.length) {
+
+    return;
+
+  }
+
+
+  cameraEnabled =
+    !cameraEnabled;
+
+
+  tracks.forEach(
+    function(track) {
+
+      track.enabled =
+        cameraEnabled;
+
+    }
+  );
+
+
+  const button =
+    document.getElementById(
+      'cameraButton'
+    );
+
+
+  const text =
+    document.getElementById(
+      'cameraButtonText'
+    );
+
+
+  if (cameraEnabled) {
+
+    button.classList.remove(
+      'off'
+    );
+
+
+    button.classList.add(
+      'active'
+    );
+
+
+    text.textContent =
+      'Camera On';
+
+  }
+
+  else {
+
+    button.classList.remove(
+      'active'
+    );
+
+
+    button.classList.add(
+      'off'
+    );
+
+
+    text.textContent =
+      'Camera Off';
+
+  }
+
+
+  attachStreamToCounsellorTile();
+
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+function setInputValue(
+  value
+) {
+
+  suppressManualInputReset =
+    true;
+
+
+  document
+    .getElementById(
+      'messageInput'
+    )
+    .value =
+    value;
+
+
+  suppressManualInputReset =
+    false;
+
+}
+
+
+function handleManualInput() {
+
+  if (
+    suppressManualInputReset
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !listening &&
+    !transliterationInProgress
+  ) {
+
+    originalSpeechTranscript =
+      '';
+
+  }
+
+
+  resizeInput();
+
+}
+
+
+function handleKeydown(
+  event
+) {
+
+  if (
+    event.key ===
+      'Enter' &&
+    !event.shiftKey
+  ) {
+
+    event.preventDefault();
+
+
+    sendMessage();
+
+  }
+
+}
+
+
+function resizeInput() {
+
+  const input =
+    document.getElementById(
+      'messageInput'
+    );
+
+
+  input.style.height =
+    'auto';
+
+
+  input.style.height =
+    Math.min(
+      input.scrollHeight,
+      110
+    ) +
+    'px';
+
+}
+
+
+function setComposerBusy(
+  busy
+) {
+
+  document
+    .getElementById(
+      'sendButton'
+    )
+    .disabled =
+    busy;
+
+
+  document
+    .getElementById(
+      'micButton'
+    )
+    .disabled =
+    busy ||
+    transliterationInProgress ||
+    !recognitionSupported;
+
+
+  document
+    .getElementById(
+      'messageInput'
+    )
+    .disabled =
+    busy;
+
+
+  document
+    .getElementById(
+      'speechLanguage'
+    )
+    .disabled =
+    busy;
+
+}
+
+
+/* =========================================================
+   MULTILINGUAL BROWSER TTS
+========================================================= */
+
+function initialiseSpeechVoices() {
+
+  if (
+    !window.speechSynthesis
+  ) {
+
+    console.warn(
+      'Browser speech synthesis is unavailable.'
+    );
+
+
+    return;
+
+  }
+
+
+  refreshSpeechVoices();
+
+
+  window
+    .speechSynthesis
+    .onvoiceschanged =
+    function() {
+
+      refreshSpeechVoices();
+
+    };
+
+
+  setTimeout(
+    refreshSpeechVoices,
+    250
+  );
+
+
+  setTimeout(
+    refreshSpeechVoices,
+    1000
+  );
+
+}
+
+
+function refreshSpeechVoices() {
+
+  if (
+    !window.speechSynthesis
+  ) {
+
+    availableSpeechVoices =
+      [];
+
+
+    return;
+
+  }
+
+
+  availableSpeechVoices =
+    window
+      .speechSynthesis
+      .getVoices() ||
+    [];
+
+
+  console.log(
+    'Speech voices loaded:',
+    availableSpeechVoices.length
+  );
+
+}
+
+
+function findVoiceByName(
+  names
+) {
+
+  if (
+    !Array.isArray(
+      names
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  for (
+    const preferredName of names
+  ) {
+
+    const match =
+      availableSpeechVoices.find(
+        function(voice) {
+
+          return (
+            String(
+              voice.name ||
+              ''
+            )
+              .toLowerCase() ===
+            String(
+              preferredName
+            )
+              .toLowerCase()
+          );
+
+        }
+      );
+
+
+    if (match) {
+
+      return match;
+
+    }
+
+  }
+
+
+  return null;
+
+}
+
+
+function findVoiceByLocale(
+  locale
+) {
+
+  const desired =
+    String(
+      locale ||
+      ''
+    )
+      .toLowerCase();
+
+
+  const exact =
+    availableSpeechVoices.find(
+      function(voice) {
+
+        return (
+          String(
+            voice.lang ||
+            ''
+          )
+            .toLowerCase() ===
+          desired
+        );
+
+      }
+    );
+
+
+  if (exact) {
+
+    return exact;
+
+  }
+
+
+  const base =
+    desired.split(
+      '-'
+    )[0];
+
+
+  return (
+    availableSpeechVoices.find(
+      function(voice) {
+
+        return (
+          String(
+            voice.lang ||
+            ''
+          )
+            .toLowerCase()
+            .startsWith(
+              base +
+              '-'
+            )
+        );
+
+      }
+    ) ||
+    null
+  );
+
+}
+
+
+function getBestVoiceForLocale(
+  locale
+) {
+
+  refreshSpeechVoices();
+
+
+  if (
+    locale ===
+    'ta-IN'
+  ) {
+
+    return (
+      findVoiceByName(
+        [
+          'Vani'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'ta-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    locale ===
+    'hi-IN'
+  ) {
+
+    return (
+      findVoiceByName(
+        [
+          'Lekha',
+          'Google हिन्दी'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'hi-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    locale ===
+    'te-IN'
+  ) {
+
+    return (
+      findVoiceByName(
+        [
+          'Geeta'
+        ]
+      ) ||
+      findVoiceByLocale(
+        'te-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    locale ===
+    'mr-IN'
+  ) {
+
+    return (
+      findVoiceByLocale(
+        'mr-IN'
+      ) ||
+      findVoiceByLocale(
+        'hi-IN'
+      )
+    );
+
+  }
+
+
+  if (
+    locale ===
+    'en-IN'
+  ) {
+
+    return (
+      findVoiceByLocale(
+        'en-IN'
+      ) ||
+      findVoiceByLocale(
+        'en-GB'
+      ) ||
+      findVoiceByLocale(
+        'en-US'
+      )
+    );
+
+  }
+
+
+  return findVoiceByLocale(
+    locale
+  );
+
+}
 /* =========================================================
    SEND LIVE TURN
 ========================================================= */
@@ -3089,7 +7778,7 @@ async function sendMessage() {
     localConversation;
 
 
-  renderConversation(
+  renderTranscript(
     localConversation
   );
 
@@ -3102,7 +7791,27 @@ async function sendMessage() {
   resizeInput();
 
 
-  renderThinkingMessage();
+  const expectedSpeaker =
+    lastAvatarSpeaker ||
+    (
+      avatarParticipants.length
+        ? avatarParticipants[0].role
+        : ''
+    );
+
+
+  renderThinkingTranscript(
+    getAvatarDisplayName(
+      resolveAvatarRoleFromSpeaker(
+        expectedSpeaker
+      )
+    )
+  );
+
+
+  setAIThinking(
+    expectedSpeaker
+  );
 
 
   setSessionStatus(
@@ -3112,7 +7821,7 @@ async function sendMessage() {
 
 
   setSpeechStatus(
-    'AI is responding...'
+    'AI participant is responding...'
   );
 
 
@@ -3196,15 +7905,14 @@ async function sendMessage() {
     }
 
 
-    removeThinkingMessage();
+    removeThinkingTranscript();
 
 
     const serverHistory =
       Array.isArray(
         payload.conversationHistory
       )
-        ? payload.conversationHistory
-          .map(
+        ? payload.conversationHistory.map(
             function(turn) {
 
               return {
@@ -3282,7 +7990,7 @@ async function sendMessage() {
     }
 
 
-    renderConversation(
+    renderTranscript(
       roomData.conversationHistory
     );
 
@@ -3294,7 +8002,7 @@ async function sendMessage() {
 
 
     setSpeechStatus(
-      'Microphone ready.'
+      'AI response received.'
     );
 
 
@@ -3320,9 +8028,11 @@ async function sendMessage() {
 
     else {
 
-      setAvatarStageState(
-        'idle',
-        customerSpeaker
+      setParticipantsReady();
+
+
+      setSpeechStatus(
+        'Microphone ready.'
       );
 
     }
@@ -3341,12 +8051,10 @@ async function sendMessage() {
     );
 
 
-    removeThinkingMessage();
+    removeThinkingTranscript();
 
 
-    setAvatarStageState(
-      'idle'
-    );
+    setParticipantsReady();
 
 
     showRuntimeError(
@@ -3387,1130 +8095,10 @@ async function sendMessage() {
 }
 
 
-function setComposerBusy(
-  busy
-) {
-
-  document
-    .getElementById(
-      'sendButton'
-    )
-    .disabled =
-    busy;
-
-
-  document
-    .getElementById(
-      'micButton'
-    )
-    .disabled =
-    busy ||
-    transliterationInProgress ||
-    !recognitionSupported;
-
-
-  document
-    .getElementById(
-      'messageInput'
-    )
-    .disabled =
-    busy;
-
-
-  document
-    .getElementById(
-      'speechLanguage'
-    )
-    .disabled =
-    busy;
-
-}
 /* =========================================================
-   SPEECH RECOGNITION
+   AI VOICE + SPEAKING STATE
 ========================================================= */
 
-function initialiseSpeechRecognition() {
-
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-
-  if (!Recognition) {
-
-    recognitionSupported =
-      false;
-
-
-    document
-      .getElementById(
-        'micButton'
-      )
-      .disabled =
-      true;
-
-
-    setSpeechStatus(
-      'Speech recognition is unavailable in this browser. You can still type your response.'
-    );
-
-
-    return;
-
-  }
-
-
-  recognitionSupported =
-    true;
-
-
-  recognition =
-    new Recognition();
-
-
-  recognition.continuous =
-    true;
-
-
-  recognition.interimResults =
-    true;
-
-
-  recognition.maxAlternatives =
-    1;
-
-
-  recognition.onstart =
-    function() {
-
-      listening =
-        true;
-
-
-      finalTranscript =
-        '';
-
-
-      originalSpeechTranscript =
-        '';
-
-
-      setInputValue(
-        ''
-      );
-
-
-      const button =
-        document.getElementById(
-          'micButton'
-        );
-
-
-      button.classList.add(
-        'listening'
-      );
-
-
-      button.textContent =
-        '■ Stop Speaking';
-
-
-      setSpeechStatus(
-        'Listening… speak naturally.'
-      );
-
-
-      setAvatarStageState(
-        'listening'
-      );
-
-    };
-
-
-  recognition.onresult =
-    function(event) {
-
-      let interim =
-        '';
-
-
-      for (
-        let i =
-          event.resultIndex;
-        i <
-          event.results.length;
-        i++
-      ) {
-
-        const transcript =
-          event.results[
-            i
-          ][0].transcript;
-
-
-        if (
-          event.results[
-            i
-          ].isFinal
-        ) {
-
-          finalTranscript +=
-            transcript +
-            ' ';
-
-        }
-
-        else {
-
-          interim +=
-            transcript;
-
-        }
-
-      }
-
-
-      const combined =
-        (
-          finalTranscript +
-          interim
-        )
-          .replace(
-            /\s+/g,
-            ' '
-          )
-          .trim();
-
-
-      originalSpeechTranscript =
-        combined;
-
-
-      const language =
-        getConversationLanguage();
-
-
-      if (
-        language ===
-        'English'
-      ) {
-
-        setInputValue(
-          combined
-        );
-
-
-        resizeInput();
-
-      }
-
-
-      if (combined) {
-
-        setSpeechStatus(
-          language ===
-            'English'
-            ? 'Listening…'
-            : 'Listening… transcript will appear in Roman script when you stop.'
-        );
-
-      }
-
-    };
-
-
-  recognition.onerror =
-    function(event) {
-
-      listening =
-        false;
-
-
-      resetMicButton();
-
-
-      setAvatarStageState(
-        'idle'
-      );
-
-
-      console.error(
-        'Speech recognition error:',
-        {
-          error:
-            event.error,
-
-          message:
-            event.message || '',
-
-          event:
-            event
-        }
-      );
-
-
-      let message =
-        'Speech recognition error: ' +
-        event.error;
-
-
-      if (
-        event.error ===
-        'not-allowed'
-      ) {
-
-        message =
-          'Speech recognition microphone access was blocked by the browser. Check site microphone permission and retry.';
-
-      }
-
-      else if (
-        event.error ===
-        'audio-capture'
-      ) {
-
-        message =
-          'Chrome could not access the selected microphone. Check the active microphone device and retry.';
-
-      }
-
-      else if (
-        event.error ===
-        'no-speech'
-      ) {
-
-        message =
-          'No speech was detected. Click Start Speaking and try again.';
-
-      }
-
-      else if (
-        event.error ===
-        'network'
-      ) {
-
-        message =
-          'Speech recognition encountered a network error. Please retry or type your response.';
-
-      }
-
-
-      setSpeechStatus(
-        message
-      );
-
-    };
-
-
-  recognition.onend =
-    async function() {
-
-      listening =
-        false;
-
-
-      resetMicButton();
-
-
-      setAvatarStageState(
-        'idle'
-      );
-
-
-      const originalText =
-        String(
-          originalSpeechTranscript ||
-          ''
-        ).trim();
-
-
-      if (!originalText) {
-
-        setSpeechStatus(
-          'Microphone ready.'
-        );
-
-
-        return;
-
-      }
-
-
-      const language =
-        getConversationLanguage();
-
-
-      if (
-        language ===
-        'English'
-      ) {
-
-        setInputValue(
-          originalText
-        );
-
-
-        resizeInput();
-
-
-        setSpeechStatus(
-          'Speech captured. Review and send.'
-        );
-
-
-        return;
-
-      }
-
-
-      transliterationInProgress =
-        true;
-
-
-      setComposerBusy(
-        true
-      );
-
-
-      setSpeechStatus(
-        'Converting transcript to Roman script...'
-      );
-
-
-      const romanized =
-        await transliterateText(
-          originalText,
-          language
-        );
-
-
-      setInputValue(
-        romanized
-      );
-
-
-      resizeInput();
-
-
-      transliterationInProgress =
-        false;
-
-
-      setComposerBusy(
-        false
-      );
-
-
-      setSpeechStatus(
-        'Speech captured in Roman script. Review and send.'
-      );
-
-    };
-
-
-  setSpeechStatus(
-    'Microphone ready.'
-  );
-
-}
-
-
-/* =========================================================
-   MICROPHONE
-========================================================= */
-
-async function toggleMicrophone() {
-
-  if (
-    turnInProgress ||
-    transliterationInProgress ||
-    !recognitionSupported ||
-    !recognition
-  ) {
-
-    return;
-
-  }
-
-
-  if (listening) {
-
-    try {
-
-      recognition.stop();
-
-    }
-
-    catch (error) {
-
-      console.warn(
-        'Recognition stop warning:',
-        error
-      );
-
-    }
-
-
-    return;
-
-  }
-
-
-  recognition.lang =
-    document
-      .getElementById(
-        'speechLanguage'
-      )
-      .value ||
-    'en-IN';
-
-
-  finalTranscript =
-    '';
-
-
-  originalSpeechTranscript =
-    '';
-
-
-  setInputValue(
-    ''
-  );
-
-
-  resizeInput();
-
-
-  setSpeechStatus(
-    'Starting microphone...'
-  );
-
-
-  try {
-
-    recognition.start();
-
-  }
-
-  catch (error) {
-
-    setAvatarStageState(
-      'idle'
-    );
-
-
-    console.error(
-      'Speech recognition start failed:',
-      {
-        name:
-          error.name,
-
-        message:
-          error.message,
-
-        error:
-          error
-      }
-    );
-
-
-    if (
-      error.name ===
-      'InvalidStateError'
-    ) {
-
-      setSpeechStatus(
-        'Microphone is already starting. Please wait a moment and try again.'
-      );
-
-    }
-
-    else {
-
-      setSpeechStatus(
-        'Could not start speech recognition: ' +
-        (
-          error.message ||
-          error.name ||
-          'Unknown browser error'
-        )
-      );
-
-    }
-
-  }
-
-}
-
-
-function resetMicButton() {
-
-  const button =
-    document.getElementById(
-      'micButton'
-    );
-
-
-  button.classList.remove(
-    'listening'
-  );
-
-
-  button.textContent =
-    '🎙 Start Speaking';
-
-}
-
-
-function setSpeechStatus(
-  text
-) {
-
-  document
-    .getElementById(
-      'speechStatus'
-    )
-    .textContent =
-    text;
-
-}
-
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-function setInputValue(
-  value
-) {
-
-  suppressManualInputReset =
-    true;
-
-
-  document
-    .getElementById(
-      'messageInput'
-    )
-    .value =
-    value;
-
-
-  suppressManualInputReset =
-    false;
-
-}
-
-
-function handleManualInput() {
-
-  if (
-    suppressManualInputReset
-  ) {
-
-    return;
-
-  }
-
-
-  if (
-    !listening &&
-    !transliterationInProgress
-  ) {
-
-    originalSpeechTranscript =
-      '';
-
-  }
-
-
-  resizeInput();
-
-}
-
-
-function handleKeydown(
-  event
-) {
-
-  if (
-    event.key ===
-      'Enter' &&
-    !event.shiftKey
-  ) {
-
-    event.preventDefault();
-
-
-    sendMessage();
-
-  }
-
-}
-
-
-function resizeInput() {
-
-  const input =
-    document.getElementById(
-      'messageInput'
-    );
-
-
-  input.style.height =
-    'auto';
-
-
-  input.style.height =
-    Math.min(
-      input.scrollHeight,
-      150
-    ) +
-    'px';
-
-}
-
-
-/* =========================================================
-   INITIAL LANGUAGE
-========================================================= */
-
-function configureSpeechLanguage(
-  scenario
-) {
-
-  const language =
-    String(
-      scenario.language ||
-      ''
-    )
-      .trim()
-      .toLowerCase();
-
-
-  let locale =
-    'en-IN';
-
-
-  if (
-    language.includes(
-      'hindi'
-    ) ||
-    language.includes(
-      'hinglish'
-    )
-  ) {
-
-    locale =
-      'hi-IN';
-
-  }
-
-  else if (
-    language.includes(
-      'tamil'
-    )
-  ) {
-
-    locale =
-      'ta-IN';
-
-  }
-
-  else if (
-    language.includes(
-      'telugu'
-    )
-  ) {
-
-    locale =
-      'te-IN';
-
-  }
-
-  else if (
-    language.includes(
-      'marathi'
-    )
-  ) {
-
-    locale =
-      'mr-IN';
-
-  }
-
-
-  document
-    .getElementById(
-      'speechLanguage'
-    )
-    .value =
-    locale;
-
-}
-
-
-/* =========================================================
-   MULTILINGUAL BROWSER TTS
-========================================================= */
-
-function initialiseSpeechVoices() {
-
-  if (
-    !window.speechSynthesis
-  ) {
-
-    console.warn(
-      'Browser speech synthesis is unavailable.'
-    );
-
-    return;
-
-  }
-
-
-  refreshSpeechVoices();
-
-
-  window
-    .speechSynthesis
-    .onvoiceschanged =
-    function() {
-
-      refreshSpeechVoices();
-
-    };
-
-
-  setTimeout(
-    refreshSpeechVoices,
-    250
-  );
-
-
-  setTimeout(
-    refreshSpeechVoices,
-    1000
-  );
-
-}
-
-
-function refreshSpeechVoices() {
-
-  if (
-    !window.speechSynthesis
-  ) {
-
-    availableSpeechVoices =
-      [];
-
-    return;
-
-  }
-
-
-  availableSpeechVoices =
-    window
-      .speechSynthesis
-      .getVoices() ||
-    [];
-
-
-  console.log(
-    'Speech voices loaded:',
-    availableSpeechVoices.length
-  );
-
-}
-
-
-function findVoiceByName(
-  names
-) {
-
-  if (
-    !Array.isArray(
-      names
-    )
-  ) {
-
-    return null;
-
-  }
-
-
-  for (
-    const preferredName of names
-  ) {
-
-    const exactMatch =
-      availableSpeechVoices
-        .find(
-          function(voice) {
-
-            return (
-              String(
-                voice.name ||
-                ''
-              )
-                .toLowerCase() ===
-              String(
-                preferredName
-              )
-                .toLowerCase()
-            );
-
-          }
-        );
-
-
-    if (exactMatch) {
-
-      return exactMatch;
-
-    }
-
-  }
-
-
-  return null;
-
-}
-
-
-function findVoiceByLocale(
-  locale
-) {
-
-  const desired =
-    String(
-      locale ||
-      ''
-    )
-      .toLowerCase();
-
-
-  if (!desired) {
-
-    return null;
-
-  }
-
-
-  const exactMatch =
-    availableSpeechVoices
-      .find(
-        function(voice) {
-
-          return (
-            String(
-              voice.lang ||
-              ''
-            )
-              .toLowerCase() ===
-            desired
-          );
-
-        }
-      );
-
-
-  if (exactMatch) {
-
-    return exactMatch;
-
-  }
-
-
-  const baseLanguage =
-    desired
-      .split('-')[0];
-
-
-  const baseMatch =
-    availableSpeechVoices
-      .find(
-        function(voice) {
-
-          return (
-            String(
-              voice.lang ||
-              ''
-            )
-              .toLowerCase()
-              .startsWith(
-                baseLanguage +
-                '-'
-              )
-          );
-
-        }
-      );
-
-
-  return baseMatch ||
-    null;
-
-}
-
-
-function getBestVoiceForLocale(
-  locale
-) {
-
-  refreshSpeechVoices();
-
-
-  const selectedLocale =
-    String(
-      locale ||
-      'en-IN'
-    );
-
-
-  if (
-    selectedLocale ===
-    'ta-IN'
-  ) {
-
-    return (
-      findVoiceByName(
-        [
-          'Vani'
-        ]
-      ) ||
-      findVoiceByLocale(
-        'ta-IN'
-      )
-    );
-
-  }
-
-
-  if (
-    selectedLocale ===
-    'hi-IN'
-  ) {
-
-    return (
-      findVoiceByName(
-        [
-          'Lekha',
-          'Google हिन्दी'
-        ]
-      ) ||
-      findVoiceByLocale(
-        'hi-IN'
-      )
-    );
-
-  }
-
-
-  if (
-    selectedLocale ===
-    'te-IN'
-  ) {
-
-    return (
-      findVoiceByName(
-        [
-          'Geeta'
-        ]
-      ) ||
-      findVoiceByLocale(
-        'te-IN'
-      )
-    );
-
-  }
-
-
-  if (
-    selectedLocale ===
-    'mr-IN'
-  ) {
-
-    return (
-      findVoiceByLocale(
-        'mr-IN'
-      ) ||
-      findVoiceByName(
-        [
-          'Lekha',
-          'Google हिन्दी'
-        ]
-      ) ||
-      findVoiceByLocale(
-        'hi-IN'
-      )
-    );
-
-  }
-
-
-  if (
-    selectedLocale ===
-    'en-IN'
-  ) {
-
-    const indianEnglish =
-      findVoiceByLocale(
-        'en-IN'
-      );
-
-
-    if (indianEnglish) {
-
-      return indianEnglish;
-
-    }
-
-
-    const defaultEnglish =
-      availableSpeechVoices
-        .find(
-          function(voice) {
-
-            return (
-              voice.default &&
-              String(
-                voice.lang ||
-                ''
-              )
-                .toLowerCase()
-                .startsWith(
-                  'en'
-                )
-            );
-
-          }
-        );
-
-
-    if (defaultEnglish) {
-
-      return defaultEnglish;
-
-    }
-
-
-    return findVoiceByLocale(
-      'en-US'
-    ) ||
-    findVoiceByLocale(
-      'en-GB'
-    );
-
-  }
-
-
-  return findVoiceByLocale(
-    selectedLocale
-  );
-
-}
 function speakCustomerReply(
   text,
   speaker
@@ -4521,9 +8109,11 @@ function speakCustomerReply(
     !text
   ) {
 
-    setAvatarStageState(
-      'idle',
-      speaker
+    setParticipantsReady();
+
+
+    setSpeechStatus(
+      'AI response received, but browser voice playback is unavailable.'
     );
 
 
@@ -4623,6 +8213,52 @@ function speakCustomerReply(
     1;
 
 
+  utterance.onstart =
+    function() {
+
+      console.log(
+        'AI TTS started:',
+        selectedVoice
+          ? selectedVoice.name
+          : 'browser default'
+      );
+
+
+      setAISpeaking(
+        speaker
+      );
+
+
+      setSpeechStatus(
+        getAvatarDisplayName(
+          resolveAvatarRoleFromSpeaker(
+            speaker
+          )
+        ) +
+        ' is speaking.'
+      );
+
+    };
+
+
+  utterance.onend =
+    function() {
+
+      console.log(
+        'AI TTS completed.'
+      );
+
+
+      setParticipantsReady();
+
+
+      setSpeechStatus(
+        'Microphone ready.'
+      );
+
+    };
+
+
   utterance.onerror =
     function(event) {
 
@@ -4643,51 +8279,17 @@ function speakCustomerReply(
       );
 
 
-      setAvatarStageState(
-        'idle',
-        speaker
+      setParticipantsReady();
+
+
+      setSpeechStatus(
+        'AI response received, but voice playback failed.'
       );
 
     };
 
 
-  utterance.onstart =
-    function() {
-
-      console.log(
-        'AI TTS started:',
-        selectedVoice
-          ? selectedVoice.name
-          : 'browser default'
-      );
-
-
-      setAvatarStageState(
-        'speaking',
-        speaker
-      );
-
-    };
-
-
-  utterance.onend =
-    function() {
-
-      console.log(
-        'AI TTS completed.'
-      );
-
-
-      setAvatarStageState(
-        'idle',
-        speaker
-      );
-
-    };
-
-
-  setAvatarStageState(
-    'thinking',
+  setAIThinking(
     speaker
   );
 
@@ -4720,6 +8322,7 @@ async function endSession() {
       'Session ID is missing.'
     );
 
+
     return;
 
   }
@@ -4727,7 +8330,7 @@ async function endSession() {
 
   const confirmed =
     window.confirm(
-      'End this simulation now? You will not be able to continue the conversation after ending it.'
+      'End this counselling simulation now? You will not be able to continue the conversation after ending it.'
     );
 
 
@@ -4740,9 +8343,29 @@ async function endSession() {
 
   try {
 
+    document
+      .getElementById(
+        'endSessionButton'
+      )
+      .disabled =
+      true;
+
+
+    setCallStatus(
+      'Ending call...'
+    );
+
+
+    setSessionStatus(
+      'Ending Session...',
+      'loading'
+    );
+
+
     const response =
       await fetch(
-        RUNTIME_URL + '/end',
+        RUNTIME_URL +
+        '/end',
         {
           method:
             'POST',
@@ -4815,9 +8438,10 @@ async function endSession() {
     }
 
 
-    setAvatarStageState(
-      'idle'
-    );
+    stopLocalMediaStream();
+
+
+    setParticipantsReady();
 
 
     setSessionStatus(
@@ -4826,17 +8450,14 @@ async function endSession() {
     );
 
 
-    setSpeechStatus(
-      'Simulation ended successfully. Redirecting...'
+    setCallStatus(
+      'Call ended'
     );
 
 
-    document
-      .getElementById(
-        'endSessionButton'
-      )
-      .disabled =
-      true;
+    setSpeechStatus(
+      'Simulation ended successfully. Redirecting...'
+    );
 
 
     document
@@ -4850,6 +8471,14 @@ async function endSession() {
     document
       .getElementById(
         'micButton'
+      )
+      .disabled =
+      true;
+
+
+    document
+      .getElementById(
+        'cameraButton'
       )
       .disabled =
       true;
@@ -4879,12 +8508,6 @@ async function endSession() {
     }
 
 
-    console.log(
-      'SESSION ENDED:',
-      result
-    );
-
-
     const postSessionUrl =
       APPS_SCRIPT_URL +
       '?page=postsession' +
@@ -4904,6 +8527,25 @@ async function endSession() {
     console.error(
       'END SESSION FAILED:',
       error
+    );
+
+
+    document
+      .getElementById(
+        'endSessionButton'
+      )
+      .disabled =
+      false;
+
+
+    setSessionStatus(
+      'Live Session',
+      'active'
+    );
+
+
+    setCallStatus(
+      'Call in progress'
     );
 
 
@@ -4928,81 +8570,59 @@ async function endSession() {
   }
 
 }
-
-
 /* =========================================================
    GENERAL UI
 ========================================================= */
 
-function scrollToBottom() {
-
-  const messages =
-    document.getElementById(
-      'messages'
-    );
-
-
-  requestAnimationFrame(
-    function() {
-
-      messages.scrollTop =
-        messages.scrollHeight;
-
-    }
-  );
-
-}
-
-
-function showRuntimeError(
-  message
+function setSpeechStatus(
+  text
 ) {
 
   const element =
     document.getElementById(
-      'runtimeError'
+      'speechStatus'
     );
 
 
-  element.textContent =
-    message;
+  if (element) {
 
+    element.textContent =
+      text;
 
-  element.classList.add(
-    'visible'
-  );
+  }
 
 }
 
 
-function clearRuntimeError() {
+function setCallStatus(
+  text
+) {
 
   const element =
     document.getElementById(
-      'runtimeError'
+      'callStatusText'
     );
 
 
-  element.textContent =
-    '';
+  if (element) {
 
+    element.textContent =
+      text;
 
-  element.classList.remove(
-    'visible'
-  );
+  }
 
 }
+
+
 function setSessionStatus(
   text,
   state
 ) {
 
-  document
-    .getElementById(
+  const label =
+    document.getElementById(
       'sessionStatus'
-    )
-    .textContent =
-    text;
+    );
 
 
   const dot =
@@ -5011,13 +8631,28 @@ function setSessionStatus(
     );
 
 
+  if (label) {
+
+    label.textContent =
+      text;
+
+  }
+
+
+  if (!dot) {
+
+    return;
+
+  }
+
+
   if (
     state ===
     'active'
   ) {
 
     dot.style.background =
-      '#28a745';
+      '#20a464';
 
   }
 
@@ -5041,15 +8676,75 @@ function setSessionStatus(
 }
 
 
+function showRuntimeError(
+  message
+) {
+
+  const element =
+    document.getElementById(
+      'runtimeError'
+    );
+
+
+  if (!element) {
+
+    return;
+
+  }
+
+
+  element.textContent =
+    message;
+
+
+  element.classList.add(
+    'visible'
+  );
+
+}
+
+
+function clearRuntimeError() {
+
+  const element =
+    document.getElementById(
+      'runtimeError'
+    );
+
+
+  if (!element) {
+
+    return;
+
+  }
+
+
+  element.textContent =
+    '';
+
+
+  element.classList.remove(
+    'visible'
+  );
+
+}
+
+
 function hideLoadingOverlay() {
 
-  document
-    .getElementById(
+  const overlay =
+    document.getElementById(
       'loadingOverlay'
-    )
-    .classList.add(
+    );
+
+
+  if (overlay) {
+
+    overlay.classList.add(
       'hidden'
     );
+
+  }
 
 }
 
@@ -5064,12 +8759,33 @@ function showLoadError(
   );
 
 
-  document
-    .getElementById(
+  const overlay =
+    document.getElementById(
+      'loadingOverlay'
+    );
+
+
+  if (overlay) {
+
+    overlay.classList.remove(
+      'hidden'
+    );
+
+  }
+
+
+  const title =
+    document.getElementById(
       'loadingTitle'
-    )
-    .textContent =
-    'Unable to open voice simulation';
+    );
+
+
+  if (title) {
+
+    title.textContent =
+      'Unable to open voice simulation';
+
+  }
 
 
   const text =
@@ -5078,13 +8794,17 @@ function showLoadError(
     );
 
 
-  text.classList.add(
-    'error-text'
-  );
+  if (text) {
+
+    text.classList.add(
+      'error-text'
+    );
 
 
-  text.textContent =
-    message;
+    text.textContent =
+      message;
+
+  }
 
 }
 
