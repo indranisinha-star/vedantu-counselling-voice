@@ -1792,6 +1792,33 @@
     }
 
 
+    .ai-avatar-video {
+
+      position: absolute;
+
+      inset: 0;
+       width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+      object-position:
+        center center;
+
+      background:
+        var(--video-bg);
+
+    }
+
+
+    .ai-avatar-video.hidden {
+
+      display: none !important;
+
+    }
+
+
     .video-tile.active-speaker
     .ai-avatar-image {
 
@@ -3539,6 +3566,37 @@ const AVATAR_ASSETS = {
 
 
 /* =========================================================
+   D-ID AVATAR RENDERER CONFIGURATION
+
+   Only the Daughter renderer is configured in this first
+   prototype. Other avatar variants automatically fall back
+   to the static avatar + Gemini voice until their own
+   D-ID Agent IDs are added later.
+========================================================= */
+
+const DID_SDK_URLS = [
+
+  'https://cdn.jsdelivr.net/npm/@d-id/client-sdk@3.0.5/+esm',
+
+  'https://esm.sh/@d-id/client-sdk@3.0.5?bundle'
+
+];
+
+
+const DID_RENDERERS = {
+
+  daughter: {
+
+    agentId:
+      'v2_agt_q3Ohpfvl',
+
+    clientKey:
+      'ck_Oo_mouXZw3vPJ05GnLGW7'
+
+  }
+
+};
+/* =========================================================
    APPLICATION STATE
 ========================================================= */
 
@@ -3614,6 +3672,34 @@ let currentAiAudioObjectUrl =
   '';
 
 
+let didSdkModule =
+  null;
+
+
+let didSdkLoadPromise =
+  null;
+
+
+const didAgentManagers =
+  {};
+
+
+const didAgentConnectionPromises =
+  {};
+
+
+let didActiveSpeech =
+  null;
+
+
+let pendingAiTranscriptHistory =
+  null;
+
+
+let pendingAiTranscriptVisible =
+  false;
+
+
 let avatarParticipants =
   [];
 
@@ -3645,6 +3731,8 @@ window.addEventListener(
   function() {
 
     stopCurrentAiAudio();
+
+    void disconnectDidAvatarRenderers();
 
     stopLocalMediaStream();
 
@@ -4735,6 +4823,9 @@ function joinSimulation() {
   renderAIParticipantTiles();
 
 
+  void prewarmDidAvatarRenderer();
+
+
   renderTranscript(
     roomData &&
     Array.isArray(
@@ -5247,7 +5338,19 @@ function renderAIParticipantTiles() {
 
               <div class="ai-avatar-stage">
 
+                <video
+                  id="aiAvatarVideo-${escapeHtml(
+                    participant.role
+                  )}"
+                  class="ai-avatar-video hidden"
+                  autoplay
+                  playsinline
+                ></video>
+
                 <img
+                  id="aiAvatarImage-${escapeHtml(
+                    participant.role
+                  )}"
                   class="ai-avatar-image"
                   src="${escapeHtml(
                     participant.image
@@ -5292,7 +5395,7 @@ function renderAIParticipantTiles() {
                     ${escapeHtml(
                       participant.displayName
                     )}
-                  </div>
+                       </div>
 
                   <div class="tile-role">
                     ${escapeHtml(
@@ -5372,6 +5475,1297 @@ function handleAvatarImageError(
       'flex';
 
   }
+
+}
+
+
+
+/* =========================================================
+   D-ID AVATAR RENDERER
+========================================================= */
+
+function getDidRendererConfig(
+  avatarVariant
+) {
+
+  const variant =
+    String(
+      avatarVariant ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return (
+    DID_RENDERERS[
+      variant
+    ] ||
+    null
+  );
+
+}
+
+
+function getAvatarParticipantByRole(
+  role
+) {
+
+  return (
+    avatarParticipants.find(
+      function(participant) {
+
+        return (
+          participant.role ===
+          role
+        );
+
+      }
+    ) ||
+    null
+  );
+
+}
+
+
+function getAvatarParticipantFromSpeaker(
+  speaker
+) {
+
+  return getAvatarParticipantByRole(
+    resolveAvatarRoleFromSpeaker(
+      speaker
+    )
+  );
+
+}
+
+
+async function loadDidSdk() {
+
+  if (
+    didSdkModule
+  ) {
+
+    return didSdkModule;
+
+  }
+
+
+  if (
+    didSdkLoadPromise
+  ) {
+
+    return didSdkLoadPromise;
+
+  }
+
+
+  didSdkLoadPromise =
+    (
+      async function() {
+
+        let lastError =
+          null;
+
+
+        for (
+          const sdkUrl of
+          DID_SDK_URLS
+        ) {
+
+          try {
+
+            console.log(
+              '[D-ID] Loading SDK:',
+              sdkUrl
+            );
+
+
+            const sdk =
+              await import(
+                sdkUrl
+              );
+
+
+            if (
+              !sdk ||
+              typeof sdk.createAgentManager !==
+                'function'
+            ) {
+
+              throw new Error(
+                'D-ID SDK loaded without createAgentManager().'
+              );
+
+            }
+
+
+            didSdkModule =
+              sdk;
+
+
+            console.log(
+              '[D-ID] SDK loaded successfully.'
+            );
+
+
+            return sdk;
+
+          }
+
+          catch (error) {
+
+            lastError =
+              error;
+
+
+            console.warn(
+              '[D-ID] SDK source failed:',
+              sdkUrl,
+              error
+            );
+
+          }
+
+        }
+
+
+        throw (
+          lastError ||
+          new Error(
+            'D-ID SDK could not be loaded.'
+          )
+        );
+
+      }
+    )();
+
+
+  try {
+
+    return await didSdkLoadPromise;
+
+  }
+
+  catch (error) {
+
+    didSdkLoadPromise =
+      null;
+
+
+    throw error;
+
+  }
+
+}
+
+
+async function prewarmDidAvatarRenderer() {
+
+  const supportedParticipant =
+    avatarParticipants.find(
+      function(participant) {
+
+        return Boolean(
+          getDidRendererConfig(
+            participant.variant
+          )
+        );
+
+      }
+    );
+
+
+  if (
+    !supportedParticipant
+  ) {
+
+    console.log(
+      '[D-ID] No configured live avatar renderer for this scenario.'
+    );
+
+
+    return false;
+
+  }
+
+
+  try {
+
+    setSpeechStatus(
+      'Connecting AI avatar...'
+    );
+
+
+    await ensureDidAgentManager(
+      supportedParticipant
+    );
+
+
+    setSpeechStatus(
+      'Microphone ready. Click Start Speaking when you are ready.'
+    );
+
+
+    return true;
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      '[D-ID] Avatar prewarm failed. Gemini audio fallback remains available:',
+      error
+    );
+
+
+    setSpeechStatus(
+      'Microphone ready. AI avatar will use fallback mode if needed.'
+    );
+
+
+    return false;
+
+  }
+
+}
+
+
+async function ensureDidAgentManager(
+  participant
+) {
+
+  if (
+    !participant
+  ) {
+
+    throw new Error(
+      'No avatar participant was supplied.'
+    );
+
+  }
+
+
+  const config =
+    getDidRendererConfig(
+      participant.variant
+    );
+
+
+  if (
+    !config
+  ) {
+
+    throw new Error(
+      'No D-ID renderer is configured for avatar variant: ' +
+      String(
+        participant.variant ||
+        ''
+      )
+    );
+
+  }
+
+
+  const managerKey =
+    participant.variant;
+
+
+  if (
+    didAgentManagers[
+      managerKey
+    ]
+  ) {
+
+    return didAgentManagers[
+      managerKey
+    ];
+
+  }
+
+
+  if (
+    didAgentConnectionPromises[
+      managerKey
+    ]
+  ) {
+
+    return await didAgentConnectionPromises[
+      managerKey
+    ];
+
+  }
+
+
+  didAgentConnectionPromises[
+    managerKey
+  ] =
+    (
+      async function() {
+
+        const sdk =
+          await loadDidSdk();
+
+
+        const callbacks = {
+
+          onSrcObjectReady(
+            stream
+          ) {
+
+            const video =
+              document.getElementById(
+                'aiAvatarVideo-' +
+                participant.role
+              );
+
+
+            if (
+              !video
+            ) {
+
+              return;
+
+            }
+
+
+            video.srcObject =
+              stream;
+
+
+            video.muted =
+              false;
+
+
+            video.volume =
+              1;
+
+
+            video
+              .play()
+              .catch(
+                function(error) {
+
+                  console.warn(
+                    '[D-ID] Stream video autoplay warning:',
+                    error
+                  );
+
+                }
+              );
+
+          },
+
+
+          onConnectionStateChange(
+            state
+          ) {
+
+            console.log(
+              '[D-ID] Connection state:',
+              participant.variant,
+              state
+            );
+
+          },
+
+
+          onVideoStateChange(
+            state
+          ) {
+
+            handleDidVideoStateChange(
+              participant,
+              state
+            );
+
+          },
+
+
+          onError(
+            error
+          ) {
+
+            console.error(
+              '[D-ID] SDK error:',
+              error
+            );
+
+
+            handleDidRendererError(
+              participant,
+              error
+            );
+
+          }
+
+        };
+
+
+        const options = {
+
+          auth: {
+
+            type:
+              'key',
+
+            clientKey:
+              config.clientKey
+
+          },
+
+          callbacks:
+            callbacks,
+
+          analytics: {
+
+            enabled:
+              false
+
+          }
+
+        };
+
+
+        if (
+          sdk.ChatMode &&
+          sdk.ChatMode.DirectPlayback
+        ) {
+
+          options.mode =
+            sdk.ChatMode.DirectPlayback;
+
+        }
+
+
+        const manager =
+          await sdk.createAgentManager(
+            config.agentId,
+            options
+          );
+
+
+        await manager.connect();
+
+
+        didAgentManagers[
+          managerKey
+        ] =
+          manager;
+
+
+        console.log(
+          '[D-ID] Agent connected:',
+          {
+            variant:
+              participant.variant,
+
+            role:
+              participant.role,
+
+            agentId:
+              config.agentId
+          }
+        );
+
+
+        return manager;
+
+      }
+    )();
+
+
+  try {
+
+    return await didAgentConnectionPromises[
+      managerKey
+    ];
+
+  }
+
+  catch (error) {
+
+    delete didAgentConnectionPromises[
+      managerKey
+    ];
+
+
+    throw error;
+
+  }
+
+}
+
+
+function showDidStreamForRole(
+  role,
+  show
+) {
+
+  const video =
+    document.getElementById(
+      'aiAvatarVideo-' +
+      role
+    );
+
+
+  const image =
+    document.getElementById(
+      'aiAvatarImage-' +
+      role
+    );
+
+
+  const tile =
+    document.getElementById(
+      'aiTile-' +
+      role
+    );
+
+
+  const fallback =
+    tile
+      ? tile.querySelector(
+          '.ai-avatar-fallback'
+        )
+      : null;
+
+
+  if (
+    video
+  ) {
+
+    video.classList.toggle(
+      'hidden',
+      !show
+    );
+
+  }
+
+
+  if (
+    image
+  ) {
+
+    image.classList.toggle(
+      'hidden',
+      show
+    );
+
+  }
+
+
+  if (
+    fallback &&
+    show
+  ) {
+
+    fallback.style.display =
+      'none';
+
+  }
+
+}
+
+
+function handleDidVideoStateChange(
+  participant,
+  state
+) {
+
+  const normalized =
+    String(
+      state ||
+      ''
+    )
+      .trim()
+      .toUpperCase();
+
+
+  console.log(
+    '[D-ID] Video state:',
+    {
+      variant:
+        participant.variant,
+
+      role:
+        participant.role,
+
+      state:
+        normalized
+    }
+  );
+
+
+  if (
+    normalized ===
+    'START'
+  ) {
+
+    showDidStreamForRole(
+      participant.role,
+      true
+    );
+
+
+    revealPendingAiTranscript();
+
+
+    setAISpeaking(
+      participant.role
+    );
+
+
+    setSpeechStatus(
+      participant.displayName +
+      ' is speaking.'
+    );
+
+
+    if (
+      didActiveSpeech &&
+      didActiveSpeech.variant ===
+        participant.variant
+    ) {
+
+      didActiveSpeech.started =
+        true;
+
+
+      if (
+        didActiveSpeech.startTimer
+      ) {
+
+        clearTimeout(
+          didActiveSpeech.startTimer
+        );
+
+
+        didActiveSpeech.startTimer =
+          null;
+
+      }
+
+    }
+
+
+    return;
+
+  }
+
+
+  if (
+    normalized ===
+    'STOP'
+  ) {
+
+    showDidStreamForRole(
+      participant.role,
+      false
+    );
+
+
+    if (
+      didActiveSpeech &&
+      didActiveSpeech.variant ===
+        participant.variant &&
+      didActiveSpeech.started
+    ) {
+
+      const activeSpeech =
+        didActiveSpeech;
+
+
+      didActiveSpeech =
+        null;
+
+
+      clearDidSpeechTimers(
+        activeSpeech
+      );
+
+
+      setParticipantsReady();
+
+
+      setSpeechStatus(
+        'Microphone ready.'
+      );
+
+
+      activeSpeech.resolve(
+        true
+      );
+
+    }
+
+  }
+
+}
+
+
+function handleDidRendererError(
+  participant,
+  error
+) {
+
+  showDidStreamForRole(
+    participant.role,
+    false
+  );
+
+
+  if (
+    didActiveSpeech &&
+    didActiveSpeech.variant ===
+      participant.variant
+  ) {
+
+    const activeSpeech =
+      didActiveSpeech;
+
+
+    didActiveSpeech =
+      null;
+
+
+    clearDidSpeechTimers(
+      activeSpeech
+    );
+
+
+    activeSpeech.resolve(
+      false
+    );
+
+  }
+
+}
+
+
+function clearDidSpeechTimers(
+  activeSpeech
+) {
+
+  if (
+    !activeSpeech
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    activeSpeech.startTimer
+  ) {
+
+    clearTimeout(
+      activeSpeech.startTimer
+    );
+
+  }
+
+
+  if (
+    activeSpeech.finishTimer
+  ) {
+
+    clearTimeout(
+      activeSpeech.finishTimer
+    );
+
+  }
+
+}
+
+
+async function playDidAvatarAudio(
+  payload,
+  speaker,
+  participant
+) {
+
+  if (
+    !payload ||
+    !payload.audioUrl ||
+    !participant
+  ) {
+
+    return false;
+
+  }
+
+
+  const config =
+    getDidRendererConfig(
+      participant.variant
+    );
+
+
+  if (
+    !config
+  ) {
+
+    return false;
+
+  }
+
+
+  let manager;
+
+
+  try {
+
+    setAIThinking(
+      speaker
+    );
+
+
+    setSpeechStatus(
+      'Preparing talking avatar...'
+    );
+
+
+    manager =
+      await ensureDidAgentManager(
+        participant
+      );
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      '[D-ID] Could not connect avatar renderer:',
+      error
+    );
+
+
+    return false;
+
+  }
+
+
+  return await new Promise(
+    async function(resolve) {
+
+      if (
+        didActiveSpeech
+      ) {
+
+        const previous =
+          didActiveSpeech;
+
+
+        didActiveSpeech =
+          null;
+
+
+        clearDidSpeechTimers(
+          previous
+        );
+
+
+        previous.resolve(
+          false
+        );
+
+      }
+
+
+      const activeSpeech = {
+
+        variant:
+          participant.variant,
+
+        role:
+          participant.role,
+
+        speaker:
+          speaker,
+
+        started:
+          false,
+
+        resolve:
+          resolve,
+
+        startTimer:
+          null,
+
+        finishTimer:
+          null
+
+      };
+
+
+      didActiveSpeech =
+        activeSpeech;
+
+
+      activeSpeech.startTimer =
+        setTimeout(
+          function() {
+
+            if (
+              didActiveSpeech !==
+              activeSpeech ||
+              activeSpeech.started
+            ) {
+
+              return;
+
+            }
+
+
+            console.warn(
+              '[D-ID] Avatar did not start within timeout. Falling back to direct audio.'
+            );
+
+
+            didActiveSpeech =
+              null;
+
+
+            showDidStreamForRole(
+              participant.role,
+              false
+            );
+
+
+            Promise
+              .resolve(
+                manager.disconnect()
+              )
+              .catch(
+                function(error) {
+
+                  console.warn(
+                    '[D-ID] Disconnect after start timeout warning:',
+                    error
+                  );
+
+                }
+              )
+              .finally(
+                function() {
+
+                  delete didAgentManagers[
+                    participant.variant
+                  ];
+
+
+                  delete didAgentConnectionPromises[
+                    participant.variant
+                  ];
+
+                }
+              );
+
+
+            resolve(
+              false
+            );
+
+          },
+          18000
+        );
+
+
+      activeSpeech.finishTimer =
+        setTimeout(
+          function() {
+
+            if (
+              didActiveSpeech !==
+              activeSpeech
+            ) {
+
+              return;
+
+            }
+
+
+            console.warn(
+              '[D-ID] Avatar speech exceeded safety timeout.'
+            );
+
+
+            didActiveSpeech =
+              null;
+
+
+            showDidStreamForRole(
+              participant.role,
+              false
+            );
+
+
+            setParticipantsReady();
+
+
+            revealPendingAiTranscript();
+
+
+            resolve(
+              false
+            );
+
+          },
+          120000
+        );
+
+
+      try {
+
+        console.log(
+          '[D-ID] Sending Gemini audio URL to avatar:',
+          {
+            variant:
+              participant.variant,
+
+            role:
+              participant.role,
+
+            audioUrl:
+              payload.audioUrl
+          }
+        );
+
+
+        await manager.speak(
+          {
+
+            type:
+              'audio',
+
+            audio_url:
+              payload.audioUrl
+
+          }
+        );
+
+
+        console.log(
+          '[D-ID] Avatar speak request accepted.'
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(
+          '[D-ID] Avatar speak request failed:',
+          error
+        );
+
+
+        if (
+          didActiveSpeech ===
+          activeSpeech
+        ) {
+
+          didActiveSpeech =
+            null;
+
+        }
+
+
+        clearDidSpeechTimers(
+          activeSpeech
+        );
+
+
+        showDidStreamForRole(
+          participant.role,
+          false
+        );
+
+
+        resolve(
+          false
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+async function disconnectDidAvatarRenderers() {
+
+  if (
+    didActiveSpeech
+  ) {
+
+    const activeSpeech =
+      didActiveSpeech;
+
+
+    didActiveSpeech =
+      null;
+
+
+    clearDidSpeechTimers(
+      activeSpeech
+    );
+
+
+    activeSpeech.resolve(
+      false
+    );
+
+  }
+
+
+  const managers =
+    Object.values(
+      didAgentManagers
+    );
+
+
+  for (
+    const manager of managers
+  ) {
+
+    if (
+      !manager ||
+      typeof manager.disconnect !==
+        'function'
+    ) {
+
+      continue;
+
+    }
+
+
+    try {
+
+      await manager.disconnect();
+
+    }
+
+    catch (error) {
+
+      console.warn(
+        '[D-ID] Disconnect warning:',
+        error
+      );
+
+    }
+
+  }
+
+
+  Object.keys(
+    didAgentManagers
+  )
+    .forEach(
+      function(key) {
+
+        delete didAgentManagers[
+          key
+        ];
+
+      }
+    );
+
+
+  Object.keys(
+    didAgentConnectionPromises
+  )
+    .forEach(
+      function(key) {
+
+        delete didAgentConnectionPromises[
+          key
+        ];
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   TRANSCRIPT REVEAL TIMING
+========================================================= */
+
+function setPendingAiTranscript(
+  history
+) {
+
+  pendingAiTranscriptHistory =
+    Array.isArray(
+      history
+    )
+      ? history.map(
+          function(turn) {
+
+            return {
+              ...turn
+            };
+
+          }
+        )
+      : null;
+
+
+  pendingAiTranscriptVisible =
+    false;
+
+}
+
+
+function revealPendingAiTranscript() {
+
+  if (
+    pendingAiTranscriptVisible
+  ) {
+
+    return;
+
+  }
+
+
+  pendingAiTranscriptVisible =
+    true;
+
+
+  removeThinkingTranscript();
+
+
+  if (
+    Array.isArray(
+      pendingAiTranscriptHistory
+    )
+  ) {
+
+    renderTranscript(
+      pendingAiTranscriptHistory
+    );
+
+  }
+
+
+  pendingAiTranscriptHistory =
+    null;
+
+}
+
+
+function clearPendingAiTranscript() {
+
+  pendingAiTranscriptHistory =
+    null;
+
+
+  pendingAiTranscriptVisible =
+    false;
 
 }
 
@@ -5801,7 +7195,7 @@ function getAvatarDisplayName(
 
 function getLatestCustomerSpeaker(
   history
-) {
+  ) {
 
   if (
     !Array.isArray(
@@ -6303,6 +7697,8 @@ function getLanguageForStoredTurn(
   );
 
 }
+
+
 /* =========================================================
    LANGUAGE
 ========================================================= */
@@ -7399,6 +8795,8 @@ function setComposerBusy(
     busy;
 
 }
+
+
 /* =========================================================
    MULTILINGUAL BROWSER TTS
 ========================================================= */
@@ -7597,7 +8995,7 @@ function findVoiceByLocale(
 
 function getBestVoiceForLocale(
   locale
-) {
+  ) {
 
   refreshSpeechVoices();
 
@@ -7936,9 +9334,6 @@ async function sendMessage() {
     }
 
 
-    removeThinkingTranscript();
-
-
     const serverHistory =
       Array.isArray(
         payload.conversationHistory
@@ -8021,7 +9416,7 @@ async function sendMessage() {
     }
 
 
-    renderTranscript(
+    setPendingAiTranscript(
       roomData.conversationHistory
     );
 
@@ -8033,7 +9428,7 @@ async function sendMessage() {
 
 
     setSpeechStatus(
-      'AI response received.'
+      'Preparing AI response...'
     );
 
 
@@ -8059,6 +9454,9 @@ async function sendMessage() {
 
     else {
 
+      revealPendingAiTranscript();
+
+
       setParticipantsReady();
 
 
@@ -8080,6 +9478,9 @@ async function sendMessage() {
       'Live turn failed:',
       error
     );
+
+
+    clearPendingAiTranscript();
 
 
     removeThinkingTranscript();
@@ -8124,6 +9525,8 @@ async function sendMessage() {
   }
 
 }
+
+
 /* =========================================================
    AI VOICE + SPEAKING STATE
 ========================================================= */
@@ -8134,6 +9537,9 @@ async function speakCustomerReply(
 ) {
 
   if (!text) {
+
+    revealPendingAiTranscript();
+
 
     setParticipantsReady();
 
@@ -8284,7 +9690,10 @@ async function speakCustomerReply(
     if (
       !payload ||
       payload.success !== true ||
-      !payload.audioBase64
+      (
+        !payload.audioUrl &&
+        !payload.audioBase64
+      )
     ) {
 
       throw new Error(
@@ -8309,19 +9718,70 @@ async function speakCustomerReply(
         avatarVariant:
           payload.avatarVariant,
 
+        audioUrl:
+          payload.audioUrl ||
+          null,
+
         audioLength:
-          payload.audioBase64.length
+          payload.audioBase64
+            ? payload.audioBase64.length
+            : 0
       }
     );
 
 
-    await playWorkerTtsAudio(
-      payload,
+    if (
+      participant &&
+      payload.audioUrl &&
+      getDidRendererConfig(
+        participant.variant
+      )
+    ) {
+
+      const avatarPlayed =
+        await playDidAvatarAudio(
+          payload,
+          speaker,
+          participant
+        );
+
+
+      if (
+        avatarPlayed
+      ) {
+
+        return true;
+
+      }
+
+
+      console.warn(
+        '[D-ID] Live avatar playback failed. Falling back to direct Gemini audio.'
+      );
+
+    }
+
+
+    const directAudioPlayed =
+      await playWorkerTtsAudio(
+        payload,
+        speaker
+      );
+
+
+    if (
+      directAudioPlayed
+    ) {
+
+      return true;
+
+    }
+
+
+    return await speakCustomerReplyWithBrowserFallback(
+      text,
       speaker
     );
-
-
-    return true;
 
   }
 
@@ -8338,10 +9798,23 @@ async function speakCustomerReply(
     );
 
 
-    return await speakCustomerReplyWithBrowserFallback(
-      text,
-      speaker
-    );
+    const fallbackPlayed =
+      await speakCustomerReplyWithBrowserFallback(
+        text,
+        speaker
+      );
+
+
+    if (
+      !fallbackPlayed
+    ) {
+
+      revealPendingAiTranscript();
+
+    }
+
+
+    return fallbackPlayed;
 
   }
 
@@ -8359,50 +9832,75 @@ function playWorkerTtsAudio(
       stopCurrentAiAudio();
 
 
-      let blob;
+      let audioSource =
+        '';
 
 
-      try {
+      if (
+        payload &&
+        payload.audioUrl
+      ) {
 
-        blob =
-          base64AudioToBlob(
-            payload.audioBase64,
-            payload.mimeType ||
-            'audio/wav'
+        audioSource =
+          payload.audioUrl;
+
+      }
+
+      else {
+
+        let blob;
+
+
+        try {
+
+          blob =
+            base64AudioToBlob(
+              payload.audioBase64,
+              payload.mimeType ||
+              'audio/wav'
+            );
+
+        }
+
+        catch (error) {
+
+          console.error(
+            '[AI VOICE] Could not decode Worker audio:',
+            error
           );
 
+
+          revealPendingAiTranscript();
+
+
+          setParticipantsReady();
+
+
+          setSpeechStatus(
+            'AI response received, but audio could not be decoded.'
+          );
+
+
+          resolve(
+            false
+          );
+
+
+          return;
+
+        }
+
+
+        currentAiAudioObjectUrl =
+          URL.createObjectURL(
+            blob
+          );
+
+
+        audioSource =
+          currentAiAudioObjectUrl;
+
       }
-
-      catch (error) {
-
-        console.error(
-          '[AI VOICE] Could not decode Worker audio:',
-          error
-        );
-
-
-        setParticipantsReady();
-
-
-        setSpeechStatus(
-          'AI response received, but audio could not be decoded.'
-        );
-
-
-        resolve(
-          false
-        );
-
-
-        return;
-
-      }
-
-
-      const objectUrl =
-        URL.createObjectURL(
-          blob
-        );
 
 
       const audio =
@@ -8413,23 +9911,19 @@ function playWorkerTtsAudio(
         audio;
 
 
-      currentAiAudioObjectUrl =
-        objectUrl;
-
-
       audio.preload =
         'auto';
 
 
       audio.src =
-        objectUrl;
+        audioSource;
 
 
       audio.onplay =
         function() {
 
           console.log(
-            '[AI VOICE] Playback started:',
+            '[AI VOICE] Direct playback started:',
             {
               speaker:
                 speaker,
@@ -8441,6 +9935,9 @@ function playWorkerTtsAudio(
                 payload.model
             }
           );
+
+
+          revealPendingAiTranscript();
 
 
           setAISpeaking(
@@ -8464,7 +9961,7 @@ function playWorkerTtsAudio(
         function() {
 
           console.log(
-            '[AI VOICE] Playback completed.'
+            '[AI VOICE] Direct playback completed.'
           );
 
 
@@ -8490,7 +9987,7 @@ function playWorkerTtsAudio(
         function(event) {
 
           console.error(
-            '[AI VOICE] Playback failed:',
+            '[AI VOICE] Direct playback failed:',
             event
           );
 
@@ -8719,6 +10216,9 @@ function speakCustomerReplyWithBrowserFallback(
         !text
       ) {
 
+        revealPendingAiTranscript();
+
+
         setParticipantsReady();
 
 
@@ -8803,6 +10303,9 @@ function speakCustomerReplyWithBrowserFallback(
 
       utterance.onstart =
         function() {
+
+          revealPendingAiTranscript();
+
 
           console.log(
             '[AI VOICE] Browser fallback started.'
@@ -9025,6 +10528,9 @@ async function endSession() {
     stopCurrentAiAudio();
 
 
+    await disconnectDidAvatarRenderers();
+
+
     if (
       listening &&
       recognition
@@ -9044,6 +10550,9 @@ async function endSession() {
 
 
     stopLocalMediaStream();
+
+
+    clearPendingAiTranscript();
 
 
     setParticipantsReady();
@@ -9286,7 +10795,7 @@ function showRuntimeError(
 ) {
 
   const element =
-    document.getElementById(
+        document.getElementById(
       'runtimeError'
     );
 
