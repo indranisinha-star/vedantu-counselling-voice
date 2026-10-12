@@ -1795,8 +1795,33 @@
     .video-tile.active-speaker
     .ai-avatar-image {
 
-      transform:
-        scale(1.045);
+      animation:
+        aiAvatarSpeakingMotion
+        850ms
+        ease-in-out
+        infinite
+        alternate;
+
+    }
+
+
+    @keyframes aiAvatarSpeakingMotion {
+
+      from {
+
+        transform:
+          scale(1.035)
+          translateY(0);
+
+      }
+
+      to {
+
+        transform:
+          scale(1.055)
+          translateY(-2px);
+
+      }
 
     }
 
@@ -3581,6 +3606,14 @@ let availableSpeechVoices =
   [];
 
 
+let currentAiAudio =
+  null;
+
+
+let currentAiAudioObjectUrl =
+  '';
+
+
 let avatarParticipants =
   [];
 
@@ -3610,6 +3643,8 @@ window.addEventListener(
 window.addEventListener(
   'beforeunload',
   function() {
+
+    stopCurrentAiAudio();
 
     stopLocalMediaStream();
 
@@ -6268,8 +6303,6 @@ function getLanguageForStoredTurn(
   );
 
 }
-
-
 /* =========================================================
    LANGUAGE
 ========================================================= */
@@ -7366,8 +7399,6 @@ function setComposerBusy(
     busy;
 
 }
-
-
 /* =========================================================
    MULTILINGUAL BROWSER TTS
 ========================================================= */
@@ -8019,7 +8050,7 @@ async function sendMessage() {
       payload.reply
     ) {
 
-      speakCustomerReply(
+      await speakCustomerReply(
         payload.reply,
         customerSpeaker
       );
@@ -8093,200 +8124,57 @@ async function sendMessage() {
   }
 
 }
-
-
 /* =========================================================
    AI VOICE + SPEAKING STATE
 ========================================================= */
 
-function speakCustomerReply(
+async function speakCustomerReply(
   text,
   speaker
 ) {
 
-  if (
-    !window.speechSynthesis ||
-    !text
-  ) {
+  if (!text) {
 
     setParticipantsReady();
 
 
     setSpeechStatus(
-      'AI response received, but browser voice playback is unavailable.'
+      'AI response received.'
     );
 
 
-    return;
+    return false;
 
   }
 
 
-  refreshSpeechVoices();
-
-
-  const locale =
-    document
-      .getElementById(
-        'speechLanguage'
-      )
-      .value ||
-    'en-IN';
-
-
-  const selectedVoice =
-    getBestVoiceForLocale(
-      locale
+  const resolvedRole =
+    resolveAvatarRoleFromSpeaker(
+      speaker
     );
 
 
-  window
-    .speechSynthesis
-    .cancel();
+  const participant =
+    avatarParticipants.find(
+      function(item) {
 
+        return (
+          item.role ===
+          resolvedRole
+        );
 
-  const utterance =
-    new SpeechSynthesisUtterance(
-      text
-    );
-
-
-  utterance.lang =
-    locale;
-
-
-  if (selectedVoice) {
-
-    utterance.voice =
-      selectedVoice;
-
-
-    if (
-      locale === 'mr-IN' &&
-      selectedVoice.lang
-    ) {
-
-      utterance.lang =
-        selectedVoice.lang;
-
-    }
-
-
-    console.log(
-      'AI TTS voice:',
-      {
-        requestedLocale:
-          locale,
-
-        voice:
-          selectedVoice.name,
-
-        voiceLanguage:
-          selectedVoice.lang,
-
-        localService:
-          selectedVoice.localService
       }
     );
 
-  }
 
-  else {
-
-    console.warn(
-      'No matching TTS voice found for:',
-      locale
-    );
-
-  }
+  const avatarVariant =
+    participant
+      ? participant.variant
+      : '';
 
 
-  utterance.rate =
-    0.96;
-
-
-  utterance.pitch =
-    1;
-
-
-  utterance.volume =
-    1;
-
-
-  utterance.onstart =
-    function() {
-
-      console.log(
-        'AI TTS started:',
-        selectedVoice
-          ? selectedVoice.name
-          : 'browser default'
-      );
-
-
-      setAISpeaking(
-        speaker
-      );
-
-
-      setSpeechStatus(
-        getAvatarDisplayName(
-          resolveAvatarRoleFromSpeaker(
-            speaker
-          )
-        ) +
-        ' is speaking.'
-      );
-
-    };
-
-
-  utterance.onend =
-    function() {
-
-      console.log(
-        'AI TTS completed.'
-      );
-
-
-      setParticipantsReady();
-
-
-      setSpeechStatus(
-        'Microphone ready.'
-      );
-
-    };
-
-
-  utterance.onerror =
-    function(event) {
-
-      console.error(
-        'AI TTS error:',
-        {
-          error:
-            event.error,
-
-          locale:
-            locale,
-
-          voice:
-            selectedVoice
-              ? selectedVoice.name
-              : null
-        }
-      );
-
-
-      setParticipantsReady();
-
-
-      setSpeechStatus(
-        'AI response received, but voice playback failed.'
-      );
-
-    };
+  const conversationLanguage =
+    getConversationLanguage();
 
 
   setAIThinking(
@@ -8294,17 +8182,742 @@ function speakCustomerReply(
   );
 
 
-  setTimeout(
-    function() {
+  setSpeechStatus(
+    'Preparing AI voice...'
+  );
+
+
+  console.log(
+    '[AI VOICE] Requesting Worker TTS:',
+    {
+      sessionId:
+        currentSessionId,
+
+      speaker:
+        speaker,
+
+      role:
+        resolvedRole,
+
+      avatarVariant:
+        avatarVariant,
+
+      language:
+        conversationLanguage
+    }
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        RUNTIME_URL +
+        '/tts',
+        {
+          method:
+            'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+
+            'Accept':
+              'application/json'
+          },
+
+          body:
+            JSON.stringify(
+              {
+                sessionId:
+                  currentSessionId,
+
+                text:
+                  text,
+
+                language:
+                  conversationLanguage,
+
+                speaker:
+                  speaker,
+
+                avatarVariant:
+                  avatarVariant
+              }
+            )
+        }
+      );
+
+
+    let payload;
+
+
+    try {
+
+      payload =
+        await response.json();
+
+    }
+
+    catch (error) {
+
+      throw new Error(
+        'TTS runtime returned an invalid response.'
+      );
+
+    }
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        payload &&
+        payload.error
+          ? payload.error
+          : 'TTS runtime returned HTTP ' +
+            response.status
+      );
+
+    }
+
+
+    if (
+      !payload ||
+      payload.success !== true ||
+      !payload.audioBase64
+    ) {
+
+      throw new Error(
+        'AI voice audio was not returned.'
+      );
+
+    }
+
+
+    console.log(
+      '[AI VOICE] Worker TTS ready:',
+      {
+        model:
+          payload.model,
+
+        voice:
+          payload.voice,
+
+        mimeType:
+          payload.mimeType,
+
+        avatarVariant:
+          payload.avatarVariant,
+
+        audioLength:
+          payload.audioBase64.length
+      }
+    );
+
+
+    await playWorkerTtsAudio(
+      payload,
+      speaker
+    );
+
+
+    return true;
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      '[AI VOICE] Worker TTS failed. Using browser fallback:',
+      error
+    );
+
+
+    setSpeechStatus(
+      'AI voice fallback active...'
+    );
+
+
+    return await speakCustomerReplyWithBrowserFallback(
+      text,
+      speaker
+    );
+
+  }
+
+}
+
+
+function playWorkerTtsAudio(
+  payload,
+  speaker
+) {
+
+  return new Promise(
+    function(resolve) {
+
+      stopCurrentAiAudio();
+
+
+      let blob;
+
+
+      try {
+
+        blob =
+          base64AudioToBlob(
+            payload.audioBase64,
+            payload.mimeType ||
+            'audio/wav'
+          );
+
+      }
+
+      catch (error) {
+
+        console.error(
+          '[AI VOICE] Could not decode Worker audio:',
+          error
+        );
+
+
+        setParticipantsReady();
+
+
+        setSpeechStatus(
+          'AI response received, but audio could not be decoded.'
+        );
+
+
+        resolve(
+          false
+        );
+
+
+        return;
+
+      }
+
+
+      const objectUrl =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const audio =
+        new Audio();
+
+
+      currentAiAudio =
+        audio;
+
+
+      currentAiAudioObjectUrl =
+        objectUrl;
+
+
+      audio.preload =
+        'auto';
+
+
+      audio.src =
+        objectUrl;
+
+
+      audio.onplay =
+        function() {
+
+          console.log(
+            '[AI VOICE] Playback started:',
+            {
+              speaker:
+                speaker,
+
+              voice:
+                payload.voice,
+
+              model:
+                payload.model
+            }
+          );
+
+
+          setAISpeaking(
+            speaker
+          );
+
+
+          setSpeechStatus(
+            getAvatarDisplayName(
+              resolveAvatarRoleFromSpeaker(
+                speaker
+              )
+            ) +
+            ' is speaking.'
+          );
+
+        };
+
+
+      audio.onended =
+        function() {
+
+          console.log(
+            '[AI VOICE] Playback completed.'
+          );
+
+
+          cleanupCurrentAiAudio();
+
+
+          setParticipantsReady();
+
+
+          setSpeechStatus(
+            'Microphone ready.'
+          );
+
+
+          resolve(
+            true
+          );
+
+        };
+
+
+      audio.onerror =
+        function(event) {
+
+          console.error(
+            '[AI VOICE] Playback failed:',
+            event
+          );
+
+
+          cleanupCurrentAiAudio();
+
+
+          setParticipantsReady();
+
+
+          setSpeechStatus(
+            'AI response received, but voice playback failed.'
+          );
+
+
+          resolve(
+            false
+          );
+
+        };
+
+
+      audio
+        .play()
+        .catch(
+          function(error) {
+
+            console.error(
+              '[AI VOICE] audio.play() failed:',
+              error
+            );
+
+
+            cleanupCurrentAiAudio();
+
+
+            setParticipantsReady();
+
+
+            setSpeechStatus(
+              'AI response received, but voice playback was blocked.'
+            );
+
+
+            resolve(
+              false
+            );
+
+          }
+        );
+
+    }
+  );
+
+}
+
+
+function base64AudioToBlob(
+  base64,
+  mimeType
+) {
+
+  const binary =
+    atob(
+      base64
+    );
+
+
+  const chunkSize =
+    8192;
+
+
+  const chunks =
+    [];
+
+
+  for (
+    let offset = 0;
+    offset < binary.length;
+    offset += chunkSize
+  ) {
+
+    const slice =
+      binary.slice(
+        offset,
+        offset +
+        chunkSize
+      );
+
+
+    const bytes =
+      new Uint8Array(
+        slice.length
+      );
+
+
+    for (
+      let i = 0;
+      i < slice.length;
+      i++
+    ) {
+
+      bytes[i] =
+        slice.charCodeAt(
+          i
+        );
+
+    }
+
+
+    chunks.push(
+      bytes
+    );
+
+  }
+
+
+  return new Blob(
+    chunks,
+    {
+      type:
+        mimeType ||
+        'audio/wav'
+    }
+  );
+
+}
+
+
+function cleanupCurrentAiAudio() {
+
+  if (
+    currentAiAudio
+  ) {
+
+    currentAiAudio.onplay =
+      null;
+
+
+    currentAiAudio.onended =
+      null;
+
+
+    currentAiAudio.onerror =
+      null;
+
+
+    try {
+
+      currentAiAudio.pause();
+
+    }
+
+    catch (error) {
+
+    }
+
+
+    currentAiAudio =
+      null;
+
+  }
+
+
+  if (
+    currentAiAudioObjectUrl
+  ) {
+
+    try {
+
+      URL.revokeObjectURL(
+        currentAiAudioObjectUrl
+      );
+
+    }
+
+    catch (error) {
+
+    }
+
+
+    currentAiAudioObjectUrl =
+      '';
+
+  }
+
+}
+
+
+function stopCurrentAiAudio() {
+
+  cleanupCurrentAiAudio();
+
+
+  if (
+    window.speechSynthesis
+  ) {
+
+    try {
 
       window
         .speechSynthesis
-        .speak(
-          utterance
+        .cancel();
+
+    }
+
+    catch (error) {
+
+    }
+
+  }
+
+}
+
+
+function speakCustomerReplyWithBrowserFallback(
+  text,
+  speaker
+) {
+
+  return new Promise(
+    function(resolve) {
+
+      if (
+        !window.speechSynthesis ||
+        !text
+      ) {
+
+        setParticipantsReady();
+
+
+        setSpeechStatus(
+          'AI response received, but voice playback is unavailable.'
         );
 
-    },
-    80
+
+        resolve(
+          false
+        );
+
+
+        return;
+
+      }
+
+
+      refreshSpeechVoices();
+
+
+      const locale =
+        document
+          .getElementById(
+            'speechLanguage'
+          )
+          .value ||
+        'en-IN';
+
+
+      const selectedVoice =
+        getBestVoiceForLocale(
+          locale
+        );
+
+
+      window
+        .speechSynthesis
+        .cancel();
+
+
+      const utterance =
+        new SpeechSynthesisUtterance(
+          text
+        );
+
+
+      utterance.lang =
+        locale;
+
+
+      if (selectedVoice) {
+
+        utterance.voice =
+          selectedVoice;
+
+
+        if (
+          locale === 'mr-IN' &&
+          selectedVoice.lang
+        ) {
+
+          utterance.lang =
+            selectedVoice.lang;
+
+        }
+
+      }
+
+
+      utterance.rate =
+        0.96;
+
+
+      utterance.pitch =
+        1;
+
+
+      utterance.volume =
+        1;
+
+
+      utterance.onstart =
+        function() {
+
+          console.log(
+            '[AI VOICE] Browser fallback started.'
+          );
+
+
+          setAISpeaking(
+            speaker
+          );
+
+
+          setSpeechStatus(
+            getAvatarDisplayName(
+              resolveAvatarRoleFromSpeaker(
+                speaker
+              )
+            ) +
+            ' is speaking.'
+          );
+
+        };
+
+
+      utterance.onend =
+        function() {
+
+          console.log(
+            '[AI VOICE] Browser fallback completed.'
+          );
+
+
+          setParticipantsReady();
+
+
+          setSpeechStatus(
+            'Microphone ready.'
+          );
+
+
+          resolve(
+            true
+          );
+
+        };
+
+
+      utterance.onerror =
+        function(event) {
+
+          console.error(
+            '[AI VOICE] Browser fallback failed:',
+            event
+          );
+
+
+          setParticipantsReady();
+
+
+          setSpeechStatus(
+            'AI response received, but voice playback failed.'
+          );
+
+
+          resolve(
+            false
+          );
+
+        };
+
+
+      setAIThinking(
+        speaker
+      );
+
+
+      setTimeout(
+        function() {
+
+          try {
+
+            window
+              .speechSynthesis
+              .speak(
+                utterance
+              );
+
+          }
+
+          catch (error) {
+
+            console.error(
+              '[AI VOICE] Browser fallback exception:',
+              error
+            );
+
+
+            setParticipantsReady();
+
+
+            setSpeechStatus(
+              'AI response received, but voice playback failed.'
+            );
+
+
+            resolve(
+              false
+            );
+
+          }
+
+        },
+        80
+      );
+
+    }
   );
 
 }
@@ -8409,15 +9022,7 @@ async function endSession() {
     }
 
 
-    if (
-      window.speechSynthesis
-    ) {
-
-      window
-        .speechSynthesis
-        .cancel();
-
-    }
+    stopCurrentAiAudio();
 
 
     if (
