@@ -1797,7 +1797,8 @@
       position: absolute;
 
       inset: 0;
-       width: 100%;
+
+      width: 100%;
 
       height: 100%;
 
@@ -3568,10 +3569,9 @@ const AVATAR_ASSETS = {
 /* =========================================================
    D-ID AVATAR RENDERER CONFIGURATION
 
-   Only the Daughter renderer is configured in this first
-   prototype. Other avatar variants automatically fall back
-   to the static avatar + Gemini voice until their own
-   D-ID Agent IDs are added later.
+   Live D-ID renderers are configured for all four avatar
+   variants: Father, Mother, Daughter, and Son. Each variant
+   uses the same shared audioUrl -> D-ID -> live avatar flow.
 ========================================================= */
 
 const DID_SDK_URLS = [
@@ -3585,6 +3585,26 @@ const DID_SDK_URLS = [
 
 const DID_RENDERERS = {
 
+  father: {
+
+    agentId:
+      'v2_agt__lEZxfLN',
+
+    clientKey:
+      'ck_A6uwgbzv9qJfTur2cHXN3'
+
+  },
+
+  mother: {
+
+    agentId:
+      'v2_agt_J-lKPAaQ',
+
+    clientKey:
+      'ck_Tu_isVs2JhDXBy6D5VwvI'
+
+  },
+
   daughter: {
 
     agentId:
@@ -3593,9 +3613,21 @@ const DID_RENDERERS = {
     clientKey:
       'ck_Oo_mouXZw3vPJ05GnLGW7'
 
+  },
+
+  son: {
+
+    agentId:
+      'v2_agt_ymTzvZiv',
+
+    clientKey:
+      'ck_8CfteUGhp-lW0zCyyDcyr'
+
   }
 
 };
+
+
 /* =========================================================
    APPLICATION STATE
 ========================================================= */
@@ -5395,7 +5427,7 @@ function renderAIParticipantTiles() {
                     ${escapeHtml(
                       participant.displayName
                     )}
-                       </div>
+                  </div>
 
                   <div class="tile-role">
                     ${escapeHtml(
@@ -7195,7 +7227,7 @@ function getAvatarDisplayName(
 
 function getLatestCustomerSpeaker(
   history
-  ) {
+) {
 
   if (
     !Array.isArray(
@@ -8995,7 +9027,7 @@ function findVoiceByLocale(
 
 function getBestVoiceForLocale(
   locale
-  ) {
+) {
 
   refreshSpeechVoices();
 
@@ -10795,7 +10827,7 @@ function showRuntimeError(
 ) {
 
   const element =
-        document.getElementById(
+    document.getElementById(
       'runtimeError'
     );
 
